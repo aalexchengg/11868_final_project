@@ -37,7 +37,7 @@ def test_dataload_1():
 
 def test_dataload_2():
     """
-    Tests dataloading with sample case taken from https://huggingface.co/docs/transformers/en/training
+    Tests dataloading with code LLM and dataset.
     """
     def tokenize_function(examples):
         return tokenizer(examples["content"], padding="max_length", truncation=True)
