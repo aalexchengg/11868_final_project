@@ -7,7 +7,7 @@ from transformers.image_processing_utils import BaseImageProcessor
 from transformers.feature_extraction_sequence_utils import SequenceFeatureExtractor
 from transformers.feature_extraction_utils import FeatureExtractionMixin
 from transformers.processing_utils import ProcessorMixin
-from torch.utils.data import DataLoader, Dataset, IterableDataset
+from torch.utils.data import DataLoader, Dataset, IterableDataset, RandomSampler
 import datasets
 import numpy as np
 import argparse
@@ -17,7 +17,7 @@ import time
 from tqdm import tqdm
 import random
 from typing import Union, Optional, Dict, Tuple, Any, Callable, Type
-from utils import (RemoveColumnsCollator)
+from utils import (RemoveColumnsCollator, find_labels)
 
 logger = logging.getLogger(__name__)
 
@@ -74,6 +74,11 @@ class Trainer:
         self.compute_metrics = compute_metrics
         self.optimizers = optimizers 
 
+        self._train_batch_size = args.train_batch_size
+        self._signature_columns = None
+        default_label_names = find_labels(self.model.__class__)
+        self.label_names = default_label_names if self.args.label_names is None else self.args.label_names
+
     def _get_collator_with_removed_columns(
         self, data_collator: Callable, description: Optional[str] = None
     ) -> Callable:
@@ -101,6 +106,37 @@ class Trainer:
             self._signature_columns = list(signature.parameters.keys())
             # Labels may be named label or label_ids, the default data collator handles that.
             self._signature_columns += list(set(["label", "label_ids"] + self.label_names))
+
+    def _remove_unused_columns(self, dataset: "datasets.Dataset", description: Optional[str] = None):
+        if not self.args.remove_unused_columns:
+            return dataset
+        self._set_signature_columns_if_needed()
+        signature_columns = self._signature_columns
+
+        ignored_columns = list(set(dataset.column_names) - set(signature_columns))
+        if len(ignored_columns) > 0:
+            dset_description = "" if description is None else f"in the {description} set"
+            logger.info(
+                f"The following columns {dset_description} don't have a corresponding argument in "
+                f"`{self.model.__class__.__name__}.forward` and have been ignored: {', '.join(ignored_columns)}."
+                f" If {', '.join(ignored_columns)} are not expected by `{self.model.__class__.__name__}.forward`, "
+                " you can safely ignore this message."
+            )
+
+        columns = [k for k in signature_columns if k in dataset.column_names]
+        if len(columns) == 0:
+            raise ValueError(
+                "No columns in the dataset match the model's forward method signature. "
+                f"The following columns have been ignored: [{', '.join(ignored_columns)}]. "
+                "Please check the dataset and model. You may need to set `remove_unused_columns=False` in `TrainingArguments`."
+            )
+
+        return dataset.remove_columns(ignored_columns)
+
+    def _get_train_sampler(self) -> Optional[torch.utils.data.Sampler]:
+        if self.train_dataset is None or not len(self.train_dataset):
+            return None
+        return RandomSampler(self.train_dataset)
     
     def get_train_dataloader(self) -> DataLoader:
         if self.train_dataset is None:
