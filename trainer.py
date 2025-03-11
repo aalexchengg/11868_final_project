@@ -7,7 +7,7 @@ from transformers.image_processing_utils import BaseImageProcessor
 from transformers.feature_extraction_sequence_utils import SequenceFeatureExtractor
 from transformers.feature_extraction_utils import FeatureExtractionMixin
 from transformers.processing_utils import ProcessorMixin
-from torch.utils.data import DataLoader, Dataset, IterableDataset, RandomSampler
+from torch.utils.data import DataLoader, Dataset, IterableDataset, RandomSampler, SequentialSampler
 import datasets
 import numpy as np
 import argparse
@@ -165,8 +165,17 @@ class Trainer:
             dataloader_params["prefetch_factor"] = self.args.dataloader_prefetch_factor
 
         return DataLoader(train_dataset, **dataloader_params)
+
+    def _get_eval_sampler(self, eval_dataset: Dataset) -> Optional[torch.utils.data.Sampler]:
+        if eval_dataset is None or not len(eval_dataset):
+            return None
+        # Build the sampler.
+        return SequentialSampler(eval_dataset)
     
-    def get_eval_dataloader(self) -> DataLoader:
+    def get_eval_dataloader(self, eval_dataset: Optional[Union[str, Dataset]] = None) -> DataLoader:
+        if eval_dataset is None and self.eval_dataset is None:
+            raise ValueError("Trainer: evaluation requires an eval_dataset.")
+        
         dataloader_key = eval_dataset if isinstance(eval_dataset, str) else "eval"
         if (
             hasattr(self, "_eval_dataloaders")
