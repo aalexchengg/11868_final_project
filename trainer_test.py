@@ -1,4 +1,4 @@
-from trainer import Trainer
+from base_trainer import Trainer
 from transformers import (AutoModelForSequenceClassification, 
                           AutoModelForSeq2SeqLM, 
                           AutoTokenizer,
