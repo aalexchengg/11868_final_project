@@ -1,5 +1,8 @@
 from typing import Optional, List
 import inspect
+import numpy as np
+from tqdm import tqdm
+import editdistance
 
 def infer_framework(model_class):
     """
@@ -39,6 +42,23 @@ def find_labels(model_class):
     else:
         return [p for p in signature.parameters if "label" in p]
 
+def compute_metrics(eval_pred):
+    """
+    Computes metrics given our evaluation predictions.
+    """
+    logits, labels = eval_pred
+    # TODO: get predictions
+    predictions = np.argmax(logits, axis=-1)
+
+    edit_distance = 0
+    exact_match = 0
+    for label, prediction in tqdm(zip(labels, predictions), desc = "eval"):
+        # TODO: token filter?
+        edit_distance += edit_distance.eval(str(label), str(prediction))
+        if label == prediction:
+            exact_match += 1
+    return {"exact_match": exact_match/len(predictions), "edit_distance": edit_distance/len(predictions)}
+        
 
 class RemoveColumnsCollator:
     """Wrap the data collator to remove unused columns before they are passed to the collator."""
