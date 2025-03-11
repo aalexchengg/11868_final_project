@@ -3,6 +3,7 @@ import inspect
 import numpy as np
 from tqdm import tqdm
 import editdistance
+from dataclasses import dataclass
 
 def infer_framework(model_class):
     """
@@ -54,7 +55,7 @@ def compute_metrics(eval_pred):
     exact_match = 0
     for label, prediction in tqdm(zip(labels, predictions), desc = "eval"):
         # TODO: token filter?
-        edit_distance += edit_distance.eval(str(label), str(prediction))
+        edit_distance += editdistance.eval(str(label), str(prediction))
         if label == prediction:
             exact_match += 1
     return {"exact_match": exact_match/len(predictions), "edit_distance": edit_distance/len(predictions)}
@@ -97,3 +98,12 @@ class RemoveColumnsCollator:
     def __call__(self, features: List[dict]):
         features = [self._remove_columns(feature) for feature in features]
         return self.data_collator(features)
+
+@dataclass
+class FastArguments:
+    temp: Optional[int] = None
+
+    def __post__init__(self):
+        # TODO: add if need to configure attributes, or delete if not needed
+        pass
+    
