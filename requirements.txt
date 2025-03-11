@@ -1,0 +1,6 @@
+datasets==3.3.2
+numpy==2.2.3
+pytest==8.3.5
+torch==2.6.0
+tqdm==4.67.1
+transformers==4.49.0

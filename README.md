@@ -16,3 +16,23 @@ Repository for 11868 Final Project.
    ```bash
    pip install -r requirements.txt
    ```
+
+## Testing
+
+To run all tests, do
+
+```
+pytest
+```
+
+To run tests in a specific file, do either
+
+```
+python3 <path/to/filename>
+```
+For usual Python debugging or 
+
+```
+pytest <path/tol/filename>
+```
+To use the pytest suite.

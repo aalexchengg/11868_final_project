@@ -163,7 +163,7 @@ class Trainer:
             dataloader_params["drop_last"] = self.args.dataloader_drop_last
             dataloader_params["worker_init_fn"] = worker_init_fn
             dataloader_params["prefetch_factor"] = self.args.dataloader_prefetch_factor
-
+        
         return DataLoader(train_dataset, **dataloader_params)
 
     def _get_eval_sampler(self, eval_dataset: Dataset) -> Optional[torch.utils.data.Sampler]:
