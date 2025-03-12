@@ -19,6 +19,8 @@ import random
 from typing import Union, Optional, Dict, Tuple, Any, Callable, Type
 from utils import (RemoveColumnsCollator, find_labels)
 import os
+import math
+import sys
 
 logger = logging.getLogger(__name__)
 
@@ -325,18 +327,92 @@ class Trainer:
             out.write(f"TIME TO TRAIN: {time}\n")
             out.write("#"*10)
 
+    def set_initial_training_values(
+        self, args: TrainingArguments, dataloader: DataLoader, total_train_batch_size: int
+    ):
+        """
+        Calculates and returns the following values:
+        - `num_train_epochs`
+        - `num_update_steps_per_epoch`
+        - `num_examples`
+        - `num_train_samples`
+        - `epoch_based`
+        - `len_dataloader`
+        - `max_steps`
+        """
+        # Case 1: we rely on `args.max_steps` first
+        max_steps = args.max_steps
+        # If max_steps is negative, we use the number of epochs to determine the number of total steps later
+        epoch_based = max_steps < 0
+        len_dataloader = len(dataloader) 
+
+        # Case 2: We have a dataloader length and can extrapolate
+        if len_dataloader is not None:
+            num_update_steps_per_epoch = max(len_dataloader // args.gradient_accumulation_steps, 1)
+            # Case 3: We have a length but are using epochs, we can extrapolate the number of steps
+            if epoch_based:
+                max_steps = math.ceil(args.num_train_epochs * num_update_steps_per_epoch)
+
+        # Now we figure out `num_examples`, `num_train_epochs`, and `train_samples`
+        if len_dataloader:
+            num_examples = self.num_examples(dataloader)
+            if args.max_steps > 0:
+                num_train_epochs = max_steps // num_update_steps_per_epoch + int(
+                    max_steps % num_update_steps_per_epoch > 0
+                )
+                # May be slightly incorrect if the last batch in the training dataloader has a smaller size but it's
+                # the best we can do.
+                num_train_samples = max_steps * total_train_batch_size
+            else:
+                num_train_epochs = math.ceil(args.num_train_epochs)
+                num_train_samples = self.num_examples(dataloader) * args.num_train_epochs
+        elif args.max_steps > 0:  # Rely on max_steps when dataloader does not have a working size
+            # Setting a very large number of epochs so we go as many times as necessary over the iterator.
+            num_train_epochs = sys.maxsize
+            num_update_steps_per_epoch = max_steps
+            num_examples = total_train_batch_size * args.max_steps
+            num_train_samples = args.max_steps * total_train_batch_size
+        else:
+            raise ValueError(
+                "args.max_steps must be set to a positive value if dataloader does not have a length, was"
+                f" {args.max_steps}"
+            )
+        return (
+            num_train_epochs,
+            num_update_steps_per_epoch,
+            num_examples,
+            num_train_samples,
+            epoch_based,
+            len_dataloader,
+            max_steps,
+        )
+
     def train(self):
         """
         Runs the training loop.
         """
-        start = time.time()
-        self._training_loop()
-        end = time.time()
-        train_time = end - start
-        self._record_performance_stats(train_time)
-        self.evaluate()
+        (
+            num_train_epochs,
+            num_update_steps_per_epoch,
+            num_examples,
+            num_train_samples,
+            epoch_based,
+            len_dataloader,
+            max_steps,
+        ) = self.set_initial_training_values(self.args, self.train_dataloader, self._train_batch_size)
+        # calculate performance at each epoch
+        times = np.zeros(num_train_epochs)
+        for epoch in tqdm(range(num_train_epochs), desc = "train"):
+            start = time.time()
+            self._training_loop()
+            end = time.time()
+            train_time = end - start
+            np[epoch] = train_time
+            self.evaluate()
+        self._record_performance_stats(np.sum(times))
     
     def _training_loop(self):
+        #TODO: change signature
         """
         To be implemented by children classes. 
         """
