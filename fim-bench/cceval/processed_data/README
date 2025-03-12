@@ -1,0 +1,3 @@
+This is the CrossCodeEval benchmark proposed in our NeurIPS paper `CrossCodeEval: A Diverse and Multilingual Benchmark for Cross-File Code Completion`. Please see our paper and supplementary materials for additional details.
+
+Data for each language is in its own folder. Each folder contains three files corresponding to the three setups in the paper. A metadata field keeps track of a unique task id, the repository (w/ commit hash), the filepath, and cross-file context information. The license of each source repository can be seen at `LICENSES/project_license_map.txt`. Please reach out to us via email if you need the raw data for the repos used to create CrossCodeEval. 
