@@ -1,7 +1,8 @@
 datasets==3.3.2
-numpy==2.2.3
+numpy==1.26.4
 pytest==8.3.5
-torch==2.6.0
+torch==2.5.1
 tqdm==4.67.1
 transformers==4.49.0
 editdistance==0.8.1
+vllm==0.7.3
