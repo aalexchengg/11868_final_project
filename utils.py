@@ -102,6 +102,8 @@ class RemoveColumnsCollator:
 @dataclass
 class FastArguments:
     temp: Optional[int] = None
+    n_gpus: Optional[int] = 0
+    device: Optional[str] = 0
 
     def __post__init__(self):
         # TODO: add if need to configure attributes, or delete if not needed
