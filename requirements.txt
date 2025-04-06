@@ -6,3 +6,4 @@ tqdm==4.67.1
 transformers==4.49.0
 editdistance==0.8.1
 vllm==0.7.3
+accelerate==1.6.0
