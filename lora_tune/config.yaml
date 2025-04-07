@@ -20,11 +20,18 @@ output_dir: /tmp/torchtune/qwen2_0_5B/lora_single_device # /tmp may be deleted b
 # Model Arguments
 model:
   _component_: torchtune.models.qwen2.lora_qwen2_0_5b
+
+  # other options are [k_proj, output_proj]
   lora_attn_modules: ['q_proj', 'v_proj', 'output_proj']
+
   apply_lora_to_mlp: True
+  apply_lora_to_output: False
+
+  quantize_base: True
+
   lora_rank: 32 # higher increases accuracy and memory
   lora_alpha: 64 # usually alpha=2*rank
-  lora_dropout: 0.0
+  lora_dropout: 0.1
 
 tokenizer:
   _component_: torchtune.models.qwen2.qwen2_tokenizer
