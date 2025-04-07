@@ -15,31 +15,32 @@
 #
 # This config works only for training on single device.
 
-output_dir: /tmp/torchtune/qwen2_0_5B/lora_single_device # /tmp may be deleted by your system. Change it to your preference.
+output_dir: /tmp/torchtune/qwen2_5_0_5b/lora_single_device # /tmp may be deleted by your system. Change it to your preference.
 
 # Model Arguments
 model:
-  _component_: torchtune.models.qwen2.lora_qwen2_0_5b
+  _component_: torchtune.models.qwen2_5.lora_qwen2_5_0_5b
 
   # other options are [k_proj, output_proj]
   lora_attn_modules: ['q_proj', 'v_proj', 'output_proj']
 
   apply_lora_to_mlp: True
+  # apply_lora_to_output: True
 
   # option only available for Qwen2.5 >= 7B
-  # apply_lora_to_output: False
 
+  # whether or not to do QLoRA
   quantize_base: True
 
-  lora_rank: 32 # higher increases accuracy and memory
-  lora_alpha: 64 # usually alpha=2*rank
-  lora_dropout: 0.1
+  lora_rank: 16 # higher increases accuracy and memory
+  lora_alpha: 32 # usually alpha=2*rank
+  lora_dropout: 0.0
 
 tokenizer:
-  _component_: torchtune.models.qwen2.qwen2_tokenizer
+  _component_: torchtune.models.qwen2_5.qwen2_5_tokenizer
   path: /tmp/Qwen2_5-0_5B-Base/vocab.json
   merges_file: /tmp/Qwen2_5-0_5B-Base/merges.txt
-  max_seq_len: null
+  max_seq_len: 1024
 
 checkpointer:
   _component_: torchtune.training.FullModelHFCheckpointer
@@ -54,10 +55,10 @@ resume_from_checkpoint: False
 # Dataset and Sampler
 dataset:
   _component_: torchtune.datasets.alpaca_cleaned_dataset
-  packed: False # True increases speed
+  packed: True # True increases speed
 seed: null
 shuffle: True
-batch_size: 4
+batch_size: 8
 
 # Optimizer and Scheduler
 optimizer:
@@ -78,7 +79,7 @@ epochs: 1
 max_steps_per_epoch: null
 gradient_accumulation_steps: 8 # Use to increase effective batch size
 clip_grad_norm: null
-compile: False # torch.compile the model + loss, True increases speed + decreases memory
+compile: True # torch.compile the model + loss, True increases speed + decreases memory
 
 # Logging
 metric_logger:
@@ -89,11 +90,12 @@ log_peak_memory_stats: True
 
 # Environment
 device: cuda
-dtype: bf16
+# NOTE - set to 'fp32' instead of bf16 because running on RTX 2070 on Jackson's Desktop - Change on PSC
+dtype: fp32
 
 # Activations Memory
 enable_activation_checkpointing: True # True reduces memory
-enable_activation_offloading: False # True reduces memory
+enable_activation_offloading: True # True reduces memory
 
 # Show case the usage of pytorch profiler
 # Set enabled to False as it's only needed for debugging training
@@ -109,7 +111,7 @@ profiler:
   cuda: True
 
   #trace options passed to `torch.profiler.profile`
-  profile_memory: False
+  profile_memory: True
   with_stack: False
   record_shapes: True
   with_flops: False
