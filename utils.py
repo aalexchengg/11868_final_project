@@ -59,6 +59,12 @@ def compute_metrics(eval_pred):
         if label == prediction:
             exact_match += 1
     return {"exact_match": exact_match/len(predictions), "edit_distance": edit_distance/len(predictions)}
+
+def tokenize_codexglue(tokenizer, examples):
+    code_strs = [" ".join(code_lst) for code_lst in examples["code"]]
+    tokens = tokenizer(code_strs, padding="max_length", truncation=True, max_length=512)
+    tokens["labels"] = tokens["input_ids"].copy()
+    return tokens
         
 
 class RemoveColumnsCollator:
