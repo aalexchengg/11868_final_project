@@ -25,7 +25,9 @@ model:
   lora_attn_modules: ['q_proj', 'v_proj', 'output_proj']
 
   apply_lora_to_mlp: True
-  apply_lora_to_output: False
+
+  # option only available for Qwen2.5 >= 7B
+  # apply_lora_to_output: False
 
   quantize_base: True
 
@@ -35,13 +37,13 @@ model:
 
 tokenizer:
   _component_: torchtune.models.qwen2.qwen2_tokenizer
-  path: /tmp/Qwen2-0.5B-Base/vocab.json
-  merges_file: /tmp/Qwen2-0.5B-Base/merges.txt
+  path: /tmp/Qwen2_5-0_5B-Base/vocab.json
+  merges_file: /tmp/Qwen2_5-0_5B-Base/merges.txt
   max_seq_len: null
 
 checkpointer:
   _component_: torchtune.training.FullModelHFCheckpointer
-  checkpoint_dir: /tmp/Qwen2-0.5B-Base
+  checkpoint_dir: /tmp/Qwen2_5-0_5B-Base
   checkpoint_files: [model.safetensors]
   recipe_checkpoint: null
   output_dir: ${output_dir}
