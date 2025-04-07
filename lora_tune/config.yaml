@@ -58,8 +58,9 @@ resume_from_checkpoint: False
 #   packed: True # True increases speed
 
 dataset:
-  _component_: torchtune.datasets.text_completion_dataset
-  name: java
+  # Use the custom builder function from the modified file
+  _component_: custom_datasets.text_completion_dataset
+  # source, column, split, add_eos etc are arguments to the builder function
   source: google/code_x_glue_cc_code_completion_token
   column: code
   add_eos: False
