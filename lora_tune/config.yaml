@@ -93,7 +93,7 @@ device: cuda
 # NOTE - set to 'fp32' instead of bf16 because running on RTX 2070 on Jackson's Desktop - Change on PSC
 dtype: fp32
 
-# Activations Memory
+# Activations Memory - leave on for 2070
 enable_activation_checkpointing: True # True reduces memory a lot, medium perf impact
 enable_activation_offloading: True # True reduces memory a bit, small perf impact
 
