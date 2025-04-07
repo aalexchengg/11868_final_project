@@ -58,7 +58,7 @@ dataset:
   packed: True # True increases speed
 seed: null
 shuffle: True
-batch_size: 4
+batch_size: 32
 
 # Optimizer and Scheduler
 optimizer:
@@ -91,11 +91,11 @@ log_peak_memory_stats: True
 # Environment
 device: cuda
 # NOTE - set to 'fp32' instead of bf16 because running on RTX 2070 on Jackson's Desktop - Change on PSC
-dtype: fp32
+dtype: bf16
 
 # Activations Memory - leave on for 2070
-enable_activation_checkpointing: True # True reduces memory a lot, medium perf impact
-enable_activation_offloading: True # True reduces memory a bit, small perf impact
+enable_activation_checkpointing: False # True reduces memory a lot, medium perf impact
+enable_activation_offloading: False # True reduces memory a bit, small perf impact
 
 # Show case the usage of pytorch profiler
 # Set enabled to False as it's only needed for debugging training
