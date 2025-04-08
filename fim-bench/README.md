@@ -5,6 +5,7 @@
 - Changed `cceval.py` call to `LLM` to have `dtype="float16"` so it works on my local GPU - others should change back.
 - E.g. run benchmark command: `./run_cceval.sh Qwen/Qwen2.5-0.5B ./cceval_out 1`
 - Looks like we'd train a model locally, store it, then pass the file path to the model into the .sh script instead of one from Hugging Face?
+- Need the .so files in /build, can re-create them if needed by running ./build_treesitter.sh
 
 ## CrossCodeEval
 
