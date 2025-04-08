@@ -84,7 +84,7 @@ def model_inference(args):
         distributed_executor_backend="ray",
         enforce_eager=True,
         # set to float16 to run on Jackson's GPU, not needed for PSC
-        dtype="float16",
+        # dtype="float16",
     )
     sampling_params = SamplingParams(temperature=0, top_p=1, max_tokens=args.gen_length)
 

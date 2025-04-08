@@ -1,6 +1,7 @@
 test_trainer/
 fim-bench/cceval_out
 fim-bench/cceval/processed_data
+fim-bench/ts_package/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
