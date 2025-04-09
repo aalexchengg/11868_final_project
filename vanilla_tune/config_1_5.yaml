@@ -18,7 +18,7 @@ output_dir: /local/torchtune/qwen2_5_1_5b/vanilla_single_device # /tmp may be de
 
 # Model Arguments
 model:
-  _component_: torchtune.models.qwen2_5.qwen2_5_1_5b
+  _component_: torchtune.models.qwen2_5.qwen2_5_1_5b_base
 
 tokenizer:
   _component_: torchtune.models.qwen2_5.qwen2_5_tokenizer
