@@ -6,7 +6,6 @@
 
 # Modified by @jacksontromero
 
-import logging
 import random  # Add import
 from typing import Any, Callable, Dict, List, Mapping, Optional, Union
 
@@ -15,8 +14,10 @@ from torch.utils.data import Dataset
 from torchtune.data._utils import truncate
 from torchtune.datasets._packed import PackedDataset
 from torchtune.modules.transforms.tokenizers import ModelTokenizer
+from torchtune import utils  # Import torchtune utils
 
-log = logging.getLogger(__name__)
+# Use the torchtune logger with DEBUG level
+log = utils.get_logger("DEBUG")
 
 
 class TextCompletionDataset(Dataset):
@@ -147,7 +148,7 @@ class TextCompletionDataset(Dataset):
                         and "<|fim_middle|>" in test_middle_decode
                     ):
                         log.warning(
-                            f"FIM tokens don't decode correctly: {test_prefix_decode}, {test_suffix_decode}, {test_middle_decode}"
+                            f"FIM tokens don't decode correctly: {test_prefix_decode}, {test_suffix_decode}, {test_middle_decode}",
                         )
                         self.fim_prob = 0.0  # Disable FIM
                     else:
@@ -164,7 +165,7 @@ class TextCompletionDataset(Dataset):
 
             except Exception as e:
                 log.warning(
-                    f"Could not initialize all FIM tokens ({e}), FIM formatting will be disabled."
+                    f"Could not initialize all FIM tokens ({e}), FIM formatting will be disabled.",
                 )
                 self.fim_prob = 0.0  # Disable FIM
 
@@ -178,7 +179,7 @@ class TextCompletionDataset(Dataset):
             )
             if column != "code":
                 log.warning(
-                    f"Using CodeXGlue source but column is '{column}'. Expected 'code'."
+                    f"Using CodeXGlue source but column is '{column}'. Expected 'code'.",
                 )
 
             try:
@@ -194,7 +195,7 @@ class TextCompletionDataset(Dataset):
                 except Exception as e_py:
                     if "invalid split" in str(e_py).lower() and split == "validation":
                         log.warning(
-                            "Python 'validation' split not found for CodeXGlue, attempting 'test' instead."
+                            "Python 'validation' split not found for CodeXGlue, attempting 'test' instead.",
                         )
                         ds_python = load_dataset(
                             source, name="python", split="test", **load_dataset_kwargs
@@ -285,7 +286,7 @@ class TextCompletionDataset(Dataset):
             if content_len < 3:
                 self.samples_too_short_for_fim += 1
                 log.warning(
-                    f"Sample {index}: Content length too short for FIM. Skipping FIM transformation."
+                    f"Sample {index}: Content length too short for FIM. Skipping FIM transformation.",
                 )
                 return None  # Too short to split meaningfully
 
@@ -356,7 +357,7 @@ class TextCompletionDataset(Dataset):
             prompt = text_input
         else:
             log.warning(
-                f"Unexpected type {type(text_input)} for column '{self._column}' at index {index}. Attempting str conversion."
+                f"Unexpected type {type(text_input)} for column '{self._column}' at index {index}. Attempting str conversion.",
             )
             prompt = str(text_input)
 
