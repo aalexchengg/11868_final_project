@@ -83,7 +83,7 @@ compile: True # torch.compile the model + loss, True increases speed + decreases
 # Logging
 metric_logger:
   _component_: torchtune.training.metric_logging.DiskLogger
-  log_dir: ${output_dir}/logs
+  log_dir: ./logs/vanilla_0_5B
 log_every_n_steps: 1
 log_peak_memory_stats: True
 
