@@ -88,7 +88,7 @@ log_peak_memory_stats: True
 # Environment
 device: cuda
 # NOTE - set to 'fp32' instead of bf16 because running on RTX 2070 on Jackson's Desktop - Change on PSC
-dtype: bf16
+dtype: fp32
 
 # Activations Memory - leave on for 2070
 enable_activation_checkpointing: False # True reduces memory a lot, medium perf impact
