@@ -4,12 +4,14 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
+import os
 import sys
 import time
 from functools import partial
 from typing import Any, Dict, Optional, Union
 from warnings import warn
 
+import huggingface_hub
 import torch
 from omegaconf import DictConfig, ListConfig
 
@@ -191,6 +193,10 @@ class FullFinetuneRecipeSingleDevice(FTRecipeInterface):
         self.total_epochs = cfg.epochs
         self.max_steps_per_epoch = cfg.max_steps_per_epoch
         self.global_step = 0
+
+        self._checkpointer_output_dir = cfg.checkpointer.output_dir
+        self._upload_final_checkpoint = cfg.get("upload_final_checkpoint", False)
+        self._upload_repo_name = cfg.upload_repo_name
 
     def load_checkpoint(self, cfg_checkpointer: DictConfig) -> Dict[str, Any]:
         """
@@ -783,6 +789,30 @@ class FullFinetuneRecipeSingleDevice(FTRecipeInterface):
 
         self._profiler.stop()
 
+    def upload(self) -> None:
+        if self._upload_final_checkpoint:
+            last_epoch = self.epochs_run - 1
+            trained_model_path = os.path.join(
+                self._checkpointer_output_dir, f"epoch_{last_epoch}"
+            )
+
+            username = huggingface_hub.whoami()["name"]
+            repo_name = self._upload_repo_name
+
+            try:
+                huggingface_hub.create_repo(repo_name, repo_type="model")
+            except:
+                pass
+            repo_id = f"{username}/{repo_name}"
+
+            api = huggingface_hub.HfApi()
+            api.upload_folder(
+                folder_path=trained_model_path,
+                repo_id=repo_id,
+                repo_type="model",
+                create_pr=False,
+            )
+
     def cleanup(self) -> None:
         self._metric_logger.close()
 
@@ -800,6 +830,7 @@ def recipe_main(cfg: DictConfig) -> None:
     recipe = FullFinetuneRecipeSingleDevice(cfg=cfg)
     recipe.setup(cfg=cfg)
     recipe.train()
+    recipe.upload()
     recipe.cleanup()
 
 
