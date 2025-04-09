@@ -55,6 +55,7 @@ optimizer:
   fused: True
   weight_decay: 0.01
   lr: 2e-3
+optimizer_in_bwd: False  # True saves memory. Requires gradient_accumulation_steps=1
 
 lr_scheduler:
   _component_: torchtune.training.lr_schedulers.get_cosine_schedule_with_warmup
