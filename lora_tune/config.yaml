@@ -53,7 +53,7 @@ checkpointer:
 upload_final_checkpoint: True
 upload_repo_name: 'qwen2-0.5b-lora-single-device'
 
-resume_from_checkpoint: True
+resume_from_checkpoint: False
 
 # Dataset and Sampler
 # dataset:
@@ -73,14 +73,14 @@ dataset:
 
 seed: null
 shuffle: True
-batch_size: 12
+batch_size: 10
 
 # Optimizer and Scheduler
 optimizer:
   _component_: torch.optim.AdamW
   fused: True
   weight_decay: 0.01
-  lr: 2e-3
+  lr: 1e-4
 
 lr_scheduler:
   _component_: torchtune.training.lr_schedulers.get_cosine_schedule_with_warmup
