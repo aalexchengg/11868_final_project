@@ -1,33 +1,34 @@
 # Config for single device full finetuning in full_finetune_single_device.py
-# using a Qwen2.5 0.5B
+# using a Qwen2.5 1.5B
 #
 # This config assumes that you've run the following command before launching:
-#   tune download Qwen/Qwen2.5-0.5B --output-dir /tmp/Qwen2_5-0_5B-Base
+#   tune download Qwen/Qwen2.5-1.5B --output-dir /tmp/Qwen2_5-1_5B-Base
 #
 # To launch on a single device, run the following command from root:
-#   tune run full_finetune_single_device --config qwen2_5/0.5B_full_single_device
+#   tune run full_finetune_single_device --config qwen2_5/1.5B_full_single_device
 #
 # You can add specific overrides through the command line. For example
 # to override the checkpointer directory while launching training:
-#   tune run full_finetune_single_device --config qwen2_5/0.5B_full_single_device checkpointer.checkpoint_dir=<YOUR_CHECKPOINT_DIR>
+#   tune run full_finetune_single_device --config qwen2_5/1.5B_full_single_device checkpointer.checkpoint_dir=<YOUR_CHECKPOINT_DIR>
 #
 # This config works only for training on single device.
 
-output_dir: $LOCAL/torchtune/qwen2_5_0_5b/vanilla_single_device # /tmp may be deleted by your system. Change it to your preference.
+
+output_dir: /local/torchtune/qwen2_5_1_5b/vanilla_single_device # /tmp may be deleted by your system. Change it to your preference.
 
 # Model Arguments
 model:
-  _component_: torchtune.models.qwen2_5.qwen2_5_0_5b
+  _component_: torchtune.models.qwen2_5.vanilla_qwen2_5_1_5b
 
 tokenizer:
   _component_: torchtune.models.qwen2_5.qwen2_5_tokenizer
-  path: /tmp/Qwen2_5-0_5B-Base/vocab.json
-  merges_file: /tmp/Qwen2_5-0_5B-Base/merges.txt
+  path: /tmp/Qwen2_5-1_5B-Base/vocab.json
+  merges_file: /tmp/Qwen2_5-1_5B-Base/merges.txt
   max_seq_len: 4096
 
 checkpointer:
   _component_: torchtune.training.FullModelHFCheckpointer
-  checkpoint_dir: /tmp/Qwen2_5-0_5B-Base
+  checkpoint_dir: /tmp/Qwen2_5-1_5B-Base
   checkpoint_files: [model.safetensors]
   recipe_checkpoint: null
   output_dir: ${output_dir}
@@ -36,6 +37,10 @@ checkpointer:
 resume_from_checkpoint: False
 
 # Dataset and Sampler
+# dataset:
+#   _component_: torchtune.datasets.alpaca_cleaned_dataset
+#   packed: True # True increases speed
+
 dataset:
   # Use the custom builder function from the modified file
   _component_: custom_datasets.text_completion_dataset
@@ -45,6 +50,8 @@ dataset:
   add_eos: False
   split: train[:100%]
   packed: True # VERY IMPORTANT
+  fim_prob: 0.5
+
 seed: null
 shuffle: True
 batch_size: 12
@@ -55,7 +62,6 @@ optimizer:
   fused: True
   weight_decay: 0.01
   lr: 2e-3
-optimizer_in_bwd: False  # True saves memory. Requires gradient_accumulation_steps=1
 
 lr_scheduler:
   _component_: torchtune.training.lr_schedulers.get_cosine_schedule_with_warmup
