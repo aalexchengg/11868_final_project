@@ -66,6 +66,8 @@ dataset:
   add_eos: False
   split: train[:100%]
   packed: True # VERY IMPORTANT
+  fim_prob: 0.5
+
 seed: null
 shuffle: True
 batch_size: 12
