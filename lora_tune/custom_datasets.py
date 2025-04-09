@@ -464,8 +464,8 @@ class TextCompletionDataset(Dataset):
                 log.error(f"Sample {index}: Error during verbose decoding: {e}")
             log.info(f"--- End Sample {index} ---")
 
-        # Print FIM stats periodically or for the last sample
-        if index % 10 == 0 or index == len(self._data) - 1:
+        # Print FIM stats for the last sample
+        if index == len(self._data) - 1:
             self.print_fim_stats()
 
         return {"tokens": final_tokens, "labels": final_labels}
