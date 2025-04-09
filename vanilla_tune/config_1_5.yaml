@@ -93,7 +93,7 @@ device: cuda
 dtype: bf16
 
 # Activations Memory - leave on for 2070
-enable_activation_checkpointing: False # True reduces memory a lot, medium perf impact
+enable_activation_checkpointing: True # True reduces memory a lot, medium perf impact
 enable_activation_offloading: True # True reduces memory a bit, small perf impact
 
 # Show case the usage of pytorch profiler
