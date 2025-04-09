@@ -804,16 +804,7 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
             try:
                 huggingface_hub.create_repo(repo_name, repo_type="model")
             except:
-                log.warning(f"Repo {repo_name} already exists")
-
-                while True:
-                    user_input = input(
-                        "Do you want to replace the contents of the repo? (y/n)\n"
-                    )
-                    if user_input.strip().lower() == "y":
-                        break
-                    elif user_input.strip().lower() == "n":
-                        return
+                pass
 
             repo_id = f"{username}/{repo_name}"
 
