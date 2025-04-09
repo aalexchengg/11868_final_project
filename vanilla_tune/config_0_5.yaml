@@ -52,7 +52,7 @@ dataset:
   add_eos: False
   split: train[:100%]
   packed: True # VERY IMPORTANT
-  fim_prob: 1
+  fim_prob: 1.0
 
 seed: null
 shuffle: True
@@ -74,7 +74,7 @@ loss:
   _component_: torchtune.modules.loss.CEWithChunkedOutputLoss
 
 # Training
-epochs: 4
+epochs: 5
 max_steps_per_epoch: null
 gradient_accumulation_steps: 32 # Use to increase effective batch size
 clip_grad_norm: 1
