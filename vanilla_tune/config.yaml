@@ -38,7 +38,7 @@ resume_from_checkpoint: False
 # Dataset and Sampler
 dataset:
   # Use the custom builder function from the modified file
-  _component_: ../lora_tune/custom_datasets.text_completion_dataset
+  _component_: custom_datasets.text_completion_dataset
   # source, column, split, add_eos etc are arguments to the builder function
   source: google/code_x_glue_cc_code_completion_token
   column: code
