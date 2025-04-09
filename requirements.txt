@@ -15,3 +15,4 @@ fuzzywuzzy==0.18.0
 timeout-decorator==0.5.0
 python-Levenshtein==0.27.1
 pyparsing==3.2.3
+huggingface_hub==0.29.3
