@@ -52,7 +52,7 @@ dataset:
   add_eos: False
   split: train[:100%]
   packed: True # VERY IMPORTANT
-  fim_prob: 0.5
+  fim_prob: 1
 
 seed: null
 shuffle: True
@@ -74,7 +74,7 @@ loss:
   _component_: torchtune.modules.loss.CEWithChunkedOutputLoss
 
 # Training
-epochs: 10
+epochs: 4
 max_steps_per_epoch: null
 gradient_accumulation_steps: 32 # Use to increase effective batch size
 clip_grad_norm: 1
@@ -94,7 +94,7 @@ dtype: bf16
 
 # Activations Memory - leave on for 2070
 enable_activation_checkpointing: False # True reduces memory a lot, medium perf impact
-enable_activation_offloading: False # True reduces memory a bit, small perf impact
+enable_activation_offloading: True # True reduces memory a bit, small perf impact
 
 # Show case the usage of pytorch profiler
 # Set enabled to False as it's only needed for debugging training
