@@ -90,7 +90,7 @@ loss:
 epochs: 10
 max_steps_per_epoch: null
 gradient_accumulation_steps: 32 # Use to increase effective batch size
-clip_grad_norm: null
+clip_grad_norm: 1
 compile: True # torch.compile the model + loss, True increases speed + decreases memory
 
 # Logging

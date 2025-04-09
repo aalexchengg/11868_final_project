@@ -711,6 +711,7 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
                         if self._clip_grad_norm is not None:
                             grad_norm = torch.nn.utils.clip_grad_norm_(
                                 self._model.parameters(),
+                                error_if_nonfinite=True,
                                 max_norm=float(self._clip_grad_norm),
                             )
                         self._optimizer.step()
