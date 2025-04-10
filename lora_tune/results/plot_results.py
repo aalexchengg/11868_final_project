@@ -88,19 +88,24 @@ def plot_overall_metrics(epoch_data, model_size, epochs, output_dir):
     os.makedirs(output_dir, exist_ok=True)
 
     metrics_to_plot = ["EM", "ES", "ES RepoEval"]
+    title_fontsize = 14
+    label_fontsize = 12
+    tick_fontsize = 12
+    marker_size = 10
 
     for metric in metrics_to_plot:
         values = [epoch_data[ep]["overall"][metric] for ep in epochs]
 
-        plt.figure(figsize=(8, 5))
-        plt.plot(epochs, values, marker="o", linestyle="-")
-        plt.title(f"{model_size} - Overall {metric} vs. Epoch")
-        plt.xlabel("Training Epoch (0 = Base Model)")
-        plt.ylabel(f"Overall {metric} Score")
-        plt.xticks(epochs)  # Ensure all epoch numbers are shown
+        plt.figure(figsize=(6, 4))
+        plt.plot(epochs, values, marker="o", linestyle="-", markersize=marker_size)
+        plt.title(f"{model_size} - Overall {metric} vs. Epoch", fontsize=title_fontsize)
+        plt.xlabel("Training Epoch (0 = Base Model)", fontsize=label_fontsize)
+        plt.ylabel(f"Overall {metric} Score", fontsize=label_fontsize)
+        plt.xticks(epochs, fontsize=tick_fontsize)
+        plt.yticks(fontsize=tick_fontsize)
         plt.grid(True)
-        plt.ylim(bottom=0)  # Start y-axis at 0 for clarity
-        plt.tight_layout(pad=1.5)  # Add padding to prevent title/label cutoff
+        plt.ylim(bottom=0)
+        plt.tight_layout(pad=1.5)
 
         filename = os.path.join(output_dir, f"{model_size}_overall_{metric}.png")
         plt.savefig(filename)
@@ -123,15 +128,24 @@ def plot_language_metrics(epoch_data, model_size, epochs, output_dir):
         print("No language-specific data found to plot.")
         return
 
+    title_fontsize = 16
+    label_fontsize = 12
+    tick_fontsize = 12
+    marker_size_em = 10
+    marker_size_es = 10
+    legend_fontsize = 12
+
     for lang in sorted(list(languages)):
         em_values = [epoch_data[ep]["languages"][lang]["EM"] for ep in epochs]
         es_values = [epoch_data[ep]["languages"][lang]["ES"] for ep in epochs]
 
-        fig, ax1 = plt.subplots(figsize=(10, 6))
+        fig, ax1 = plt.subplots(figsize=(8, 5))
 
         color_em = "tab:blue"
-        ax1.set_xlabel("Training Epoch (0 = Base Model)")
-        ax1.set_ylabel(f"{lang.capitalize()} Exact Match (EM) Score", color=color_em)
+        ax1.set_xlabel("Training Epoch (0 = Base Model)", fontsize=label_fontsize)
+        ax1.set_ylabel(
+            f"{lang.capitalize()} EM Score", color=color_em, fontsize=label_fontsize
+        )
         ax1.plot(
             epochs,
             em_values,
@@ -139,18 +153,19 @@ def plot_language_metrics(epoch_data, model_size, epochs, output_dir):
             linestyle="-",
             color=color_em,
             label=f"{lang} EM",
+            markersize=marker_size_em,
         )
-        ax1.tick_params(axis="y", labelcolor=color_em)
-        ax1.set_xticks(epochs)  # Ensure all epoch numbers are shown
-        ax1.grid(True, axis="x")  # Grid only for x-axis to avoid clutter
+        ax1.tick_params(axis="y", labelcolor=color_em, labelsize=tick_fontsize)
+        ax1.set_xticks(epochs)
+        ax1.set_xticklabels(epochs, fontsize=tick_fontsize)
+        ax1.grid(True, axis="x")
         ax1.set_ylim(bottom=0)
 
-        ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
-
+        ax2 = ax1.twinx()
         color_es = "tab:red"
         ax2.set_ylabel(
-            f"{lang.capitalize()} Edit Similarity (ES) Score", color=color_es
-        )  # we already handled the x-label with ax1
+            f"{lang.capitalize()} ES Score", color=color_es, fontsize=label_fontsize
+        )
         ax2.plot(
             epochs,
             es_values,
@@ -158,14 +173,22 @@ def plot_language_metrics(epoch_data, model_size, epochs, output_dir):
             linestyle="--",
             color=color_es,
             label=f"{lang} ES",
+            markersize=marker_size_es,
         )
-        ax2.tick_params(axis="y", labelcolor=color_es)
+        ax2.tick_params(axis="y", labelcolor=color_es, labelsize=tick_fontsize)
         ax2.set_ylim(bottom=0)
 
-        plt.title(f"{model_size} - {lang.capitalize()} EM & ES vs. Epoch")
-        fig.tight_layout()  # adjust layout *after* setting title
-        # Adding legends - might need adjustment for position
-        # fig.legend(loc="upper right", bbox_to_anchor=(1,1), bbox_transform=ax1.transAxes)
+        plt.title(
+            f"{model_size} - {lang.capitalize()} EM & ES vs. Epoch",
+            fontsize=title_fontsize,
+        )
+        lines1, labels1 = ax1.get_legend_handles_labels()
+        lines2, labels2 = ax2.get_legend_handles_labels()
+        ax2.legend(
+            lines1 + lines2, labels1 + labels2, loc="best", fontsize=legend_fontsize
+        )
+
+        fig.tight_layout()
 
         filename = os.path.join(output_dir, f"{model_size}_{lang}_EM_ES.png")
         plt.savefig(filename)
@@ -187,9 +210,13 @@ def plot_consolidated_em_all_languages(epoch_data, model_size, epochs, output_di
         print("No language-specific data found for consolidated EM plot.")
         return
 
-    plt.figure(figsize=(10, 6))
+    title_fontsize = 16
+    label_fontsize = 12
+    tick_fontsize = 12
+    marker_size = 10
+    legend_fontsize = 12
 
-    # Define markers and linestyles to differentiate languages
+    plt.figure(figsize=(8, 5))
     markers = ["o", "s", "^", "d", "v", "<", ">", "p", "*", "h", "H", "+", "x", "D"]
     linestyles = ["-", "--", "-.", ":"]
 
@@ -201,15 +228,19 @@ def plot_consolidated_em_all_languages(epoch_data, model_size, epochs, output_di
             marker=markers[i % len(markers)],
             linestyle=linestyles[i % len(linestyles)],
             label=f"{lang.capitalize()} EM",
+            markersize=marker_size,
         )
 
-    plt.title(f"{model_size} - Consolidated EM Scores vs. Epoch")
-    plt.xlabel("Training Epoch (0 = Base Model)")
-    plt.ylabel("Exact Match (EM) Score")
-    plt.xticks(epochs)
+    plt.title(
+        f"{model_size} - Consolidated EM Scores vs. Epoch", fontsize=title_fontsize
+    )
+    plt.xlabel("Training Epoch (0 = Base Model)", fontsize=label_fontsize)
+    plt.ylabel("Exact Match (EM) Score", fontsize=label_fontsize)
+    plt.xticks(epochs, fontsize=tick_fontsize)
+    plt.yticks(fontsize=tick_fontsize)
     plt.grid(True)
     plt.ylim(bottom=0)
-    plt.legend()
+    plt.legend(fontsize=legend_fontsize)
     plt.tight_layout(pad=1.5)
 
     filename = os.path.join(output_dir, f"{model_size}_consolidated_EM.png")
@@ -232,8 +263,13 @@ def plot_consolidated_es_all_languages(epoch_data, model_size, epochs, output_di
         print("No language-specific data found for consolidated ES plot.")
         return
 
-    plt.figure(figsize=(10, 6))
+    title_fontsize = 16
+    label_fontsize = 12
+    tick_fontsize = 12
+    marker_size = 10
+    legend_fontsize = 12
 
+    plt.figure(figsize=(8, 5))
     markers = ["o", "s", "^", "d", "v", "<", ">", "p", "*", "h", "H", "+", "x", "D"]
     linestyles = ["-", "--", "-.", ":"]
 
@@ -245,15 +281,19 @@ def plot_consolidated_es_all_languages(epoch_data, model_size, epochs, output_di
             marker=markers[i % len(markers)],
             linestyle=linestyles[i % len(linestyles)],
             label=f"{lang.capitalize()} ES",
+            markersize=marker_size,
         )
 
-    plt.title(f"{model_size} - Consolidated ES Scores vs. Epoch")
-    plt.xlabel("Training Epoch (0 = Base Model)")
-    plt.ylabel("Edit Similarity (ES) Score")
-    plt.xticks(epochs)
+    plt.title(
+        f"{model_size} - Consolidated ES Scores vs. Epoch", fontsize=title_fontsize
+    )
+    plt.xlabel("Training Epoch (0 = Base Model)", fontsize=label_fontsize)
+    plt.ylabel("Edit Similarity (ES) Score", fontsize=label_fontsize)
+    plt.xticks(epochs, fontsize=tick_fontsize)
+    plt.yticks(fontsize=tick_fontsize)
     plt.grid(True)
     plt.ylim(bottom=0)
-    plt.legend()
+    plt.legend(fontsize=legend_fontsize)
     plt.tight_layout(pad=1.5)
 
     filename = os.path.join(output_dir, f"{model_size}_consolidated_ES.png")
