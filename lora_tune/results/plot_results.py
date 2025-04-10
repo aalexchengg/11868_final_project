@@ -92,7 +92,7 @@ def plot_overall_metrics(epoch_data, model_size, epochs, output_dir):
     for metric in metrics_to_plot:
         values = [epoch_data[ep]["overall"][metric] for ep in epochs]
 
-        plt.figure(figsize=(10, 6))
+        plt.figure(figsize=(8, 5))
         plt.plot(epochs, values, marker="o", linestyle="-")
         plt.title(f"{model_size} - Overall {metric} vs. Epoch")
         plt.xlabel("Training Epoch (0 = Base Model)")
@@ -127,7 +127,7 @@ def plot_language_metrics(epoch_data, model_size, epochs, output_dir):
         em_values = [epoch_data[ep]["languages"][lang]["EM"] for ep in epochs]
         es_values = [epoch_data[ep]["languages"][lang]["ES"] for ep in epochs]
 
-        fig, ax1 = plt.subplots(figsize=(12, 7))
+        fig, ax1 = plt.subplots(figsize=(10, 6))
 
         color_em = "tab:blue"
         ax1.set_xlabel("Training Epoch (0 = Base Model)")
@@ -187,7 +187,7 @@ def plot_consolidated_em_all_languages(epoch_data, model_size, epochs, output_di
         print("No language-specific data found for consolidated EM plot.")
         return
 
-    plt.figure(figsize=(12, 7))
+    plt.figure(figsize=(10, 6))
 
     # Define markers and linestyles to differentiate languages
     markers = ["o", "s", "^", "d", "v", "<", ">", "p", "*", "h", "H", "+", "x", "D"]
@@ -232,7 +232,7 @@ def plot_consolidated_es_all_languages(epoch_data, model_size, epochs, output_di
         print("No language-specific data found for consolidated ES plot.")
         return
 
-    plt.figure(figsize=(12, 7))
+    plt.figure(figsize=(10, 6))
 
     markers = ["o", "s", "^", "d", "v", "<", ">", "p", "*", "h", "H", "+", "x", "D"]
     linestyles = ["-", "--", "-.", ":"]
