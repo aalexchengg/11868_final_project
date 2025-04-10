@@ -1,4 +1,4 @@
-output_dir: $PROJECT/torchtune/qwen2_5_0_5b/vanilla_single_device
+output_dir: /ocean/projects/cis240137p/lchu2/torchtune/qwen2_5_0_5b/vanilla_single_device
 # using project storage for psc
 # /tmp may be deleted by your system. Change it to your preference.
 
@@ -69,7 +69,7 @@ compile: True # torch.compile the model + loss, True increases speed + decreases
 # Logging
 metric_logger:
   _component_: torchtune.training.metric_logging.DiskLogger
-  log_dir: $PROJECT/logs/vanilla_0_5B
+  log_dir: /ocean/projects/cis240137p/lchu2/logs/vanilla_0_5B
 log_every_n_steps: 1
 log_peak_memory_stats: True
 
