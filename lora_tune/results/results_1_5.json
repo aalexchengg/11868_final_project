@@ -1,0 +1,188 @@
+[
+  {
+    "name": "Qwen2.5-1.5B Base (codelm_leftright_context)",
+    "languages": {
+      "python": {
+        "EM": 0.0,
+        "ES": 17.82,
+        "ES RepoEval": 10.93
+      },
+      "java": {
+        "EM": 0.0,
+        "ES": 3.73,
+        "ES RepoEval": 2.36
+      },
+      "csharp": {
+        "EM": 0.0,
+        "ES": 8.43,
+        "ES RepoEval": 5.04
+      },
+      "typescript": {
+        "EM": 0.09,
+        "ES": 13.49,
+        "ES RepoEval": 8.51
+      }
+    },
+    "overall": {
+      "EM": 0.03,
+      "ES": 11.65,
+      "ES RepoEval": 7.22
+    },
+    "source_file": "lora_tune/1_5_results.md"
+  },
+  {
+    "name": "Qwen2.5-1.5B Base EPOCH 1 (QLora r=32, a=64, code_x_glue (Python+Java)) (codelm_leftright_context)",
+    "languages": {
+      "python": {
+        "EM": 0.0,
+        "ES": 21.67,
+        "ES RepoEval": 12.79
+      },
+      "java": {
+        "EM": 0.0,
+        "ES": 23.81,
+        "ES RepoEval": 14.05
+      },
+      "csharp": {
+        "EM": 0.0,
+        "ES": 23.44,
+        "ES RepoEval": 13.86
+      },
+      "typescript": {
+        "EM": 0.09,
+        "ES": 27.69,
+        "ES RepoEval": 17.07
+      }
+    },
+    "overall": {
+      "EM": 0.03,
+      "ES": 24.48,
+      "ES RepoEval": 14.7
+    },
+    "source_file": "lora_tune/1_5_results.md"
+  },
+  {
+    "name": "Qwen2.5-1.5B Base EPOCH 2 (QLora r=32, a=64, code_x_glue (Python+Java)) (codelm_leftright_context)",
+    "languages": {
+      "python": {
+        "EM": 0.0,
+        "ES": 20.83,
+        "ES RepoEval": 12.27
+      },
+      "java": {
+        "EM": 0.0,
+        "ES": 22.48,
+        "ES RepoEval": 13.28
+      },
+      "csharp": {
+        "EM": 0.0,
+        "ES": 22.65,
+        "ES RepoEval": 13.45
+      },
+      "typescript": {
+        "EM": 0.15,
+        "ES": 27.58,
+        "ES RepoEval": 17.01
+      }
+    },
+    "overall": {
+      "EM": 0.05,
+      "ES": 23.79,
+      "ES RepoEval": 14.3
+    },
+    "source_file": "lora_tune/1_5_results.md"
+  },
+  {
+    "name": "Qwen2.5-1.5B Base EPOCH 3 (QLora r=32, a=64, code_x_glue (Python+Java)) (codelm_leftright_context)",
+    "languages": {
+      "python": {
+        "EM": 0.0,
+        "ES": 20.41,
+        "ES RepoEval": 12.04
+      },
+      "java": {
+        "EM": 0.0,
+        "ES": 22.15,
+        "ES RepoEval": 13.21
+      },
+      "csharp": {
+        "EM": 0.0,
+        "ES": 22.44,
+        "ES RepoEval": 13.35
+      },
+      "typescript": {
+        "EM": 0.12,
+        "ES": 27.46,
+        "ES RepoEval": 16.99
+      }
+    },
+    "overall": {
+      "EM": 0.04,
+      "ES": 23.53,
+      "ES RepoEval": 14.2
+    },
+    "source_file": "lora_tune/1_5_results.md"
+  },
+  {
+    "name": "Qwen2.5-1.5B Base EPOCH 4 (QLora r=32, a=64, code_x_glue (Python+Java)) (codelm_leftright_context)",
+    "languages": {
+      "python": {
+        "EM": 0.0,
+        "ES": 20.37,
+        "ES RepoEval": 12.02
+      },
+      "java": {
+        "EM": 0.0,
+        "ES": 22.06,
+        "ES RepoEval": 13.19
+      },
+      "csharp": {
+        "EM": 0.0,
+        "ES": 22.58,
+        "ES RepoEval": 13.48
+      },
+      "typescript": {
+        "EM": 0.12,
+        "ES": 27.36,
+        "ES RepoEval": 16.87
+      }
+    },
+    "overall": {
+      "EM": 0.04,
+      "ES": 23.49,
+      "ES RepoEval": 14.17
+    },
+    "source_file": "lora_tune/1_5_results.md"
+  },
+  {
+    "name": "Qwen2.5-1.5B Base EPOCH 5 (QLora r=32, a=64, code_x_glue (Python+Java)) (codelm_leftright_context)",
+    "languages": {
+      "python": {
+        "EM": 0.0,
+        "ES": 20.35,
+        "ES RepoEval": 12.0
+      },
+      "java": {
+        "EM": 0.0,
+        "ES": 22.1,
+        "ES RepoEval": 13.2
+      },
+      "csharp": {
+        "EM": 0.0,
+        "ES": 22.57,
+        "ES RepoEval": 13.45
+      },
+      "typescript": {
+        "EM": 0.12,
+        "ES": 27.38,
+        "ES RepoEval": 16.87
+      }
+    },
+    "overall": {
+      "EM": 0.04,
+      "ES": 23.5,
+      "ES RepoEval": 14.16
+    },
+    "source_file": "lora_tune/1_5_results.md"
+  }
+]

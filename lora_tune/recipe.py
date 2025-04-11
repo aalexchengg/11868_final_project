@@ -4,6 +4,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
+import os
 import sys
 import time
 
@@ -11,6 +12,7 @@ from functools import partial
 from typing import Any, Dict, Optional, Union
 from warnings import warn
 
+import huggingface_hub
 import torch
 import torchtune.modules.common_utils as common_utils
 from omegaconf import DictConfig, ListConfig
@@ -182,6 +184,10 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
                 "Hint: enable_activation_checkpointing is True, but enable_activation_offloading isn't. "
                 "Enabling activation offloading should reduce memory further.",
             )
+
+        self._checkpointer_output_dir = cfg.checkpointer.output_dir
+        self._upload_final_checkpoint = cfg.get("upload_final_checkpoint", False)
+        self._upload_repo_name = cfg.upload_repo_name
 
     def load_checkpoint(self, cfg_checkpointer: DictConfig) -> Dict[str, Any]:
         """
@@ -711,6 +717,7 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
                         if self._clip_grad_norm is not None:
                             grad_norm = torch.nn.utils.clip_grad_norm_(
                                 self._model.parameters(),
+                                error_if_nonfinite=True,
                                 max_norm=float(self._clip_grad_norm),
                             )
                         self._optimizer.step()
@@ -784,6 +791,31 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
                     )
                 )
 
+    def upload(self) -> None:
+        if self._upload_final_checkpoint:
+            last_epoch = self.epochs_run - 1
+            trained_model_path = os.path.join(
+                self._checkpointer_output_dir, f"epoch_{last_epoch}"
+            )
+
+            username = huggingface_hub.whoami()["name"]
+            repo_name = self._upload_repo_name
+
+            try:
+                huggingface_hub.create_repo(repo_name, repo_type="model")
+            except:
+                pass
+
+            repo_id = f"{username}/{repo_name}"
+
+            api = huggingface_hub.HfApi()
+            api.upload_folder(
+                folder_path=trained_model_path,
+                repo_id=repo_id,
+                repo_type="model",
+                create_pr=False,
+            )
+
     def cleanup(self) -> None:
         self._metric_logger.close()
 
@@ -801,6 +833,7 @@ def recipe_main(cfg: DictConfig) -> None:
     recipe = LoRAFinetuneRecipeSingleDevice(cfg=cfg)
     recipe.setup(cfg=cfg)
     recipe.train()
+    recipe.upload()
     recipe.cleanup()
 
 
