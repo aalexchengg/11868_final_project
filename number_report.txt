@@ -1,0 +1,8 @@
+[JAVA TRAINING SET]
+mean: 1216.772537498067, standard deviation: 4639.0586081693955, median: 374.5, mode: 32
+[JAVA VALIDATION SET]
+mean: 533.5288635415218, standard deviation 1858.4472081539964, median: 149, mode: 10
+[PYTHON TRAINING SET]
+mean: 864.18759, standard deviation: 1817.667425435326, median: 315.0, mode: 46
+[PYTHON VALIDATION SET]
+mean: 842.30342, standard deviation 1721.7239511209632, median: 309.0, mode: 46
