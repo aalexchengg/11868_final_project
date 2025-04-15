@@ -38,6 +38,9 @@ from torchtune.training import DummyProfiler, PROFILER_KEY
 
 from tqdm import tqdm
 
+from tuning.custom_datasets.utils._make_fim import fim_dataset
+from torchtune.datasets._packed import PackedDataset
+
 log = utils.get_logger("DEBUG")
 
 
@@ -317,6 +320,7 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
             shuffle=cfg.shuffle,
             batch_size=cfg.batch_size,
             collate_fn=collate_name,
+            cfg_fim=cfg.make_fim,
             dataloader_state_dict=(
                 checkpoint_dict[training.DATALOADER_KEY]
                 if self._resume_from_checkpoint
@@ -530,6 +534,7 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
         shuffle: bool,
         batch_size: int,
         collate_fn: str,
+        cfg_fim: DictConfig,
         dataloader_state_dict: Optional[Dict[str, Any]] = None,
     ) -> StatefulDataLoader:
         """
@@ -537,6 +542,7 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
         map-style datasets. If a state_dict is provided (meaning we are resuming a training run),
         it is loaded into the dataloader.
         """
+
         if isinstance(cfg_dataset, ListConfig):
             datasets = [
                 config.instantiate(single_cfg_dataset, self._tokenizer)
@@ -547,6 +553,27 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
         else:
             ds = config.instantiate(cfg_dataset, self._tokenizer)
             packed = cfg_dataset.get("packed", False)
+
+        if cfg_fim.convert_to_fim:
+            ds = fim_dataset(
+                source_ds=ds,
+                fim_prob=cfg_fim.fim_prob,
+                min_fim_middle_percent=cfg_fim.min_fim_middle_percent,
+                max_fim_middle_percent=cfg_fim.max_fim_middle_percent,
+                verbose=cfg_fim.verbose,
+            )
+
+        if packed:
+            if self._tokenizer.max_seq_len is None:
+                raise ValueError(
+                    "PackedDataset requires a max_seq_len to be set on the tokenizer."
+                )
+            max_len = self._tokenizer.max_seq_len
+            ds = PackedDataset(
+                ds,
+                max_seq_len=max_len,
+                split_across_pack=cfg_dataset.get("split_across_pack", True),
+            )
 
         # Instantiate collate_fn
         if "left_pad_sequence" in collate_fn:
