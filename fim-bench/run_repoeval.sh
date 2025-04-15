@@ -14,7 +14,7 @@ echo "Running RepoEval"
 mkdir -p ${OUTPUT_DIR}/repoeval
 python repoeval/repoeval.py \
     --tasks line_completion function_completion api_completion \
-    --model_type codelm_right_cfc_left \
+    --model_type codelm_leftright_context \
     --model_name_or_path ${INPUT_MODEL} \
     --cfc_seq_length 2048 \
     --right_context_length 2048 \
