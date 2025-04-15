@@ -47,9 +47,9 @@ def filter(example):
     ## TAKE THIS OUT START
     langs = import_language_data()
     found_lang = False
-    for source in langs:
-        for lang in langs[source]:
-            if extension in langs[lang] and code_lang == lang:
+    for source in langs: # either github or thestack
+        for lang in langs[source]: # all languages
+            if extension in langs[source][lang] and code_lang == lang:
                 found_lang = True
     if not found_lang: return False
     ## TAKE THIS OUT END
