@@ -35,9 +35,7 @@ def import_language_data():
 def filter(example):
     code = example['code'] if 'code' in example else example['content']
     code_lang = example['language'] if 'language' in example else example['lang']
-    # path = example['source'] if 'source' in example else example['max_stars_repo_path']
-    path = example['path'] if 'path' in example else example['max_stars_repo_path']
-    # specifically path is also broken (given we are moving to 'source')
+    path = example['source'] if 'source' in example else example['max_stars_repo_path']
     # else statements above to accommodate for the stack, remove for standardized
     extension = os.path.splitext(path)[1]
     lines = code.split('\n')
@@ -88,37 +86,66 @@ def filter(example):
 
 
 if __name__ == '__main__':
+    # print("===\nPROOF OF CONCEPT\n===")
+    # github_data = load_dataset("codeparrot/github-code", split="train", streaming=True)
+    # raw_start = time.time()
+    # for i in tqdm(range(5), desc="no filtering github"):
+    #     next(iter(github_data))
+    # raw_end = time.time()
+    # print(f"no filtering time: {raw_end - raw_start}")
+    #
+    # github_filter = github_data.filter(lambda example: filter(example))
+    # filter_start = time.time()
+    # for i in tqdm(range(5), desc="filtering github"):
+    #     next(iter(github_filter))
+    # filter_end = time.time()
+    # print(f"filtering time: {filter_end - filter_start}")
+    #
+    # print("===\nSHUFFLE AND TRY AGAIN\n===")
+    # github_data_shuffled = github_data.shuffle()
+    #
+    # raw_start = time.time()
+    # for i in tqdm(range(5), desc="no filtering github, shuffled"):
+    #     next(iter(github_data_shuffled))
+    # raw_end = time.time()
+    # print(f"no filtering time, shuffled: {raw_end - raw_start}")
+    #
+    # github_filter = github_data_shuffled.filter(lambda example: filter(example))
+    # filter_start = time.time()
+    # for i in tqdm(range(5), desc="filtering github, shuffled"):
+    #     next(iter(github_filter))
+    # filter_end = time.time()
+    # print(f"filtering time, shuffled: {filter_end - filter_start}")
+
+
+
     print("===\nPROOF OF CONCEPT\n===")
-    github_data = load_dataset("codeparrot/github-code", split="train", streaming=True)
+    stack_data = load_dataset("bigcode/the-stack", split="train", streaming=True)
     raw_start = time.time()
-    for i in tqdm(range(50), desc="no filtering github"):
-        next(iter(github_data))
+    for i in tqdm(range(50), desc="no filtering stack"):
+        next(iter(stack_data))
     raw_end = time.time()
     print(f"no filtering time: {raw_end - raw_start}")
 
-    github_filter = github_data.filter(lambda example: filter(example))
+    stack_filter = stack_data.filter(lambda example: filter(example))
     filter_start = time.time()
-    for i in tqdm(range(50), desc="filtering github"):
-        next(iter(github_filter))
+    for i in tqdm(range(50), desc="filtering stack"):
+        next(iter(stack_filter))
     filter_end = time.time()
     print(f"filtering time: {filter_end - filter_start}")
 
     print("===\nSHUFFLE AND TRY AGAIN\n===")
-    github_data_shuffled = github_data.shuffle()
+    stack_data_shuffled = stack_data.shuffle()
 
     raw_start = time.time()
-    for i in tqdm(range(50), desc="no filtering github, shuffled"):
-        next(iter(github_data_shuffled))
+    for i in tqdm(range(50), desc="no filtering stack, shuffled"):
+        next(iter(stack_data_shuffled))
     raw_end = time.time()
     print(f"no filtering time, shuffled: {raw_end - raw_start}")
 
-    github_filter = github_data_shuffled.filter(lambda example: filter(example))
+    stack_filter = stack_data_shuffled.filter(lambda example: filter(example))
     filter_start = time.time()
-    for i in tqdm(range(50), desc="filtering github, shuffled"):
-        next(iter(github_filter))
+    for i in tqdm(range(50), desc="filtering stack, shuffled"):
+        next(iter(stack_filter))
     filter_end = time.time()
     print(f"filtering time, shuffled: {filter_end - filter_start}")
-
-
-
-    # stack_data = load_dataset("bigcode/the-stack", split="train", streaming=True)
