@@ -12,7 +12,7 @@ echo "Running CrossCodeLongEval"
 mkdir -p ${OUTPUT_DIR}/cclong
 python cclongeval/cclong.py \
     --tasks chunk_completion function_completion \
-    --model_type codelm_right_cfc_left \
+    --model_type codelm_leftright_context \
     --model_name_or_path ${INPUT_MODEL} \
     --cfc_seq_length 2048 \
     --right_context_length 2048 \

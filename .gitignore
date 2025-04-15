@@ -2,6 +2,9 @@ test_trainer/
 fim-bench/cceval_out
 fim-bench/cceval/processed_data
 fim-bench/ts_package/
+fim-bench/cclongeval/processed_data/
+
+.vscode/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
