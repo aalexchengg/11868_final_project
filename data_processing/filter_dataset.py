@@ -35,6 +35,7 @@ def import_language_data():
 def filter(example):
     code = example['code'] if 'code' in example else example['content']
     code_lang = example['language'] if 'language' in example else example['lang']
+    # note that github takes 'path' instead of 'source'
     path = example['source'] if 'source' in example else example['max_stars_repo_path']
     # else statements above to accommodate for the stack, remove for standardized
     extension = os.path.splitext(path)[1]
