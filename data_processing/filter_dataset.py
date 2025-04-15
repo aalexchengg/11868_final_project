@@ -35,7 +35,9 @@ def import_language_data():
 def filter(example):
     code = example['code'] if 'code' in example else example['content']
     code_lang = example['language'] if 'language' in example else example['lang']
-    path = example['source'] if 'source' in example else example['max_stars_repo_path']
+    # path = example['source'] if 'source' in example else example['max_stars_repo_path']
+    path = example['path'] if 'source' in example else example['max_stars_repo_path']
+    # specifically path is also broken (given we are moving to 'source')
     # else statements above to accommodate for the stack, remove for standardized
     extension = os.path.splitext(path)[1]
     lines = code.split('\n')
@@ -89,14 +91,14 @@ if __name__ == '__main__':
     print("===\nPROOF OF CONCEPT\n===")
     github_data = load_dataset("codeparrot/github-code", split="train", streaming=True)
     raw_start = time.time()
-    for i in tqdm(range(1000), desc="no filtering github"):
+    for i in tqdm(range(50), desc="no filtering github"):
         next(iter(github_data))
     raw_end = time.time()
     print(f"no filtering time: {raw_end - raw_start}")
 
     github_filter = github_data.filter(lambda example: filter(example))
     filter_start = time.time()
-    for i in tqdm(range(1000), desc="filtering github"):
+    for i in tqdm(range(50), desc="filtering github"):
         next(iter(github_filter))
     filter_end = time.time()
     print(f"filtering time: {filter_end - filter_start}")
@@ -105,14 +107,14 @@ if __name__ == '__main__':
     github_data_shuffled = github_data.shuffle()
 
     raw_start = time.time()
-    for i in tqdm(range(1000), desc="no filtering github, shuffled"):
+    for i in tqdm(range(50), desc="no filtering github, shuffled"):
         next(iter(github_data_shuffled))
     raw_end = time.time()
     print(f"no filtering time, shuffled: {raw_end - raw_start}")
 
     github_filter = github_data_shuffled.filter(lambda example: filter(example))
     filter_start = time.time()
-    for i in tqdm(range(1000), desc="filtering github, shuffled"):
+    for i in tqdm(range(50), desc="filtering github, shuffled"):
         next(iter(github_filter))
     filter_end = time.time()
     print(f"filtering time, shuffled: {filter_end - filter_start}")
