@@ -86,40 +86,39 @@ def filter(example):
 
 
 if __name__ == '__main__':
-    # print("===\nPROOF OF CONCEPT\n===")
-    # github_data = load_dataset("codeparrot/github-code", split="train", streaming=True)
-    # raw_start = time.time()
-    # for i in tqdm(range(5), desc="no filtering github"):
-    #     next(iter(github_data))
-    # raw_end = time.time()
-    # print(f"no filtering time: {raw_end - raw_start}")
-    #
-    # github_filter = github_data.filter(lambda example: filter(example))
-    # filter_start = time.time()
-    # for i in tqdm(range(5), desc="filtering github"):
-    #     next(iter(github_filter))
-    # filter_end = time.time()
-    # print(f"filtering time: {filter_end - filter_start}")
-    #
-    # print("===\nSHUFFLE AND TRY AGAIN\n===")
-    # github_data_shuffled = github_data.shuffle()
-    #
-    # raw_start = time.time()
-    # for i in tqdm(range(5), desc="no filtering github, shuffled"):
-    #     next(iter(github_data_shuffled))
-    # raw_end = time.time()
-    # print(f"no filtering time, shuffled: {raw_end - raw_start}")
-    #
-    # github_filter = github_data_shuffled.filter(lambda example: filter(example))
-    # filter_start = time.time()
-    # for i in tqdm(range(5), desc="filtering github, shuffled"):
-    #     next(iter(github_filter))
-    # filter_end = time.time()
-    # print(f"filtering time, shuffled: {filter_end - filter_start}")
+    print("===\nPROOF OF CONCEPT with GITHUB CODE\n===")
+    github_data = load_dataset("codeparrot/github-code", split="train", streaming=True)
+    raw_start = time.time()
+    for i in tqdm(range(50), desc="no filtering github"):
+        next(iter(github_data))
+    raw_end = time.time()
+    print(f"no filtering time: {raw_end - raw_start}")
+
+    github_filter = github_data.filter(lambda example: filter(example))
+    filter_start = time.time()
+    for i in tqdm(range(50), desc="filtering github"):
+        next(iter(github_filter))
+    filter_end = time.time()
+    print(f"filtering time: {filter_end - filter_start}")
+
+    print("===\nSHUFFLE AND TRY AGAIN\n===")
+    github_data_shuffled = github_data.shuffle()
+
+    raw_start = time.time()
+    for i in tqdm(range(50), desc="no filtering github, shuffled"):
+        next(iter(github_data_shuffled))
+    raw_end = time.time()
+    print(f"no filtering time, shuffled: {raw_end - raw_start}")
+
+    github_filter = github_data_shuffled.filter(lambda example: filter(example))
+    filter_start = time.time()
+    for i in tqdm(range(50), desc="filtering github, shuffled"):
+        next(iter(github_filter))
+    filter_end = time.time()
+    print(f"filtering time, shuffled: {filter_end - filter_start}")
 
 
-
-    print("===\nPROOF OF CONCEPT\n===")
+    print("===\nPROOF OF CONCEPT with THE STACK\n===")
     stack_data = load_dataset("bigcode/the-stack", split="train", streaming=True)
     raw_start = time.time()
     for i in tqdm(range(50), desc="no filtering stack"):
