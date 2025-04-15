@@ -80,8 +80,8 @@ class FimDataset(Dataset):
         self.fim_prefix_id = None
         self.fim_suffix_id = None
         self.fim_middle_id = None
-        self.eos_id = self.source_ds._tokenizer.eos_id
-        self.bos_id = self.source_ds._tokenizer.bos_id
+        self.eos_id = None
+        self.bos_id = None
 
         if self.fim_prob > 0:  # Only attempt if FIM is requested
             prefix_tokens = self.source_ds._tokenizer.encode(
@@ -93,6 +93,9 @@ class FimDataset(Dataset):
             middle_tokens = self.source_ds._tokenizer.encode(
                 "<|fim_middle|>", add_bos=False, add_eos=False
             )
+            eos_tokens = self.source_ds._tokenizer.encode(
+                "<|endoftext|>", add_bos=False, add_eos=False
+            )
 
             # Ensure tokens exist and are single tokens
             if len(prefix_tokens) == 1:
@@ -101,16 +104,17 @@ class FimDataset(Dataset):
                 self.fim_suffix_id = suffix_tokens[0]
             if len(middle_tokens) == 1:
                 self.fim_middle_id = middle_tokens[0]
+            if len(eos_tokens) == 1:
+                self.eos_id = eos_tokens[0]
 
             if None in [
                 self.fim_prefix_id,
                 self.fim_suffix_id,
                 self.fim_middle_id,
                 self.eos_id,
-                self.bos_id,
             ]:
                 raise ValueError(
-                    "One or more required FIM/EOS/BOS tokens not found or map to multiple tokens."
+                    "One or more required FIM/EOS tokens not found or map to multiple tokens."
                 )
 
             # Validate token decoding
@@ -123,14 +127,18 @@ class FimDataset(Dataset):
             test_middle_decode = self.source_ds._tokenizer.decode(
                 [self.fim_middle_id], skip_special_tokens=False
             )
+            test_eos_decode = self.source_ds._tokenizer.decode(
+                [self.eos_id], skip_special_tokens=False
+            )
 
             if not (
                 "<|fim_prefix|>" in test_prefix_decode
                 and "<|fim_suffix|>" in test_suffix_decode
                 and "<|fim_middle|>" in test_middle_decode
+                and "<|endoftext|>" in test_eos_decode
             ):
                 log.error(
-                    f"FIM tokens don't decode correctly: {test_prefix_decode}, {test_suffix_decode}, {test_middle_decode}",
+                    f"FIM tokens don't decode correctly: {test_prefix_decode}, {test_suffix_decode}, {test_middle_decode}, {test_eos_decode}",
                 )
                 raise ValueError(
                     f"FIM tokens don't decode correctly: {test_prefix_decode}, {test_suffix_decode}, {test_middle_decode}"
@@ -189,7 +197,6 @@ class FimDataset(Dataset):
             self.fim_suffix_id,
             self.fim_middle_id,
             self.eos_id,
-            self.bos_id,
         ]:
             error_msg = "FIM tokens not available in _transform_to_fim."
             log.error(error_msg)
@@ -245,10 +252,9 @@ class FimDataset(Dataset):
             ]  # Exclude original EOS
 
             # Construct FIM input and target sequences
-            # Input: [<bos>] <prefix> PREFIX <suffix> SUFFIX <middle>
+            # Input: <prefix> PREFIX <suffix> SUFFIX <middle>
             fim_input = (
-                [self.bos_id]
-                + [self.fim_prefix_id]
+                [self.fim_prefix_id]
                 + prefix_tokens
                 + [self.fim_suffix_id]
                 + suffix_tokens
