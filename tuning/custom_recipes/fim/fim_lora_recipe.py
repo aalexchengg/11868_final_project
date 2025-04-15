@@ -38,7 +38,8 @@ from torchtune.training import DummyProfiler, PROFILER_KEY
 
 from tqdm import tqdm
 
-from dataset_utils._make_fim import fim_dataset
+from tuning.custom_datasets.utils._make_fim import fim_dataset
+from torchtune.datasets._packed import PackedDataset
 
 log = utils.get_logger("DEBUG")
 
@@ -319,7 +320,7 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
             shuffle=cfg.shuffle,
             batch_size=cfg.batch_size,
             collate_fn=collate_name,
-            make_fim=cfg.make_fim.convert_to_fim,
+            cfg_fim=cfg.make_fim,
             dataloader_state_dict=(
                 checkpoint_dict[training.DATALOADER_KEY]
                 if self._resume_from_checkpoint
@@ -541,6 +542,7 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
         map-style datasets. If a state_dict is provided (meaning we are resuming a training run),
         it is loaded into the dataloader.
         """
+
         if isinstance(cfg_dataset, ListConfig):
             datasets = [
                 config.instantiate(single_cfg_dataset, self._tokenizer)
@@ -559,6 +561,18 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
                 min_fim_middle_percent=cfg_fim.min_fim_middle_percent,
                 max_fim_middle_percent=cfg_fim.max_fim_middle_percent,
                 verbose=cfg_fim.verbose,
+            )
+
+        if packed:
+            if self._tokenizer.max_seq_len is None:
+                raise ValueError(
+                    "PackedDataset requires a max_seq_len to be set on the tokenizer."
+                )
+            max_len = self._tokenizer.max_seq_len
+            ds = PackedDataset(
+                ds,
+                max_seq_len=max_len,
+                split_across_pack=cfg_dataset.get("split_across_pack", True),
             )
 
         # Instantiate collate_fn

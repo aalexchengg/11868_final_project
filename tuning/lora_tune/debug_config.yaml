@@ -42,6 +42,9 @@ tokenizer:
   merges_file: /tmp/Qwen2_5-0_5B-Base/merges.txt
   max_seq_len: 4096
 
+upload_final_checkpoint: False
+upload_repo_name: null
+
 checkpointer:
   _component_: torchtune.training.FullModelHFCheckpointer
   checkpoint_dir: /tmp/Qwen2_5-0_5B-Base
@@ -59,15 +62,20 @@ resume_from_checkpoint: False
 
 dataset:
   # Use the custom builder function from the modified file
-  _component_: custom_datasets.text_completion_dataset
+  _component_: tuning.custom_datasets.codexglue.text_completion_dataset
   # source, column, split, add_eos etc are arguments to the builder function
   source: google/code_x_glue_cc_code_completion_token
   column: code
-  add_eos: False
-  split: train[:5]
-  fim_prob: 1.0 # Set to 1.0 to force FIM attempt
+  split: train[:1]
   verbose: True # Enable verbose logging in the dataset
   packed: True # VERY IMPORTANT - Uncommented to ensure proper packing is used
+
+make_fim:
+  convert_to_fim: True # whether to convert dataset to FIM
+  fim_prob: 1.0 # prob a single sample is converted to FIM
+  min_fim_middle_percent: 0.01 # min length of middle portion as percent of total length
+  max_fim_middle_percent: 0.1 # max length of middle portion as percent of total length
+  verbose: True # whether to include debug output about the FIM-transformation process
 
 seed: null
 shuffle: True
