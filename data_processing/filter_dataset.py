@@ -36,7 +36,7 @@ def filter(example):
     code = example['code'] if 'code' in example else example['content']
     code_lang = example['language'] if 'language' in example else example['lang']
     # path = example['source'] if 'source' in example else example['max_stars_repo_path']
-    path = example['path'] if 'source' in example else example['max_stars_repo_path']
+    path = example['path'] if 'path' in example else example['max_stars_repo_path']
     # specifically path is also broken (given we are moving to 'source')
     # else statements above to accommodate for the stack, remove for standardized
     extension = os.path.splitext(path)[1]
