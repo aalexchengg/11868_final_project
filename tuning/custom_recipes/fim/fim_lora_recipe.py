@@ -370,6 +370,7 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
         )
 
         if self.do_ff:
+            self.ff_verbose = cfg.fast_forward.verbose
             self.evaluate_every = cfg.fast_forward.evaluate_every
             self.num_stabilization_steps = cfg.fast_forward.num_stabilization_steps
             self.ff_dataset = cfg.fast_forward.ff_dataset
@@ -721,9 +722,6 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
                 labels = batch.pop("labels")
                 logits = self._model(**batch)
 
-                print(f"labels[:10]: {labels[:10]}")
-                print(f"logits[:10]: {logits[:10]}")
-
                 labels = torch.hstack(
                     (labels[..., 1:], self.ignore_labels_cache[: labels.shape[0]])
                 )
@@ -736,9 +734,8 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
 
                 del logits
 
-                losses.append(loss)
+                losses.append(loss.unsqueeze(0))
 
-            log.info(f"Losses: {losses}")
             loss = torch.cat(losses).mean()
             return loss.item()
 
@@ -857,7 +854,11 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
                         and (idx + 1) % self._gradient_accumulation_steps == 0
                     ):
                         predictor_steps += 1
-                        log.info(f"FF step {predictor_steps} / {next_predictor_step}")
+                        if self.ff_verbose:
+                            log.info(
+                                f"FF step {predictor_steps} / {next_predictor_step}"
+                            )
+
                         if (
                             predictor_steps == next_predictor_step
                             or predictor_steps == next_predictor_step - 1
@@ -912,7 +913,10 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
                             fast_forward_step += 1
                             total_loss = self.evaluate_ff()
 
-                            log.info(f"FF step {fast_forward_step}, loss: {total_loss}")
+                            if self.ff_verbose:
+                                log.info(
+                                    f"FF step {fast_forward_step}, loss: {total_loss}"
+                                )
 
                             self._model.train()
 
