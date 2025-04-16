@@ -719,8 +719,10 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
             for step, batch in enumerate(self.ff_dataloader):
                 utils.batch_to_device(batch, self._device)
                 labels = batch.pop("labels")
-                with self.activations_handling_ctx:
-                    logits = self._model(**batch)
+                logits = self._model(**batch)
+
+                print(f"labels[:10]: {labels[:10]}")
+                print(f"logits[:10]: {logits[:10]}")
 
                 labels = torch.hstack(
                     (labels[..., 1:], self.ignore_labels_cache[: labels.shape[0]])
@@ -734,8 +736,9 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
 
                 del logits
 
-                losses.append(loss.unsqueeze(0))
+                losses.append(loss)
 
+            log.info(f"Losses: {losses}")
             loss = torch.cat(losses).mean()
             return loss.item()
 
