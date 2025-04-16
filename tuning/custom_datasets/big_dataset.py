@@ -15,7 +15,7 @@ from torchtune.data._utils import truncate
 from torchtune.datasets._packed import PackedDataset
 from torchtune.modules.transforms.tokenizers import ModelTokenizer
 from torchtune import utils  # Import torchtune utils
-from .format_fns import github_format_fn, stack_format_fn
+from format_fns import github_format_fn, stack_format_fn
 
 # Use the torchtune logger with DEBUG level
 log = utils.get_logger("DEBUG")
@@ -78,7 +78,7 @@ class BigDataset(IterableDataset):
                 dataset = dataset.map(stack_format_fn, batched = True)
             temp.append(dataset)
         self._data = interleave_datasets(temp, seed = 15122)
-        self._data = self._data.select_columns(['id', 'code', 'language','source', 'size'])
+        self._data = self._data.select_columns(['id', 'code', 'language','source'])
         self._data = self._data.map(self._prepare_sample)
 
         if filter_fn is not None:
