@@ -50,8 +50,8 @@ checkpointer:
   output_dir: ${output_dir}
   model_type: QWEN2
 
-upload_final_checkpoint: True
-upload_repo_name: 'qwen2-0.5b-lora-single-device'
+upload_checkpoints: True
+upload_repo_name: 'qwen2-0.5b-lora-single-device-ff'
 
 resume_from_checkpoint: False
 

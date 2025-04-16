@@ -190,7 +190,7 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
             )
 
         self._checkpointer_output_dir = cfg.checkpointer.output_dir
-        self._upload_final_checkpoint = cfg.get("upload_final_checkpoint", False)
+        self._upload_checkpoints = cfg.get("upload_checkpoints", False)
         self._upload_repo_name = cfg.upload_repo_name
 
     def load_checkpoint(self, cfg_checkpointer: DictConfig) -> Dict[str, Any]:
@@ -981,11 +981,12 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
                     )
                 )
 
-    def upload(self) -> None:
-        if self._upload_final_checkpoint:
-            last_epoch = self.epochs_run - 1
+                self.upload(epoch=curr_epoch)
+
+    def upload(self, epoch: int) -> None:
+        if self._upload_checkpoints:
             trained_model_path = os.path.join(
-                self._checkpointer_output_dir, f"epoch_{last_epoch}"
+                self._checkpointer_output_dir, f"epoch_{epoch}"
             )
 
             username = huggingface_hub.whoami()["name"]
@@ -1023,7 +1024,6 @@ def recipe_main(cfg: DictConfig) -> None:
     recipe = LoRAFinetuneRecipeSingleDevice(cfg=cfg)
     recipe.setup(cfg=cfg)
     recipe.train()
-    recipe.upload()
     recipe.cleanup()
 
 

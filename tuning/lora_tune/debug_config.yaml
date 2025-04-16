@@ -42,7 +42,7 @@ tokenizer:
   merges_file: /tmp/Qwen2_5-0_5B-Base/merges.txt
   max_seq_len: 4096
 
-upload_final_checkpoint: False
+upload_checkpoints: False
 upload_repo_name: null
 
 checkpointer:
