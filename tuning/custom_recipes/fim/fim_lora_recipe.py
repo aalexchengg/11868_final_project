@@ -377,7 +377,7 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
             self.ff_dataloader = self._setup_data(
                 cfg_dataset=self.ff_dataset,
                 shuffle=False,
-                batch_size=cfg.fast_forward.ff_batch_size,
+                batch_size=cfg.batch_size,
                 collate_fn=self.ff_collate_fn,
                 cfg_fim=None,
             )

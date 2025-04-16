@@ -84,7 +84,6 @@ fast_forward:
   verbose: True # whether to include debug output about the FF process
 
   # TODO - CHANGE THIS TO BE A 'REAL' VALIDATION SET
-  ff_batch_size: 1
   # ff_collate_fn: None
   ff_dataset:
     _component_: tuning.custom_datasets.codexglue.text_completion_dataset
