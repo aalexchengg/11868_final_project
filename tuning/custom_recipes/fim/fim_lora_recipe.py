@@ -722,9 +722,14 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
                 labels = batch.pop("labels")
                 logits = self._model(**batch)
 
-                labels = torch.hstack(
-                    (labels[..., 1:], self.ignore_labels_cache[: labels.shape[0]])
+                # Create ignore tensor dynamically based on current batch size
+                current_batch_size = labels.shape[0]
+                ignore_tensor = torch.full(
+                    (current_batch_size, 1),
+                    self._loss_fn.ignore_index,
+                    device=self._device,
                 )
+                labels = torch.hstack((labels[..., 1:], ignore_tensor))
 
                 if not isinstance(logits, list):
                     labels = labels.reshape(-1)
@@ -734,7 +739,10 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
 
                 del logits
 
-                losses.append(loss.unsqueeze(0))
+                losses.append(loss.flatten())
+
+            if self.ff_verbose:
+                log.info(f"Eval losses: {losses}")
 
             loss = torch.cat(losses).mean()
             return loss.item()
