@@ -66,7 +66,7 @@ dataset:
   # source, column, split, add_eos etc are arguments to the builder function
   source: google/code_x_glue_cc_code_completion_token
   column: code
-  split: train[:1]
+  split: train[:50]
   verbose: True # Enable verbose logging in the dataset
   packed: True # VERY IMPORTANT - Uncommented to ensure proper packing is used
 
@@ -77,7 +77,23 @@ make_fim:
   max_fim_middle_percent: 0.1 # max length of middle portion as percent of total length
   verbose: True # whether to include debug output about the FIM-transformation process
 
-seed: null
+fast_forward:
+  do_ff: True # whether to do FF
+  evaluate_every: 2 # How many GD steps between FF runs
+  num_stabilization_steps: 5 # how many initial GD steps to take in epoch 0 before starting any FF runs
+
+  # TODO - CHANGE THIS TO BE A 'REAL' VALIDATION SET
+  ff_batch_size: 1
+  # ff_collate_fn: None
+  ff_dataset:
+    _component_: tuning.custom_datasets.codexglue.text_completion_dataset
+    source: google/code_x_glue_cc_code_completion_token
+    column: code
+    split: test[:32]
+    verbose: True # Enable verbose logging in the dataset
+    packed: True # VERY IMPORTANT - Uncommented to ensure proper packing is used
+
+seed: 11868
 shuffle: True
 batch_size: 1
 

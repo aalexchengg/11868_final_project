@@ -40,6 +40,7 @@ from tqdm import tqdm
 
 from tuning.custom_datasets.utils._make_fim import fim_dataset
 from torchtune.datasets._packed import PackedDataset
+import concurrent.futures
 
 log = utils.get_logger("DEBUG")
 
@@ -362,6 +363,24 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
             (cfg.batch_size, 1), self._loss_fn.ignore_index, device=self._device
         )
 
+        # FF
+        self.do_ff = cfg.fast_forward.do_ff
+        self.ff_collate_fn = cfg.fast_forward.get(
+            "ff_collate_fn", "torchtune.data.padded_collate_sft"
+        )
+
+        if self.do_ff:
+            self.evaluate_every = cfg.fast_forward.evaluate_every
+            self.num_stabilization_steps = cfg.fast_forward.num_stabilization_steps
+            self.ff_dataset = cfg.fast_forward.ff_dataset
+            self.ff_dataloader = self._setup_data(
+                cfg_dataset=self.ff_dataset,
+                shuffle=False,
+                batch_size=cfg.fast_forward.ff_batch_size,
+                collate_fn=self.ff_collate_fn,
+                cfg_fim=None,
+            )
+
     def _setup_profiler(
         self, cfg_profiler: Optional[DictConfig] = None
     ) -> Union[torch.profiler.profile, DummyProfiler]:
@@ -534,7 +553,7 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
         shuffle: bool,
         batch_size: int,
         collate_fn: str,
-        cfg_fim: DictConfig,
+        cfg_fim: Optional[DictConfig] = None,
         dataloader_state_dict: Optional[Dict[str, Any]] = None,
     ) -> StatefulDataLoader:
         """
@@ -554,7 +573,7 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
             ds = config.instantiate(cfg_dataset, self._tokenizer)
             packed = cfg_dataset.get("packed", False)
 
-        if cfg_fim.convert_to_fim:
+        if cfg_fim is not None and cfg_fim.convert_to_fim:
             ds = fim_dataset(
                 source_ds=ds,
                 fim_prob=cfg_fim.fim_prob,
@@ -693,6 +712,30 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
 
         return loss
 
+    def evaluate_ff(self):
+        with torch.no_grad():
+            self._model.eval()
+            losses = []
+            for step, batch in enumerate(self.ff_dataloader):
+                utils.batch_to_device(batch, self._device)
+                labels = batch.pop("labels")
+                with self.activations_handling_ctx:
+                    logits = self._model(**batch)
+
+                labels = torch.hstack(
+                    (labels[..., 1:], self.ignore_labels_cache[: labels.shape[0]])
+                )
+
+                if not isinstance(logits, list):
+                    labels = labels.reshape(-1)
+                    logits = logits.reshape(-1, logits.size(-1))
+
+                loss = self._loss_fn(logits, labels)
+
+                del logits
+
+                return loss
+
     def train(self) -> None:
         """
         The core training loop.
@@ -707,6 +750,20 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
         t0 = time.perf_counter()
         running_loss = 0
         num_tokens = 0
+
+        if self.do_ff:
+            log.info(
+                f"Fast Forward is enabled with evaluate_every = {self.evaluate_every}"
+            )
+            predictor_steps = 0
+            next_predictor_step = self.evaluate_every
+
+            param_dict = {}
+            param_dict_empty = {}
+            for name, _ in self._model.named_parameters():
+                if "lora" in name:
+                    param_dict[name] = []
+                    param_dict_empty[name] = []
 
         with self._profiler as prof:
             # self.epochs_run should be non-zero when we're resuming from a checkpoint
@@ -785,6 +842,78 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
                         running_loss = 0
                         num_tokens = 0
                         t0 = time.perf_counter()
+
+                    if (
+                        self.do_ff
+                        and not (curr_epoch == 0 and idx < self.num_stabilization_steps)
+                        and (idx + 1) % self._gradient_accumulation_steps == 0
+                    ):
+                        predictor_steps += 1
+                        log.info(f"FF step {predictor_steps} / {next_predictor_step}")
+                        if (
+                            predictor_steps == next_predictor_step
+                            or predictor_steps == next_predictor_step - 1
+                        ):
+                            model_state_dict = self._model.state_dict()
+                            for key in param_dict.keys():
+                                param_dict[key].append(
+                                    model_state_dict[key].detach().clone()
+                                )
+                                if predictor_steps == next_predictor_step:
+                                    param_dict[key] = torch.stack(param_dict[key])
+
+                    if self.do_ff and predictor_steps == next_predictor_step:
+                        keys = list(param_dict.keys())
+
+                        def calc_diff(param_name):
+                            return (
+                                param_name,
+                                param_dict[param_name][-1] - param_dict[param_name][-2],
+                            )
+
+                        with concurrent.futures.ThreadPoolExecutor() as executor:
+                            results = executor.map(calc_diff, keys)
+
+                        difference_dict = {
+                            param_name: value for param_name, value in results
+                        }
+
+                        prev_loss = None
+                        fast_forward_step = 0
+
+                        while True:
+                            model_dict = self._model.state_dict()
+
+                            def cal_update(param_name):
+                                return (
+                                    param_name,
+                                    model_dict[param_name]
+                                    + difference_dict[param_name],
+                                )
+
+                            with concurrent.futures.ThreadPoolExecutor() as executor:
+                                results = executor.map(cal_update, keys)
+
+                            param_dict.update(results)
+                            self._model.load_state_dict(param_dict, strict=False)
+
+                            # Set model to eval mode
+                            self._model.eval()
+
+                            fast_forward_step += 1
+                            total_loss = self.evaluate_ff()
+
+                            log.info(f"FF step {fast_forward_step}, loss: {total_loss}")
+
+                            self._model.train()
+
+                            if prev_loss is not None and total_loss > prev_loss:
+                                break
+
+                            prev_loss = total_loss
+
+                        next_predictor_step = next_predictor_step + self.evaluate_every
+                        param_dict.update(param_dict_empty)
 
                     # Stop tracking CUDA memory now that active steps are complete
                     if (
