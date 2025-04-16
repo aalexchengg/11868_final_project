@@ -14,8 +14,8 @@ logger = logging.getLogger(__name__)
 
 
 def format_text(text: str) -> str:
-    # TODO: implement
-    return text
+    # all we need to do is append the end of text special token
+    return text + " <|endoftext|>"
 
 
 def format_examples(examples):
@@ -42,7 +42,7 @@ def process_github():
         raise AssertionError("This dataset has already been processed. If you want to overwrite, please manually delete on HuggingFace Hub and try again.")
     # otherwise, do the work
     logger.info("Loading in source dataset...")
-    dataset = load_dataset(repo_name, streaming = True)
+    dataset = load_dataset(repo_name, streaming = True, trust_remote_code = True)
     logger.info("Mapping dataset...")
     dataset.map(format_examples, batched = True)
     logger.info("Pushing to hub...")
