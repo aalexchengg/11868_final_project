@@ -1,0 +1,10 @@
+INFO:root:Loading in Github dataset...
+INFO:root:Shuffling with seed 15122...
+INFO:root:Creating early stopping generator with size 10
+INFO:root:Now building dataset...
+Generating train split: 0 examples [00:00, ? examples/s]Generating train split: 1 examples [00:00,  1.10 examples/s]Generating train split: 10 examples [00:00, 10.90 examples/s]
+INFO:root:Pushing to hub ...
+Uploading the dataset shards:   0%|          | 0/1 [00:00<?, ?it/s]
+Creating parquet from Arrow format:   0%|          | 0/1 [00:00<?, ?ba/s][ACreating parquet from Arrow format: 100%|██████████| 1/1 [00:00<00:00, 494.73ba/s]
+Uploading the dataset shards: 100%|██████████| 1/1 [00:00<00:00,  4.37it/s]Uploading the dataset shards: 100%|██████████| 1/1 [00:00<00:00,  4.37it/s]
+INFO:root:All complete. Dataset can be found at https://huggingface.com/aalexchengg/github_test
