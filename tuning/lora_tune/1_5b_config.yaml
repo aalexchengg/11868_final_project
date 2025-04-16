@@ -50,8 +50,8 @@ checkpointer:
   output_dir: ${output_dir}
   model_type: QWEN2
 
-upload_final_checkpoint: True
-upload_repo_name: 'qwen2-1.5b-lora-single-device'
+upload_checkpoints: True
+upload_repo_name: 'qwen2-1.5b-lora-single-device-ff'
 
 resume_from_checkpoint: False
 
@@ -62,16 +62,37 @@ resume_from_checkpoint: False
 
 dataset:
   # Use the custom builder function from the modified file
-  _component_: custom_datasets.text_completion_dataset
+  _component_: tuning.custom_datasets.codexglue.text_completion_dataset
   # source, column, split, add_eos etc are arguments to the builder function
   source: google/code_x_glue_cc_code_completion_token
   column: code
-  add_eos: True
   split: train[:100%]
   packed: True # VERY IMPORTANT
-  fim_prob: 1.0
 
-seed: null
+make_fim:
+  convert_to_fim: True # whether to convert dataset to FIM
+  fim_prob: 1.0 # prob a single sample is converted to FIM
+  min_fim_middle_percent: 0.01 # min length of middle portion as percent of total length
+  max_fim_middle_percent: 0.1 # max length of middle portion as percent of total length
+  verbose: False # whether to include debug output about the FIM-transformation process
+
+fast_forward:
+  do_ff: True # whether to do FF
+  evaluate_every: 6 # How many GD steps between FF runs
+  num_stabilization_steps: 50 # how many initial GD steps to take in epoch 0 before starting any FF runs
+  verbose: True # whether to include debug output about the FF process
+
+  # TODO - CHANGE THIS TO BE A 'REAL' VALIDATION SET
+  # ff_collate_fn: None
+  ff_dataset:
+    _component_: tuning.custom_datasets.codexglue.text_completion_dataset
+    source: google/code_x_glue_cc_code_completion_token
+    column: code
+    split: test[:64]
+    verbose: False # Enable verbose logging in the dataset
+    packed: True # VERY IMPORTANT - Uncommented to ensure proper packing is used
+
+seed: 11868
 shuffle: True
 batch_size: 5
 
@@ -99,7 +120,7 @@ compile: True # torch.compile the model + loss, True increases speed + decreases
 # Logging
 metric_logger:
   _component_: torchtune.training.metric_logging.DiskLogger
-  log_dir: ./logs/qwen2_5_1_5b/lora_single_device/
+  log_dir: ./logs/qwen2_5_1_5b/lora_single_device_ff/
 log_every_n_steps: 1
 log_peak_memory_stats: True
 
