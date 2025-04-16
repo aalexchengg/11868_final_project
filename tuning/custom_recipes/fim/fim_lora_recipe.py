@@ -741,8 +741,8 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
 
                 losses.append(loss.flatten())
 
-            if self.ff_verbose:
-                log.info(f"Eval losses: {losses}")
+            # if self.ff_verbose:
+            #     log.info(f"Eval losses: {losses}")
 
             loss = torch.cat(losses).mean()
             return loss.item()
