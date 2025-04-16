@@ -762,10 +762,12 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
             next_predictor_step = self.evaluate_every
 
             param_dict = {}
+            prev_param_dict = {}
             param_dict_empty = {}
             for name, _ in self._model.named_parameters():
                 if "lora" in name:
                     param_dict[name] = []
+                    prev_param_dict[name] = []
                     param_dict_empty[name] = []
 
         with self._profiler as prof:
@@ -897,6 +899,7 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
                             with concurrent.futures.ThreadPoolExecutor() as executor:
                                 results = executor.map(cal_update, keys)
 
+                            prev_param_dict.update(param_dict)
                             param_dict.update(results)
                             self._model.load_state_dict(param_dict, strict=False)
 
@@ -911,6 +914,9 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
                             self._model.train()
 
                             if prev_loss is not None and total_loss > prev_loss:
+                                self._model.load_state_dict(
+                                    prev_param_dict, strict=False
+                                )
                                 break
 
                             prev_loss = total_loss
