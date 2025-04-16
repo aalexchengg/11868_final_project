@@ -67,7 +67,7 @@ dataset:
   source: google/code_x_glue_cc_code_completion_token
   column: code
   split: train[:50]
-  verbose: True # Enable verbose logging in the dataset
+  verbose: False # Enable verbose logging in the dataset
   packed: True # VERY IMPORTANT - Uncommented to ensure proper packing is used
 
 make_fim:
@@ -75,12 +75,12 @@ make_fim:
   fim_prob: 1.0 # prob a single sample is converted to FIM
   min_fim_middle_percent: 0.01 # min length of middle portion as percent of total length
   max_fim_middle_percent: 0.1 # max length of middle portion as percent of total length
-  verbose: True # whether to include debug output about the FIM-transformation process
+  verbose: False # whether to include debug output about the FIM-transformation process
 
 fast_forward:
   do_ff: True # whether to do FF
-  evaluate_every: 2 # How many GD steps between FF runs
-  num_stabilization_steps: 5 # how many initial GD steps to take in epoch 0 before starting any FF runs
+  evaluate_every: 4 # How many GD steps between FF runs
+  num_stabilization_steps: 10 # how many initial GD steps to take in epoch 0 before starting any FF runs
 
   # TODO - CHANGE THIS TO BE A 'REAL' VALIDATION SET
   ff_batch_size: 1
@@ -90,7 +90,7 @@ fast_forward:
     source: google/code_x_glue_cc_code_completion_token
     column: code
     split: test[:32]
-    verbose: True # Enable verbose logging in the dataset
+    verbose: False # Enable verbose logging in the dataset
     packed: True # VERY IMPORTANT - Uncommented to ensure proper packing is used
 
 seed: 11868
