@@ -919,6 +919,7 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
                             self._model.eval()
 
                             fast_forward_step += 1
+                            self.global_step += 1
                             total_loss = self.evaluate_ff()
 
                             if self.ff_verbose:
@@ -926,12 +927,21 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
                                     f"FF step {fast_forward_step}, loss: {total_loss}"
                                 )
 
-                            self._model.train()
+                            ff_log_dict = {
+                                "ff_loss": total_loss,
+                                "ff_step": fast_forward_step,
+                            }
+                            self._metric_logger.log_dict(
+                                ff_log_dict,
+                                step=self.global_step,
+                            )
 
+                            self._model.train()
                             if prev_loss is not None and total_loss > prev_loss:
                                 self._model.load_state_dict(
                                     prev_param_dict, strict=False
                                 )
+                                self.global_step -= 1
                                 break
 
                             prev_loss = total_loss
