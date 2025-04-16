@@ -734,7 +734,10 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
 
                 del logits
 
-                return loss
+                losses.append(loss.unsqueeze(0))
+
+            loss = torch.cat(losses).mean()
+            return loss.item()
 
     def train(self) -> None:
         """
