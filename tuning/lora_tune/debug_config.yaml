@@ -81,6 +81,7 @@ fast_forward:
   do_ff: True # whether to do FF
   evaluate_every: 4 # How many GD steps between FF runs
   num_stabilization_steps: 10 # how many initial GD steps to take in epoch 0 before starting any FF runs
+  verbose: True # whether to include debug output about the FF process
 
   # TODO - CHANGE THIS TO BE A 'REAL' VALIDATION SET
   ff_batch_size: 1
