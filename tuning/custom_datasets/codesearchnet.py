@@ -9,19 +9,19 @@
 import random  # Add import
 from typing import Any, Callable, Dict, List, Mapping, Optional, Union
 
-from datasets import load_dataset, interleave_datasets
-from torch.utils.data import IterableDataset
+from datasets import load_dataset, concatenate_datasets
+from torch.utils.data import Dataset
 from torchtune.data._utils import truncate
 from torchtune.datasets._packed import PackedDataset
 from torchtune.modules.transforms.tokenizers import ModelTokenizer
 from torchtune import utils  # Import torchtune utils
-from .format_fns import github_format_fn, stack_format_fn
+from format_fns import csn_format_fn
 
 # Use the torchtune logger with DEBUG level
 log = utils.get_logger("DEBUG")
 
 
-class BigDataset(IterableDataset):
+class TextCompletionDataset(Dataset):
     """
     Freeform dataset for any unstructured text corpus. Quickly load any dataset
     from Hugging Face or local disk and tokenize it for your model.
@@ -63,7 +63,7 @@ class BigDataset(IterableDataset):
         self._tokenizer = tokenizer
         self._column = column
         self.add_eos = add_eos
-        self._sources = sources  # Store list of sources
+        self._sources = sources  # Store source for checking
         self.verbose = verbose
 
         self.eos_id = self._tokenizer.eos_id
@@ -71,26 +71,27 @@ class BigDataset(IterableDataset):
         temp = []
         for source in sources:
             log.info(f"Loading dataset from source {source}")
-            dataset = load_dataset(source, split ="train", streaming = True)
-            if source == "codeparrot/github-code":
-                dataset = dataset.map(github_format_fn, batched = True)
-            else: # formatting for the stack
-                dataset = dataset.map(stack_format_fn, batched = True)
+            dataset = load_dataset(source, split ="train", streaming = False)
             temp.append(dataset)
-        self._data = interleave_datasets(temp, seed = 15122)
-        self._data = self._data.select_columns(['id', 'code', 'language','source', 'size'])
-        self._data = self._data.map(self._prepare_sample)
-
+        self._data = concatenate_datasets(temp)
+        self._data = self._data.map(csn_format_fn, batched = True)
         if filter_fn is not None:
             log.info("Applying filter function to the dataset.")
             self._data = self._data.filter(filter_fn)
-    
 
-    def __iter__(self):
-        return iter(self._data)
+    def __len__(self):
+        return len(self._data)
+
+    def __getitem__(self, index: int) -> Dict[str, List[int]]:
+        sample = self._data[index]
+        try:
+            return self._prepare_sample(sample, index)  # Pass index for logging
+        except Exception as e:
+            log.error(f"Error processing sample {index}: {e}")
+            raise e
 
     def _prepare_sample(
-        self, sample: Mapping[str, Any]
+        self, sample: Mapping[str, Any], index: int
     ) -> Dict[str, List[int]]:
         # Handle list vs string in the target column (specifically for CodeXGlue 'code')
         text_input = sample[self._column]
@@ -100,13 +101,13 @@ class BigDataset(IterableDataset):
             prompt = text_input
         else:
             log.warning(
-                f"Unexpected type {type(text_input)} for column '{self._column}' with id {sample['id']}. Attempting str conversion.",
+                f"Unexpected type {type(text_input)} for column '{self._column}' at index {index}. Attempting str conversion.",
             )
             prompt = str(text_input)
 
         # <<< Add verbose log #1 >>>
         if self.verbose:
-            log.info(f"\n--- Sample {sample['id']} ---")
+            log.info(f"\n--- Sample {index} ---")
             log.info(f"Original Prompt (joined):\n{prompt}...")
 
         # --- Initial Tokenization (add BOS/EOS based on config/tokenizer defaults) ---
@@ -125,7 +126,7 @@ class BigDataset(IterableDataset):
         final_labels = final_tokens.copy()  # Standard case, labels are copy
 
         if len(final_tokens) != len(final_labels):
-            error_msg = f"CRITICAL: Sample {sample['id']}: Token and label length mismatch! T={len(final_tokens)}, L={len(final_labels)}. Truncating labels."
+            error_msg = f"CRITICAL: Sample {index}: Token and label length mismatch! T={len(final_tokens)}, L={len(final_labels)}. Truncating labels."
             log.error(error_msg)
             raise ValueError(error_msg)
 
@@ -136,7 +137,7 @@ class BigDataset(IterableDataset):
                     final_tokens, skip_special_tokens=False
                 )
                 log.info(
-                    f"Sample {sample['id']}: Final Tokens ({len(final_tokens)}):\n{decoded_final_tokens}"
+                    f"Sample {index}: Final Tokens ({len(final_tokens)}):\n{decoded_final_tokens}"
                 )
 
                 target_tokens_from_labels = [
@@ -147,18 +148,18 @@ class BigDataset(IterableDataset):
                         target_tokens_from_labels, skip_special_tokens=False
                     )
                     log.info(
-                        f"Sample {sample['id']}: Decoded Target ({len(target_tokens_from_labels)}):\n{decoded_target}"
+                        f"Sample {index}: Decoded Target ({len(target_tokens_from_labels)}):\n{decoded_target}"
                     )
                 else:
-                    log.info(f"Sample {sample['id']}: No target tokens found in labels.")
+                    log.info(f"Sample {index}: No target tokens found in labels.")
             except Exception as e:
-                log.error(f"Sample {sample['id']}: Error during verbose decoding: {e}")
-            log.info(f"--- End Sample {sample['id']} ---")
+                log.error(f"Sample {index}: Error during verbose decoding: {e}")
+            log.info(f"--- End Sample {index} ---")
 
         return {"tokens": final_tokens, "labels": final_labels}
 
 
-def big_dataset(
+def text_completion_dataset(
     tokenizer: ModelTokenizer,
     sources: List[str],
     column: str = "text",
@@ -168,7 +169,7 @@ def big_dataset(
     filter_fn: Optional[Callable] = None,
     verbose: bool = False,
     **load_dataset_kwargs: Dict[str, Any],
-) -> Union[BigDataset, PackedDataset]:
+) -> Union[TextCompletionDataset, PackedDataset]:
     """
     Build a configurable dataset from a freeform, unstructured text corpus similar
     to datasets used in pre-training. This method should be
@@ -216,7 +217,7 @@ def big_dataset(
         ValueError: If ``packed=True`` and ``tokenizer.max_seq_len`` is not set.
     """
     # Pass all arguments, including split via kwargs, to the constructor
-    ds = BigDataset(
+    ds = TextCompletionDataset(
         tokenizer=tokenizer,
         sources=sources,
         column=column,
@@ -228,16 +229,17 @@ def big_dataset(
 
     return ds
 
-
 if __name__ == "__main__":
     from torchtune.models.qwen2_5._tokenizer import QWEN2_5_SPECIAL_TOKENS, Qwen2_5Tokenizer
     tokenizer = Qwen2_5Tokenizer(path = "tmp/vocab.json", merges_file = "tmp/merges.txt", max_seq_len = 4096)
-    # sources = ["codeparrot/github-code", "bigcode/the-stack"]
-    sources = ['bigcode/the-stack']
+    sources = [
+        "Nan-Do/code-search-net-python",
+        "Nan-Do/code-search-net-go",
+        "Nan-Do/code-search-net-php",
+        "Nan-Do/code-search-net-javascript",
+        "Nan-Do/code-search-net-java",
+        "Nan-Do/code-search-net-ruby"]
+    dataset = text_completion_dataset(tokenizer, sources, "code")
+    for i in range(5):
+        print(dataset[i])
     
-    dataset = big_dataset(tokenizer, sources, "code")
-    generator = iter(dataset)
-    for _ in range(1):
-        print(next(generator))
-    
-    print("Finished")
