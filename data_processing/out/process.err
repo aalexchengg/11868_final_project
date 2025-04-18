@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/home/abcheng/miniconda3/envs/finetune/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/home/abcheng/miniconda3/envs/finetune/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/home/abcheng/workspace/11868_final_project/data_processing/process_github.py", line 55, in <module>
+    process_github()
+  File "/home/abcheng/workspace/11868_final_project/data_processing/process_github.py", line 49, in process_github
+    dataset.push_to_hub("aalexchengg/github-code-formatted")
+AttributeError: 'IterableDatasetDict' object has no attribute 'push_to_hub'
