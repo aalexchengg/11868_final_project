@@ -82,19 +82,19 @@ class PropulsionDoRALinear(nn.Module, AdapterModule):
             degree=self.degree,
         )
         weight = (
-            linear.prop_linear.weight
+            linear.weight
             if not self._quantize_base
-            else to_nf4(linear.prop_linear.weight, **quantization_kwargs)
+            else to_nf4(linear.weight, **quantization_kwargs)
         )
-        bias = linear.prop_linear.bias if self.use_bias else None
+        bias = linear.bias if self.use_bias else None
 
         # 'self.disabled' is a flag showing whether to turn off DoRA adapters,
         # this can be used in DPO for treating the dora adapters as the policy model
         # and disabling it to treat the base model as the reference model
         self.disabled = False
-        self.register_parameter("linear_weight", nn.Parameter(weight))
+        self.register_parameter("weight", nn.Parameter(weight))
         self.register_parameter(
-            "linear_bias", nn.Parameter(bias) if bias is not None else None
+            "bias", nn.Parameter(bias) if bias is not None else None
         )
         self.dropout = nn.Dropout(p=dropout) if dropout > 0.0 else nn.Identity()
         self.lora_a = PropulsionLinear(
@@ -122,8 +122,8 @@ class PropulsionDoRALinear(nn.Module, AdapterModule):
     def initialize_parameters(self):
         # Initialize as in
         # https://github.com/microsoft/LoRA/blob/4c0333854cb905966f8cc4e9a74068c1e507c7b7/loralib/layers.py#L119
-        _lora_a_init_params(self.lora_a.prop_linear)
-        _lora_b_init_params(self.lora_b.prop_linear)
+        _lora_a_init_params(self.lora_a)
+        _lora_b_init_params(self.lora_b)
 
     @torch.no_grad()
     def initialize_dora_magnitude(self):
@@ -138,16 +138,16 @@ class PropulsionDoRALinear(nn.Module, AdapterModule):
         """
         if any(
             [
-                self.linear_weight.is_meta,
-                self.lora_a.prop_linear.weight.is_meta,
-                self.lora_b.prop_linear.weight.is_meta,
+                self.weight.is_meta,
+                self.lora_a.weight.is_meta,
+                self.lora_b.weight.is_meta,
             ]
         ):
             raise RuntimeError(
                 "Cannot initialize DoRA magnitude if base or LoRA parameters are still on meta device."
             )
-        base_weight = self.linear_weight.to(self.lora_a.prop_linear.weight.dtype)
-        lora_weight = self.lora_b.prop_linear.weight @ self.lora_a.prop_linear.weight
+        base_weight = self.weight.to(self.lora_a.weight.dtype)
+        lora_weight = self.lora_b.weight @ self.lora_a.weight
         self.magnitude.copy_(self._get_weight_norm(base_weight, lora_weight))
 
     def _get_weight_norm(self, weight, lora_weight):
@@ -160,12 +160,12 @@ class PropulsionDoRALinear(nn.Module, AdapterModule):
         Return a list of strings corresponding to the names of the ``nn.Parameter`` s in
         the model coming from the adapter.
 
-        For DoRA this means lora_a.prop_linear.weight, lora_b.prop_linear.weight, and magnitude.
+        For DoRA this means lora_a.weight, lora_b.weight, and magnitude.
         """
         adapter_params = [
-            "lora_a.prop_linear.weight",
+            "lora_a.weight",
             "lora_a.propulsion",
-            "lora_b.prop_linear.weight",
+            "lora_b.weight",
             "lora_b.propulsion",
             "magnitude",
         ]

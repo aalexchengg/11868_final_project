@@ -84,11 +84,11 @@ class PropulsionLoRALinear(nn.Module, AdapterModule):
             degree=self.degree,
         )
         weight = (
-            linear.prop_linear.weight
+            linear.weight
             if not self._quantize_base
-            else to_nf4(linear.prop_linear.weight, **quantization_kwargs)
+            else to_nf4(linear.weight, **quantization_kwargs)
         )
-        bias = linear.prop_linear.bias if self.use_bias else None
+        bias = linear.bias if self.use_bias else None
 
         # 'self.disabled' is a flag showing whether to turn off LoRA adapters,
         # this can be used in DPO for treating the lora adapters as the policy model
@@ -96,9 +96,9 @@ class PropulsionLoRALinear(nn.Module, AdapterModule):
         self.disabled = False
 
         # I think they do these because quantization could have changed?
-        self.register_parameter("linear_weight", nn.Parameter(weight))
+        self.register_parameter("weight", nn.Parameter(weight))
         self.register_parameter(
-            "linear_bias", nn.Parameter(bias) if bias is not None else None
+            "bias", nn.Parameter(bias) if bias is not None else None
         )
         self.dropout = nn.Dropout(p=dropout) if dropout > 0.0 else nn.Identity()
         self.lora_a = nn.PropulsionLinear(
@@ -119,8 +119,8 @@ class PropulsionLoRALinear(nn.Module, AdapterModule):
     def initialize_parameters(self):
         # Initialize as in
         # https://github.com/microsoft/LoRA/blob/4c0333854cb905966f8cc4e9a74068c1e507c7b7/loralib/layers.py#L119
-        _lora_a_init_params(self.lora_a.prop_linear)
-        _lora_b_init_params(self.lora_b.prop_linear)
+        _lora_a_init_params(self.lora_a)
+        _lora_b_init_params(self.lora_b)
 
     def adapter_params(self) -> List[str]:
         """
@@ -132,9 +132,9 @@ class PropulsionLoRALinear(nn.Module, AdapterModule):
         # NOTE: this function has to be updated if the names of "lora_a" and "lora_b"
         # in this module change.
         adapter_params = [
-            "lora_a.prop_linear.weight",
+            "lora_a.weight",
             "lora_a.propulsion",
-            "lora_b.prop_linear.weight",
+            "lora_b.weight",
             "lora_b.propulsion",
         ]
         return adapter_params

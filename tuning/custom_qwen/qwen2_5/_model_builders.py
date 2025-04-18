@@ -25,7 +25,13 @@ Qwen2.5 7B model.
 """
 
 
-def qwen2_5_0_5b() -> TransformerDecoder:
+def propulsion_qwen2_5_0_5b(
+    prop_attn_modules: List[LORA_ATTN_MODULES],
+    apply_prop_to_mlp: bool = False,
+    apply_prop_to_output: bool = False,
+    prop_degree: int = 15,
+    **kwargs,
+) -> TransformerDecoder:
     """
     Builder for creating a Qwen2.5 model (base or instruct) initialized w/ the default 0.5B parameter values
     from https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct
@@ -48,10 +54,19 @@ def qwen2_5_0_5b() -> TransformerDecoder:
         norm_eps=1e-6,
         rope_base=1000000.0,
         tie_word_embeddings=True,
+        prop_attn_modules=prop_attn_modules,
+        apply_prop_to_mlp=apply_prop_to_mlp,
+        apply_prop_to_output=apply_prop_to_output,
+        prop_degree=prop_degree,
     )
 
 
-def qwen2_5_1_5b_base() -> TransformerDecoder:
+def propulsion_qwen2_5_1_5b_base(
+    prop_attn_modules: List[LORA_ATTN_MODULES],
+    apply_prop_to_mlp: bool = False,
+    apply_prop_to_output: bool = False,
+    prop_degree: int = 15,
+) -> TransformerDecoder:
     """
     Builder for creating a Qwen2.5 base model initialized w/ the default 1.5B parameter values
     from https://huggingface.co/Qwen/Qwen2.5-1.5B
@@ -78,10 +93,19 @@ def qwen2_5_1_5b_base() -> TransformerDecoder:
         norm_eps=1e-6,
         rope_base=1000000.0,
         tie_word_embeddings=True,
+        prop_attn_modules=prop_attn_modules,
+        apply_prop_to_mlp=apply_prop_to_mlp,
+        apply_prop_to_output=apply_prop_to_output,
+        prop_degree=prop_degree,
     )
 
 
-def qwen2_5_1_5b_instruct() -> TransformerDecoder:
+def propulsion_qwen2_5_1_5b_instruct(
+    prop_attn_modules: List[LORA_ATTN_MODULES],
+    apply_prop_to_mlp: bool = False,
+    apply_prop_to_output: bool = False,
+    prop_degree: int = 15,
+) -> TransformerDecoder:
     """
     Builder for creating a Qwen2.5 instruct model initialized w/ the default 1.5B parameter values
     from https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct
@@ -108,10 +132,19 @@ def qwen2_5_1_5b_instruct() -> TransformerDecoder:
         norm_eps=1e-6,
         rope_base=1000000.0,
         tie_word_embeddings=True,
+        prop_attn_modules=prop_attn_modules,
+        apply_prop_to_mlp=apply_prop_to_mlp,
+        apply_prop_to_output=apply_prop_to_output,
+        prop_degree=prop_degree,
     )
 
 
-def qwen2_5_3b() -> TransformerDecoder:
+def propulsion_qwen2_5_3b(
+    prop_attn_modules: List[LORA_ATTN_MODULES],
+    apply_prop_to_mlp: bool = False,
+    apply_prop_to_output: bool = False,
+    prop_degree: int = 15,
+) -> TransformerDecoder:
     """
     Builder for creating a Qwen2.5 model (base or instruct) initialized w/ the default 3B parameter values
     from https://huggingface.co/Qwen/Qwen2.5-3B-Instruct
@@ -134,10 +167,19 @@ def qwen2_5_3b() -> TransformerDecoder:
         norm_eps=1e-6,
         rope_base=1000000.0,
         tie_word_embeddings=True,
+        prop_attn_modules=prop_attn_modules,
+        apply_prop_to_mlp=apply_prop_to_mlp,
+        apply_prop_to_output=apply_prop_to_output,
+        prop_degree=prop_degree,
     )
 
 
-def qwen2_5_7b_base() -> TransformerDecoder:
+def propulsion_qwen2_5_7b_base(
+    prop_attn_modules: List[LORA_ATTN_MODULES],
+    apply_prop_to_mlp: bool = False,
+    apply_prop_to_output: bool = False,
+    prop_degree: int = 15,
+) -> TransformerDecoder:
     """
     Builder for creating a Qwen2.5 base model initialized w/ the default 7B parameter values
     from https://huggingface.co/Qwen/Qwen2.5-7B
@@ -160,10 +202,19 @@ def qwen2_5_7b_base() -> TransformerDecoder:
         attn_dropout=0.0,
         norm_eps=1e-6,
         rope_base=1000000.0,
+        prop_attn_modules=prop_attn_modules,
+        apply_prop_to_mlp=apply_prop_to_mlp,
+        apply_prop_to_output=apply_prop_to_output,
+        prop_degree=prop_degree,
     )
 
 
-def qwen2_5_7b_instruct() -> TransformerDecoder:
+def propulsion_qwen2_5_7b_instruct(
+    prop_attn_modules: List[LORA_ATTN_MODULES],
+    apply_prop_to_mlp: bool = False,
+    apply_prop_to_output: bool = False,
+    prop_degree: int = 15,
+) -> TransformerDecoder:
     """
     Builder for creating a Qwen2.5 instruct model initialized w/ the default 7B parameter values
     from https://huggingface.co/Qwen/Qwen2.5-7B-Instruct
@@ -186,10 +237,19 @@ def qwen2_5_7b_instruct() -> TransformerDecoder:
         attn_dropout=0.0,
         norm_eps=1e-6,
         rope_base=1000000.0,
+        prop_attn_modules=prop_attn_modules,
+        apply_prop_to_mlp=apply_prop_to_mlp,
+        apply_prop_to_output=apply_prop_to_output,
+        prop_degree=prop_degree,
     )
 
 
-def qwen2_5_14b_base() -> TransformerDecoder:
+def propulsion_qwen2_5_14b_base(
+    prop_attn_modules: List[LORA_ATTN_MODULES],
+    apply_prop_to_mlp: bool = False,
+    apply_prop_to_output: bool = False,
+    prop_degree: int = 15,
+) -> TransformerDecoder:
     """
     Builder for creating a Qwen2.5 base model initialized w/ the default 14B parameter values
     from https://huggingface.co/Qwen/Qwen2.5-14B
@@ -212,10 +272,19 @@ def qwen2_5_14b_base() -> TransformerDecoder:
         attn_dropout=0.0,
         norm_eps=1e-5,
         rope_base=1000000.0,
+        prop_attn_modules=prop_attn_modules,
+        apply_prop_to_mlp=apply_prop_to_mlp,
+        apply_prop_to_output=apply_prop_to_output,
+        prop_degree=prop_degree,
     )
 
 
-def qwen2_5_14b_instruct() -> TransformerDecoder:
+def propulsion_qwen2_5_14b_instruct(
+    prop_attn_modules: List[LORA_ATTN_MODULES],
+    apply_prop_to_mlp: bool = False,
+    apply_prop_to_output: bool = False,
+    prop_degree: int = 15,
+) -> TransformerDecoder:
     """
     Builder for creating a Qwen2.5 instruct model initialized w/ the default 14B parameter values
     from https://huggingface.co/Qwen/Qwen2.5-14B-Instruct
@@ -238,10 +307,19 @@ def qwen2_5_14b_instruct() -> TransformerDecoder:
         attn_dropout=0.0,
         norm_eps=1e-6,
         rope_base=1000000.0,
+        prop_attn_modules=prop_attn_modules,
+        apply_prop_to_mlp=apply_prop_to_mlp,
+        apply_prop_to_output=apply_prop_to_output,
+        prop_degree=prop_degree,
     )
 
 
-def qwen2_5_32b_base() -> TransformerDecoder:
+def propulsion_qwen2_5_32b_base(
+    prop_attn_modules: List[LORA_ATTN_MODULES],
+    apply_prop_to_mlp: bool = False,
+    apply_prop_to_output: bool = False,
+    prop_degree: int = 15,
+) -> TransformerDecoder:
     """
     Builder for creating a Qwen2.5 base model initialized w/ the default 32B parameter values
     from https://huggingface.co/Qwen/Qwen2.5-32B
@@ -264,10 +342,19 @@ def qwen2_5_32b_base() -> TransformerDecoder:
         attn_dropout=0.0,
         norm_eps=1e-5,
         rope_base=1000000.0,
+        prop_attn_modules=prop_attn_modules,
+        apply_prop_to_mlp=apply_prop_to_mlp,
+        apply_prop_to_output=apply_prop_to_output,
+        prop_degree=prop_degree,
     )
 
 
-def qwen2_5_32b_instruct() -> TransformerDecoder:
+def propulsion_qwen2_5_32b_instruct(
+    prop_attn_modules: List[LORA_ATTN_MODULES],
+    apply_prop_to_mlp: bool = False,
+    apply_prop_to_output: bool = False,
+    prop_degree: int = 15,
+) -> TransformerDecoder:
     """
     Builder for creating a Qwen2.5 instruct model initialized w/ the default 32B parameter values
     from https://huggingface.co/Qwen/Qwen2.5-32B-Instruct
@@ -290,10 +377,19 @@ def qwen2_5_32b_instruct() -> TransformerDecoder:
         attn_dropout=0.0,
         norm_eps=1e-6,
         rope_base=1000000.0,
+        prop_attn_modules=prop_attn_modules,
+        apply_prop_to_mlp=apply_prop_to_mlp,
+        apply_prop_to_output=apply_prop_to_output,
+        prop_degree=prop_degree,
     )
 
 
-def qwen2_5_72b_base() -> TransformerDecoder:
+def propulsion_qwen2_5_72b_base(
+    prop_attn_modules: List[LORA_ATTN_MODULES],
+    apply_prop_to_mlp: bool = False,
+    apply_prop_to_output: bool = False,
+    prop_degree: int = 15,
+) -> TransformerDecoder:
     """
     Builder for creating a Qwen2.5 base model initialized w/ the default 72B parameter values
     from https://huggingface.co/Qwen/Qwen2.5-72B
@@ -316,10 +412,19 @@ def qwen2_5_72b_base() -> TransformerDecoder:
         attn_dropout=0.0,
         norm_eps=1e-5,
         rope_base=1000000.0,
+        prop_attn_modules=prop_attn_modules,
+        apply_prop_to_mlp=apply_prop_to_mlp,
+        apply_prop_to_output=apply_prop_to_output,
+        prop_degree=prop_degree,
     )
 
 
-def qwen2_5_72b_instruct() -> TransformerDecoder:
+def propulsion_qwen2_5_72b_instruct(
+    prop_attn_modules: List[LORA_ATTN_MODULES],
+    apply_prop_to_mlp: bool = False,
+    apply_prop_to_output: bool = False,
+    prop_degree: int = 15,
+) -> TransformerDecoder:
     """
     Builder for creating a Qwen2.5 instruct model initialized w/ the default 72B parameter values
     from https://huggingface.co/Qwen/Qwen2.5-72B-Instruct
@@ -342,6 +447,10 @@ def qwen2_5_72b_instruct() -> TransformerDecoder:
         attn_dropout=0.0,
         norm_eps=1e-6,
         rope_base=1000000.0,
+        prop_attn_modules=prop_attn_modules,
+        apply_prop_to_mlp=apply_prop_to_mlp,
+        apply_prop_to_output=apply_prop_to_output,
+        prop_degree=prop_degree,
     )
 
 
@@ -396,7 +505,7 @@ def qwen2_5_tokenizer(
     )
 
 
-def lora_qwen2_5_0_5b(
+def propulsion_lora_qwen2_5_0_5b(
     lora_attn_modules: List[LORA_ATTN_MODULES],
     prop_attn_modules: List[LORA_ATTN_MODULES],
     apply_lora_to_mlp: bool = False,
@@ -469,7 +578,7 @@ def lora_qwen2_5_0_5b(
     )
 
 
-def lora_qwen2_5_1_5b_base(
+def propulsion_lora_qwen2_5_1_5b_base(
     lora_attn_modules: List[LORA_ATTN_MODULES],
     prop_attn_modules: List[LORA_ATTN_MODULES],
     apply_lora_to_mlp: bool = False,
@@ -546,7 +655,7 @@ def lora_qwen2_5_1_5b_base(
     )
 
 
-def lora_qwen2_5_1_5b_instruct(
+def propulsion_lora_qwen2_5_1_5b_instruct(
     lora_attn_modules: List[LORA_ATTN_MODULES],
     prop_attn_modules: List[LORA_ATTN_MODULES],
     apply_lora_to_mlp: bool = False,
@@ -623,7 +732,7 @@ def lora_qwen2_5_1_5b_instruct(
     )
 
 
-def lora_qwen2_5_3b(
+def propulsion_lora_qwen2_5_3b(
     lora_attn_modules: List[LORA_ATTN_MODULES],
     prop_attn_modules: List[LORA_ATTN_MODULES],
     apply_lora_to_mlp: bool = False,
@@ -696,7 +805,7 @@ def lora_qwen2_5_3b(
     )
 
 
-def lora_qwen2_5_7b_base(
+def propulsion_lora_qwen2_5_7b_base(
     lora_attn_modules: List[LORA_ATTN_MODULES],
     prop_attn_modules: List[LORA_ATTN_MODULES],
     apply_lora_to_mlp: bool = False,
@@ -771,7 +880,7 @@ def lora_qwen2_5_7b_base(
     )
 
 
-def lora_qwen2_5_7b_instruct(
+def propulsion_lora_qwen2_5_7b_instruct(
     lora_attn_modules: List[LORA_ATTN_MODULES],
     prop_attn_modules: List[LORA_ATTN_MODULES],
     apply_lora_to_mlp: bool = False,
@@ -846,7 +955,7 @@ def lora_qwen2_5_7b_instruct(
     )
 
 
-def lora_qwen2_5_14b_base(
+def propulsion_lora_qwen2_5_14b_base(
     lora_attn_modules: List[LORA_ATTN_MODULES],
     prop_attn_modules: List[LORA_ATTN_MODULES],
     apply_lora_to_mlp: bool = False,
@@ -906,7 +1015,7 @@ def lora_qwen2_5_14b_base(
     )
 
 
-def lora_qwen2_5_14b_instruct(
+def propulsion_lora_qwen2_5_14b_instruct(
     lora_attn_modules: List[LORA_ATTN_MODULES],
     prop_attn_modules: List[LORA_ATTN_MODULES],
     apply_lora_to_mlp: bool = False,
@@ -981,7 +1090,7 @@ def lora_qwen2_5_14b_instruct(
     )
 
 
-def lora_qwen2_5_32b_base(
+def propulsion_lora_qwen2_5_32b_base(
     lora_attn_modules: List[LORA_ATTN_MODULES],
     prop_attn_modules: List[LORA_ATTN_MODULES],
     apply_lora_to_mlp: bool = False,
@@ -1056,7 +1165,7 @@ def lora_qwen2_5_32b_base(
     )
 
 
-def lora_qwen2_5_32b_instruct(
+def propulsion_lora_qwen2_5_32b_instruct(
     lora_attn_modules: List[LORA_ATTN_MODULES],
     prop_attn_modules: List[LORA_ATTN_MODULES],
     apply_lora_to_mlp: bool = False,
@@ -1131,7 +1240,7 @@ def lora_qwen2_5_32b_instruct(
     )
 
 
-def lora_qwen2_5_72b_base(
+def propulsion_lora_qwen2_5_72b_base(
     lora_attn_modules: List[LORA_ATTN_MODULES],
     prop_attn_modules: List[LORA_ATTN_MODULES],
     apply_lora_to_mlp: bool = False,
@@ -1206,7 +1315,7 @@ def lora_qwen2_5_72b_base(
     )
 
 
-def lora_qwen2_5_72b_instruct(
+def propulsion_lora_qwen2_5_72b_instruct(
     lora_attn_modules: List[LORA_ATTN_MODULES],
     prop_attn_modules: List[LORA_ATTN_MODULES],
     apply_lora_to_mlp: bool = False,

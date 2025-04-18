@@ -45,12 +45,14 @@ from tuning.custom_qwen.peft.prop_utils import (
     validate_missing_and_unexpected_for_lora_and_propulsion,
 )
 
+from torchviz import make_dot
+
 log = utils.get_logger("DEBUG")
 
 
-class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
+class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
     """
-    LoRA finetuning recipe for dense transformer-based LLMs such as Llama2. This recipe is optimized
+    Adapter finetuning recipe for dense transformer-based LLMs such as Llama2. This recipe is optimized
     for single GPU training. Training on CPU is not supported.
 
     Features:
@@ -286,12 +288,11 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
             enable_activation_offloading=self._enable_activation_offloading,
             compile_model=cfg.compile,
             base_model_state_dict=checkpoint_dict[training.MODEL_KEY],
-            lora_weights_state_dict=(
+            adapter_weights_state_dict=(
                 checkpoint_dict[training.ADAPTER_KEY]
                 if self._resume_from_checkpoint
                 else None
             ),
-            propulsion_cfg=cfg.propulsion,
         )
 
         self._tokenizer = config.instantiate(cfg.tokenizer)
@@ -453,57 +454,6 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
 
         return profiler
 
-    # def _add_propulsion_to_layers(self, model, degree, prop_targets, prop_bias):
-    #     for name, module in model.named_children():
-    #         if isinstance(module, nn.Linear):
-    #             if len(prop_targets) > 0:
-    #                 if name in prop_targets:
-    #                     custom_linear = PropulsionLinear(
-    #                         module.in_features,
-    #                         module.out_features,
-    #                         module.bias is not None,
-    #                         degree=degree,
-    #                     )
-    #                     custom_linear.prop_linear.weight = nn.Parameter(
-    #                         module.weight.data.clone()
-    #                     )
-    #                     custom_linear.prop_linear.weight.requires_grad = False
-    #                     if module.bias is not None:
-    #                         custom_linear.prop_linear.bias = nn.Parameter(
-    #                             module.bias.data.clone()
-    #                         )
-    #                         if prop_bias:
-    #                             custom_linear.prop_linear.bias.requires_grad = True
-    #                         else:
-    #                             custom_linear.prop_linear.bias.requires_grad = False
-
-    #                     setattr(model, name, custom_linear)
-
-    #             # in other case, always replace
-    #             else:
-    #                 custom_linear = PropulsionLinear(
-    #                     module.in_features,
-    #                     module.out_features,
-    #                     module.bias is not None,
-    #                     degree=degree,
-    #                 )
-    #                 custom_linear.prop_linear.weight = nn.Parameter(
-    #                     module.weight.data.clone()
-    #                 )
-    #                 custom_linear.prop_linear.weight.requires_grad = False
-    #                 if module.bias is not None:
-    #                     custom_linear.prop_linear.bias = nn.Parameter(
-    #                         module.bias.data.clone()
-    #                     )
-    #                     if prop_bias:
-    #                         custom_linear.prop_linear.bias.requires_grad = True
-    #                     else:
-    #                         custom_linear.prop_linear.bias.requires_grad = False
-
-    #                 setattr(model, name, custom_linear)
-    #         else:
-    #             self._add_propulsion_to_layers(module, degree, prop_targets, prop_bias)
-
     def _setup_model(
         self,
         cfg_model: DictConfig,
@@ -511,7 +461,7 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
         enable_activation_offloading: bool,
         compile_model: bool,
         base_model_state_dict: Dict[str, Any],
-        lora_weights_state_dict: Optional[Dict[str, Any]] = None,
+        adapter_weights_state_dict: Optional[Dict[str, Any]] = None,
     ) -> nn.Module:
         with training.set_default_dtype(self._dtype), self._device:
             model = config.instantiate(cfg_model)
@@ -521,6 +471,12 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
         self._lora_attn_modules = list(cfg_model.lora_attn_modules)
         self._apply_lora_to_mlp = cfg_model.apply_lora_to_mlp
         self._apply_lora_to_output = getattr(cfg_model, "apply_lora_to_output", False)
+
+        self._prop_attn_modules = list(cfg_model.prop_attn_modules)
+        self._apply_prop_to_mlp = cfg_model.apply_prop_to_mlp
+        self._apply_prop_to_output = getattr(cfg_model, "apply_prop_to_output", False)
+        self._prop_degree = cfg_model.prop_degree
+
         self.adapter_params = get_adapter_params(model)
         self._is_dora = any(["magnitude" in k for k in self.adapter_params.keys()])
         set_trainable_params(model, self.adapter_params)
@@ -542,9 +498,9 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
             for m in model.modules():
                 if hasattr(m, "initialize_dora_magnitude"):
                     m.initialize_dora_magnitude()
-        if lora_weights_state_dict:
+        if adapter_weights_state_dict:
             adapter_missing, adapter_unexpected = model.load_state_dict(
-                lora_weights_state_dict, strict=False
+                adapter_weights_state_dict, strict=False
             )
         else:
             adapter_missing, adapter_unexpected = None, None
@@ -720,6 +676,7 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
             # Move to CPU to avoid a copy on GPU
             state_dict = {k: v.cpu() for k, v in self._model.state_dict().items()}
 
+            # TODO ADD PROPULSION MERGING
             merged_state_dict = get_merged_lora_ckpt(
                 state_dict,
                 rank=self._lora_rank,
@@ -728,16 +685,30 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
 
             ckpt_dict.update({training.MODEL_KEY: merged_state_dict})
 
-        adapter_config = {
-            "r": self._lora_rank,
-            "lora_alpha": self._lora_alpha,
-            "target_modules": get_lora_module_names(
-                self._lora_attn_modules,
-                self._apply_lora_to_mlp,
-                self._apply_lora_to_output,
-            ),
-            "peft_type": "LORA",
-        }
+        adapter_config = {}
+        if self._do_lora:
+            adapter_config.update(
+                {
+                    "r": self._lora_rank,
+                    "lora_alpha": self._lora_alpha,
+                    "target_modules": get_lora_module_names(
+                        self._lora_attn_modules,
+                        self._apply_lora_to_mlp,
+                        self._apply_lora_to_output,
+                    ),
+                    "peft_type": "LORA",
+                }
+            )
+
+        if self._do_prop:
+            adapter_config.update(
+                {
+                    "target_modules": self._prop_attn_modules,
+                    "peft_type": "PROPULSION",
+                    "prop_degree": self._prop_degree,
+                }
+            )
+
         ckpt_dict.update({training.ADAPTER_CONFIG: adapter_config})
 
         self._checkpointer.save_checkpoint(
@@ -831,7 +802,8 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
             prev_param_dict = {}
             param_dict_empty = {}
             for name, _ in self._model.named_parameters():
-                if "lora" in name:
+                # TODO - IS THIS RIGHT?
+                if "lora" in name or "prop" in name:
                     param_dict[name] = []
                     prev_param_dict[name] = []
                     param_dict_empty[name] = []
@@ -863,6 +835,14 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
                     # Loss is normalized by default so we multiply by the number of tokens
                     # This way we can normalize by the total number of tokens if we're accumulating gradients
                     current_loss = self._loss_step(batch) * current_num_tokens
+
+                    print(current_loss.grad_fn)
+
+                    dot = make_dot(
+                        current_loss, params=dict(self._model.named_parameters())
+                    )
+                    dot.render("current_loss", format="png")
+
                     running_loss += current_loss
                     current_loss.backward()
 
@@ -1078,8 +1058,8 @@ def recipe_main(cfg: DictConfig) -> None:
         - Parameters specified in config (see available configs through ``tune ls``)
         - Overwritten by arguments from the command-line
     """
-    config.log_config(recipe_name="LoRAFinetuneRecipeSingleDevice", cfg=cfg)
-    recipe = LoRAFinetuneRecipeSingleDevice(cfg=cfg)
+    config.log_config(recipe_name="AdapterFinetuneRecipeSingleDevice", cfg=cfg)
+    recipe = AdapterFinetuneRecipeSingleDevice(cfg=cfg)
     recipe.setup(cfg=cfg)
     recipe.train()
     recipe.cleanup()
