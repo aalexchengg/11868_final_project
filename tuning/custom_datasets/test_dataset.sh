@@ -14,4 +14,6 @@ eval "$(conda shell.bash hook)"
 conda activate finetune
 
 
-python3 -m big_dataset
+python3 -m codesearchnet
+
+echo "All finished"
