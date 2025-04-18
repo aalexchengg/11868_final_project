@@ -30,3 +30,17 @@ def stack_format_fn(examples):
         sources.append(f"stack_{examples['hexsha'][i]}")
     result = {"id": ids, "code": texts, "language": languages, "source": sources}
     return result
+
+
+def csn_format_fn(examples):
+    ids = []
+    texts = []
+    sources = []
+    languages = []
+    for i, text in enumerate(examples['code']):
+        texts.append(format_text(text))
+        ids.append(str(uuid.uuid4()))
+        languages.append(examples['language'][i])
+        sources.append(f"csn_{examples['sha'][i]}")
+    result = {"id": ids, "code": texts, "language": languages, "source": sources}
+    return result
