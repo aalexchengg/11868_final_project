@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --job-name=process_dataset
-#SBATCH --output=out/process.out
-#SBATCH --error=out/process.err
+#SBATCH --job-name=make_github
+#SBATCH --output=out/make_github.out
+#SBATCH --error=out/make_github.err
 #SBATCH --partition=general
 #SBATCH --gpus=1
 #SBATCH --mem=32G
@@ -14,4 +14,4 @@ eval "$(conda shell.bash hook)"
 conda activate finetune
 
 
-python3 -m process_github
+python3 -m make_github -out aalexchengg/github_test -size 10
