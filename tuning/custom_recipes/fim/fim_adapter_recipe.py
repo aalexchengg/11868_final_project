@@ -31,6 +31,7 @@ from torchtune.modules.peft import (
     get_lora_module_names,
     get_merged_lora_ckpt,
     set_trainable_params,
+    validate_missing_and_unexpected_for_lora,
 )
 from torchtune.recipe_interfaces import FTRecipeInterface
 from torchtune.training import DummyProfiler, PROFILER_KEY
@@ -43,9 +44,10 @@ import concurrent.futures
 
 from tuning.custom_qwen.peft.prop_utils import (
     validate_missing_and_unexpected_for_lora_and_propulsion,
+    validate_missing_and_unexpected_for_propulsion,
 )
 
-from torchviz import make_dot
+# from torchviz import make_dot
 
 log = utils.get_logger("DEBUG")
 
@@ -197,6 +199,12 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
         self._checkpointer_output_dir = cfg.checkpointer.output_dir
         self._upload_checkpoints = cfg.get("upload_checkpoints", False)
         self._upload_repo_name = cfg.upload_repo_name
+
+        self._do_lora = cfg.do_lora
+        self._do_prop = cfg.do_prop
+
+        if not self._do_lora and not self._do_prop:
+            raise ValueError("do_lora and do_prop cannot both be False")
 
     def load_checkpoint(self, cfg_checkpointer: DictConfig) -> Dict[str, Any]:
         """
@@ -466,20 +474,30 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
         with training.set_default_dtype(self._dtype), self._device:
             model = config.instantiate(cfg_model)
 
-        self._lora_rank = cfg_model.lora_rank
-        self._lora_alpha = cfg_model.lora_alpha
-        self._lora_attn_modules = list(cfg_model.lora_attn_modules)
-        self._apply_lora_to_mlp = cfg_model.apply_lora_to_mlp
-        self._apply_lora_to_output = getattr(cfg_model, "apply_lora_to_output", False)
+        if self._do_lora:
+            self._lora_rank = cfg_model.lora_rank
+            self._lora_alpha = cfg_model.lora_alpha
+            self._lora_attn_modules = list(cfg_model.lora_attn_modules)
+            self._apply_lora_to_mlp = cfg_model.apply_lora_to_mlp
+            self._apply_lora_to_output = getattr(
+                cfg_model, "apply_lora_to_output", False
+            )
 
-        self._prop_attn_modules = list(cfg_model.prop_attn_modules)
-        self._apply_prop_to_mlp = cfg_model.apply_prop_to_mlp
-        self._apply_prop_to_output = getattr(cfg_model, "apply_prop_to_output", False)
-        self._prop_degree = cfg_model.prop_degree
+        if self._do_prop:
+            self._prop_attn_modules = list(cfg_model.prop_attn_modules)
+            self._apply_prop_to_mlp = cfg_model.apply_prop_to_mlp
+            self._apply_prop_to_output = getattr(
+                cfg_model, "apply_prop_to_output", False
+            )
+            self._prop_degree = cfg_model.prop_degree
 
         self.adapter_params = get_adapter_params(model)
         self._is_dora = any(["magnitude" in k for k in self.adapter_params.keys()])
         set_trainable_params(model, self.adapter_params)
+
+        # immediately after set_trainable_params(...)
+        # for n, p in model.named_parameters():
+        #     print(f"{n:80s}  requires_grad={p.requires_grad}")
 
         if compile_model:
             training.compile_model(model)
@@ -505,18 +523,40 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
         else:
             adapter_missing, adapter_unexpected = None, None
 
-        validate_missing_and_unexpected_for_lora_and_propulsion(
-            lora_attn_modules=self._lora_attn_modules,
-            apply_lora_to_mlp=self._apply_lora_to_mlp,
-            apply_lora_to_output=self._apply_lora_to_output,
-            prop_attn_modules=self._prop_attn_modules,
-            apply_prop_to_mlp=self._apply_prop_to_mlp,
-            apply_prop_to_output=self._apply_prop_to_output,
-            base_missing=base_missing,
-            base_unexpected=base_unexpected,
-            adapter_missing=adapter_missing,
-            adapter_unexpected=adapter_unexpected,
-        )
+        if self._do_lora and self._do_prop:
+            validate_missing_and_unexpected_for_lora_and_propulsion(
+                lora_attn_modules=self._lora_attn_modules,
+                apply_lora_to_mlp=self._apply_lora_to_mlp,
+                apply_lora_to_output=self._apply_lora_to_output,
+                prop_attn_modules=self._prop_attn_modules,
+                apply_prop_to_mlp=self._apply_prop_to_mlp,
+                apply_prop_to_output=self._apply_prop_to_output,
+                base_missing=base_missing,
+                base_unexpected=base_unexpected,
+                adapter_missing=adapter_missing,
+                adapter_unexpected=adapter_unexpected,
+            )
+        elif self._do_lora:
+            validate_missing_and_unexpected_for_lora(
+                lora_attn_modules=self._lora_attn_modules,
+                apply_lora_to_mlp=self._apply_lora_to_mlp,
+                apply_lora_to_output=self._apply_lora_to_output,
+                base_missing=base_missing,
+                base_unexpected=base_unexpected,
+                lora_missing=adapter_missing,
+                lora_unexpected=adapter_unexpected,
+            )
+        elif self._do_prop:
+            validate_missing_and_unexpected_for_propulsion(
+                prop_attn_modules=self._prop_attn_modules,
+                apply_prop_to_mlp=self._apply_prop_to_mlp,
+                apply_prop_to_output=self._apply_prop_to_output,
+                base_missing=base_missing,
+                base_unexpected=base_unexpected,
+                prop_missing=adapter_missing,
+                prop_unexpected=adapter_unexpected,
+            )
+
         # Validate model adapter params were loaded in with the expected dtype
         # TODO (rohan-varma): Further validation to ensure the appropriate base params
         # are NF4 vs bf16 based on the quantization config.
@@ -836,12 +876,10 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
                     # This way we can normalize by the total number of tokens if we're accumulating gradients
                     current_loss = self._loss_step(batch) * current_num_tokens
 
-                    print(current_loss.grad_fn)
-
-                    dot = make_dot(
-                        current_loss, params=dict(self._model.named_parameters())
-                    )
-                    dot.render("current_loss", format="png")
+                    # dot = make_dot(
+                    #     current_loss, params=dict(self._model.named_parameters())
+                    # )
+                    # dot.render("current_loss", format="png")
 
                     running_loss += current_loss
                     current_loss.backward()

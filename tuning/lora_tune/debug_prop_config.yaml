@@ -17,8 +17,12 @@
 
 output_dir: ./torchtune/qwen2_5_0_5b/debug_lora_single_device # /tmp may be deleted by your system. Change it to your preference.
 
+do_lora: False
+do_prop: True
+
 # Model Arguments
 model:
+  # TO CHANGE WHETHER DOING LORA+PROP OR JUST PROP, CHANGE THE BASE MODEL HERE
   _component_: tuning.custom_qwen.qwen2_5.propulsion_qwen2_5_0_5b
 
   # other options are [k_proj, output_proj]

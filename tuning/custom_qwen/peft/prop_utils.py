@@ -6,6 +6,49 @@ from torchtune.modules.peft import (
 )
 
 
+def validate_missing_and_unexpected_for_propulsion(
+    prop_attn_modules: List[LORA_ATTN_MODULES],
+    apply_prop_to_mlp: bool,
+    apply_prop_to_output: bool,
+    base_missing: Optional[List[str]] = None,
+    base_unexpected: Optional[List[str]] = None,
+    prop_missing: Optional[List[str]] = None,
+    prop_unexpected: Optional[List[str]] = None,
+) -> None:
+    """
+    Validate that Propulsion state dict loading was done properly.
+    """
+    prop_modules = get_lora_module_names(
+        prop_attn_modules, apply_prop_to_mlp, apply_prop_to_output
+    )
+
+    is_prop_param = lambda x: any(
+        [
+            ".".join([k, "propulsion"]) in x
+            or ".".join([k, "prop_linear.weight"]) in x
+            or ".".join([k, "prop_linear.bias"]) in x
+            for k in prop_modules
+        ]
+    )
+
+    if base_missing:
+        for k in base_missing:
+            if not is_prop_param(k):
+                raise AssertionError(
+                    f"Missing non-propulsion key {k} from base model dict"
+                )
+    if base_unexpected:
+        raise AssertionError(f"Unexpected keys {base_unexpected} loading base model")
+    if prop_missing:
+        for k in prop_missing:
+            if not is_prop_param(k):
+                raise AssertionError(
+                    f"Missing propulsion key {k} from adapter state dict"
+                )
+    if prop_unexpected:
+        raise AssertionError(f"Unexpected keys {prop_unexpected} loading adapter")
+
+
 def validate_missing_and_unexpected_for_lora_and_propulsion(
     lora_attn_modules: List[LORA_ATTN_MODULES],
     apply_lora_to_mlp: bool,
@@ -91,5 +134,9 @@ def validate_missing_and_unexpected_for_lora_and_propulsion(
         for k in adapter_missing:
             if is_lora_param(k):
                 raise AssertionError(f"Missing LoRA key {k} from adapter state dict")
+            if is_prop_param(k):
+                raise AssertionError(
+                    f"Missing propulsion key {k} from adapter state dict"
+                )
     if adapter_unexpected:
         raise AssertionError(f"Unexpected keys {adapter_unexpected} loading adapter")

@@ -1,9 +1,10 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torchtune.modules.peft import AdapterModule
 
 
-class PropulsionLinear(nn.Module):
+class PropulsionLinear(nn.Module, AdapterModule):
     def __init__(
         self, input_features, output_features, bias=False, degree=15, **kwargs
     ):
@@ -27,5 +28,8 @@ class PropulsionLinear(nn.Module):
         self.degree = degree
 
     def forward(self, x):
-        self.push = torch.pow(self.propulsion, self.degree)
-        return F.linear(x, self.weight, self.bias) * self.push
+        push = torch.pow(self.propulsion, self.degree)
+        return F.linear(x, self.weight, self.bias) * push
+
+    def adapter_params(self):
+        return ["propulsion"]
