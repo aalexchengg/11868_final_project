@@ -1,0 +1,87 @@
+output_dir: ./torchtune/qwen2_5_0_5b/debug_lora_single_device
+model:
+  _component_: tuning.custom_qwen.qwen2_5.propulsion_qwen2_5_0_5b
+  lora_attn_modules:
+  - q_proj
+  - v_proj
+  - output_proj
+  apply_lora_to_mlp: false
+  lora_rank: 2
+  lora_alpha: 4
+  lora_dropout: 0.0
+  prop_attn_modules:
+  - q_proj
+  - v_proj
+  - k_proj
+  - output_proj
+  apply_prop_to_mlp: true
+  apply_prop_to_output: false
+  prop_degree: 10
+tokenizer:
+  _component_: torchtune.models.qwen2_5.qwen2_5_tokenizer
+  path: /tmp/Qwen2_5-0_5B-Base/vocab.json
+  merges_file: /tmp/Qwen2_5-0_5B-Base/merges.txt
+  max_seq_len: 4096
+upload_checkpoints: false
+upload_repo_name: null
+checkpointer:
+  _component_: torchtune.training.FullModelHFCheckpointer
+  checkpoint_dir: /tmp/Qwen2_5-0_5B-Base
+  checkpoint_files:
+  - model.safetensors
+  recipe_checkpoint: null
+  output_dir: ${output_dir}
+  model_type: QWEN2
+resume_from_checkpoint: false
+dataset:
+  _component_: tuning.custom_datasets.codexglue.text_completion_dataset
+  source: google/code_x_glue_cc_code_completion_token
+  column: code
+  split: train[:50]
+  verbose: false
+  packed: true
+make_fim:
+  convert_to_fim: true
+  fim_prob: 1.0
+  min_fim_middle_percent: 0.01
+  max_fim_middle_percent: 0.1
+  verbose: false
+fast_forward:
+  do_ff: false
+  evaluate_every: 4
+  num_stabilization_steps: 10
+  verbose: true
+  ff_dataset:
+    _component_: tuning.custom_datasets.codexglue.text_completion_dataset
+    source: google/code_x_glue_cc_code_completion_token
+    column: code
+    split: test[:32]
+    verbose: false
+    packed: true
+seed: 11868
+shuffle: true
+batch_size: 1
+optimizer:
+  _component_: torch.optim.AdamW
+  fused: true
+  weight_decay: 0.01
+  lr: 0.002
+lr_scheduler:
+  _component_: torchtune.training.lr_schedulers.get_cosine_schedule_with_warmup
+  num_warmup_steps: 100
+loss:
+  _component_: torchtune.modules.loss.CEWithChunkedOutputLoss
+epochs: 1
+max_steps_per_epoch: null
+gradient_accumulation_steps: 1
+clip_grad_norm: null
+compile: false
+metric_logger:
+  _component_: torchtune.training.metric_logging.DiskLogger
+  log_dir: ${output_dir}/logs
+log_every_n_steps: 1
+log_peak_memory_stats: true
+device: cuda
+dtype: bf16
+enable_activation_checkpointing: false
+enable_activation_offloading: false

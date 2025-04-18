@@ -19,7 +19,7 @@ output_dir: ./torchtune/qwen2_5_0_5b/debug_lora_single_device # /tmp may be dele
 
 # Model Arguments
 model:
-  _component_: torchtune.models.qwen2_5.lora_qwen2_5_0_5b
+  _component_: tuning.custom_qwen.qwen2_5.propulsion_qwen2_5_0_5b
 
   # other options are [k_proj, output_proj]
   lora_attn_modules: ['q_proj', 'v_proj', 'output_proj']
@@ -83,7 +83,7 @@ make_fim:
   verbose: False # whether to include debug output about the FIM-transformation process
 
 fast_forward:
-  do_ff: True # whether to do FF
+  do_ff: False # whether to do FF
   evaluate_every: 4 # How many GD steps between FF runs
   num_stabilization_steps: 10 # how many initial GD steps to take in epoch 0 before starting any FF runs
   verbose: True # whether to include debug output about the FF process
