@@ -9,7 +9,7 @@ import sys
 import time
 
 from functools import partial
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, List, Literal, Optional, Union
 from warnings import warn
 
 import huggingface_hub
@@ -31,7 +31,6 @@ from torchtune.modules.peft import (
     get_lora_module_names,
     get_merged_lora_ckpt,
     set_trainable_params,
-    validate_missing_and_unexpected_for_lora,
 )
 from torchtune.recipe_interfaces import FTRecipeInterface
 from torchtune.training import DummyProfiler, PROFILER_KEY
@@ -41,6 +40,10 @@ from tqdm import tqdm
 from tuning.custom_datasets.utils._make_fim import fim_dataset
 from torchtune.datasets._packed import PackedDataset
 import concurrent.futures
+
+from tuning.custom_qwen.peft.prop_utils import (
+    validate_missing_and_unexpected_for_lora_and_propulsion,
+)
 
 log = utils.get_logger("DEBUG")
 
@@ -288,6 +291,7 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
                 if self._resume_from_checkpoint
                 else None
             ),
+            propulsion_cfg=cfg.propulsion,
         )
 
         self._tokenizer = config.instantiate(cfg.tokenizer)
@@ -449,6 +453,57 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
 
         return profiler
 
+    # def _add_propulsion_to_layers(self, model, degree, prop_targets, prop_bias):
+    #     for name, module in model.named_children():
+    #         if isinstance(module, nn.Linear):
+    #             if len(prop_targets) > 0:
+    #                 if name in prop_targets:
+    #                     custom_linear = PropulsionLinear(
+    #                         module.in_features,
+    #                         module.out_features,
+    #                         module.bias is not None,
+    #                         degree=degree,
+    #                     )
+    #                     custom_linear.prop_linear.weight = nn.Parameter(
+    #                         module.weight.data.clone()
+    #                     )
+    #                     custom_linear.prop_linear.weight.requires_grad = False
+    #                     if module.bias is not None:
+    #                         custom_linear.prop_linear.bias = nn.Parameter(
+    #                             module.bias.data.clone()
+    #                         )
+    #                         if prop_bias:
+    #                             custom_linear.prop_linear.bias.requires_grad = True
+    #                         else:
+    #                             custom_linear.prop_linear.bias.requires_grad = False
+
+    #                     setattr(model, name, custom_linear)
+
+    #             # in other case, always replace
+    #             else:
+    #                 custom_linear = PropulsionLinear(
+    #                     module.in_features,
+    #                     module.out_features,
+    #                     module.bias is not None,
+    #                     degree=degree,
+    #                 )
+    #                 custom_linear.prop_linear.weight = nn.Parameter(
+    #                     module.weight.data.clone()
+    #                 )
+    #                 custom_linear.prop_linear.weight.requires_grad = False
+    #                 if module.bias is not None:
+    #                     custom_linear.prop_linear.bias = nn.Parameter(
+    #                         module.bias.data.clone()
+    #                     )
+    #                     if prop_bias:
+    #                         custom_linear.prop_linear.bias.requires_grad = True
+    #                     else:
+    #                         custom_linear.prop_linear.bias.requires_grad = False
+
+    #                 setattr(model, name, custom_linear)
+    #         else:
+    #             self._add_propulsion_to_layers(module, degree, prop_targets, prop_bias)
+
     def _setup_model(
         self,
         cfg_model: DictConfig,
@@ -488,20 +543,23 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
                 if hasattr(m, "initialize_dora_magnitude"):
                     m.initialize_dora_magnitude()
         if lora_weights_state_dict:
-            lora_missing, lora_unexpected = model.load_state_dict(
+            adapter_missing, adapter_unexpected = model.load_state_dict(
                 lora_weights_state_dict, strict=False
             )
         else:
-            lora_missing, lora_unexpected = None, None
+            adapter_missing, adapter_unexpected = None, None
 
-        validate_missing_and_unexpected_for_lora(
+        validate_missing_and_unexpected_for_lora_and_propulsion(
             lora_attn_modules=self._lora_attn_modules,
             apply_lora_to_mlp=self._apply_lora_to_mlp,
             apply_lora_to_output=self._apply_lora_to_output,
+            prop_attn_modules=self._prop_attn_modules,
+            apply_prop_to_mlp=self._apply_prop_to_mlp,
+            apply_prop_to_output=self._apply_prop_to_output,
             base_missing=base_missing,
             base_unexpected=base_unexpected,
-            lora_missing=lora_missing,
-            lora_unexpected=lora_unexpected,
+            adapter_missing=adapter_missing,
+            adapter_unexpected=adapter_unexpected,
         )
         # Validate model adapter params were loaded in with the expected dtype
         # TODO (rohan-varma): Further validation to ensure the appropriate base params

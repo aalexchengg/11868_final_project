@@ -36,6 +36,11 @@ model:
   lora_alpha: 4 # usually alpha=2*rank
   lora_dropout: 0.0
 
+  prop_attn_modules: ['q_proj', 'v_proj', 'k_proj', 'output_proj']
+  apply_prop_to_mlp: True
+  apply_prop_to_output: False
+  prop_degree: 10
+
 tokenizer:
   _component_: torchtune.models.qwen2_5.qwen2_5_tokenizer
   path: /tmp/Qwen2_5-0_5B-Base/vocab.json
