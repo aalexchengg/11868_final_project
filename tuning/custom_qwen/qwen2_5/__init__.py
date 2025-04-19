@@ -32,6 +32,8 @@ from ._model_builders import (
     qwen2_5_tokenizer,
 )
 
+from ._checkpointer import CustomFullModelHFCheckpointer
+
 __all__ = [
     "propulsion_lora_qwen2_5_0_5b",
     "propulsion_lora_qwen2_5_14b_base",
@@ -58,4 +60,5 @@ __all__ = [
     "propulsion_qwen2_5_7b_base",
     "propulsion_qwen2_5_7b_instruct",
     "qwen2_5_tokenizer",
+    "CustomFullModelHFCheckpointer"
 ]

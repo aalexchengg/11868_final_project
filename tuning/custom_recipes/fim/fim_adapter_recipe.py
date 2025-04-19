@@ -710,13 +710,15 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
         adapter_state_dict = get_adapter_state_dict(self._model.state_dict())
         ckpt_dict.update({training.ADAPTER_KEY: adapter_state_dict})
 
-        if not self._save_adapter_weights_only:
+        # print(ckpt_dict.keys())
+
+        if not self._save_adapter_weights_only and self._do_lora:
             # Construct the full state dict with LoRA weights merged into base LLM weights
 
             # Move to CPU to avoid a copy on GPU
             state_dict = {k: v.cpu() for k, v in self._model.state_dict().items()}
 
-            # TODO ADD PROPULSION MERGING
+            # TODO ADD PROPULSION MERGING when doing LoRA merging, prolly need custom function
             merged_state_dict = get_merged_lora_ckpt(
                 state_dict,
                 rank=self._lora_rank,
@@ -724,6 +726,10 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
             )
 
             ckpt_dict.update({training.MODEL_KEY: merged_state_dict})
+
+        if not self._do_lora:
+            state_dict = {k: v.cpu() for k, v in self._model.state_dict().items()}
+            ckpt_dict.update({training.MODEL_KEY: state_dict})
 
         adapter_config = {}
         if self._do_lora:
@@ -754,6 +760,7 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
         self._checkpointer.save_checkpoint(
             ckpt_dict,
             epoch=epoch,
+            allowed_new_layer_types=["propulsion"],
             intermediate_checkpoint=intermediate_checkpoint,
             adapter_only=self._save_adapter_weights_only,
         )

@@ -55,7 +55,7 @@ upload_checkpoints: False
 upload_repo_name: null
 
 checkpointer:
-  _component_: torchtune.training.FullModelHFCheckpointer
+  _component_: tuning.custom_qwen.qwen2_5.CustomFullModelHFCheckpointer
   checkpoint_dir: /tmp/Qwen2_5-0_5B-Base
   checkpoint_files: [model.safetensors]
   recipe_checkpoint: null
@@ -75,7 +75,7 @@ dataset:
   # source, column, split, add_eos etc are arguments to the builder function
   source: google/code_x_glue_cc_code_completion_token
   column: code
-  split: train[:50]
+  split: train[:1]
   verbose: False # Enable verbose logging in the dataset
   packed: True # VERY IMPORTANT - Uncommented to ensure proper packing is used
 
@@ -121,7 +121,7 @@ loss:
   _component_: torchtune.modules.loss.CEWithChunkedOutputLoss
 
 # Training
-epochs: 1
+epochs: 5
 max_steps_per_epoch: null
 gradient_accumulation_steps: 1 # Use to increase effective batch size
 clip_grad_norm: null
