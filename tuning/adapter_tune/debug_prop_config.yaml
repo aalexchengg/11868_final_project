@@ -75,7 +75,7 @@ dataset:
   # source, column, split, add_eos etc are arguments to the builder function
   source: google/code_x_glue_cc_code_completion_token
   column: code
-  split: train[:1]
+  split: train[:5]
   verbose: False # Enable verbose logging in the dataset
   packed: True # VERY IMPORTANT - Uncommented to ensure proper packing is used
 

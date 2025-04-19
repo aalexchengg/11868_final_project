@@ -395,6 +395,15 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
                 cfg_fim=None,
             )
 
+        # right after you build model & optimizer, before your first step:
+        # opt_list = self._optimizer.param_groups[0]["params"]
+        # to_opt = [
+        #     name
+        #     for name, p in self._model.named_parameters()
+        #     if any(p is q for q in opt_list)
+        # ]
+        # print("Optimizing these params:", to_opt)
+
     def _setup_profiler(
         self, cfg_profiler: Optional[DictConfig] = None
     ) -> Union[torch.profiler.profile, DummyProfiler]:
@@ -891,6 +900,14 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
                     running_loss += current_loss
                     current_loss.backward()
 
+                    # grad = self._model.layers[0].attn.q_proj.propulsion.grad
+                    # print(
+                    #     "q_proj.propulsion.grad →",
+                    #     None if grad is None else grad.norm().item(),
+                    # )
+
+                    # before = self._model.layers[0].attn.q_proj.propulsion.clone()
+
                     # Step with optimizer
                     if (idx + 1) % self._gradient_accumulation_steps == 0:
                         training.scale_grads(self._model, 1 / num_tokens)
@@ -900,11 +917,15 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
                                 error_if_nonfinite=True,
                                 max_norm=float(self._clip_grad_norm),
                             )
+                        # print("stepping the optimizer")
                         self._optimizer.step()
                         self._optimizer.zero_grad(set_to_none=True)
                         self._lr_scheduler.step()
                         # Update the number of steps when the weights are updated
                         self.global_step += 1
+
+                        # after = self._model.layers[0].attn.q_proj.propulsion
+                        # print("max Δ propulsion:", (after - before).abs().max().item())
 
                         loss_to_log = running_loss.item() / num_tokens
                         pbar.update(1)
