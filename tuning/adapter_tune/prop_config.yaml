@@ -128,7 +128,7 @@ compile: True # torch.compile the model + loss, True increases speed + decreases
 # Logging
 metric_logger:
   _component_: torchtune.training.metric_logging.DiskLogger
-  log_dir: ./logs/qwen2_5_0_5b/lora_single_device_ff/
+  log_dir: ./logs/qwen2_5_0_5b/prop_single_device_noff/
 log_every_n_steps: 1
 log_peak_memory_stats: True
 
