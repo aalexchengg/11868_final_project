@@ -6,6 +6,8 @@ fim-bench/cclongeval/processed_data/
 
 .vscode/
 
+tuning/adapter_tune/torchtune/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
