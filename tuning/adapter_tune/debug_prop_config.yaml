@@ -102,7 +102,7 @@ fast_forward:
     verbose: False # Enable verbose logging in the dataset
     packed: True # VERY IMPORTANT - Uncommented to ensure proper packing is used
 
-seed: 11868
+seed: 15122
 shuffle: True
 batch_size: 1
 
@@ -111,7 +111,7 @@ optimizer:
   _component_: torch.optim.AdamW
   fused: True
   weight_decay: 0.01
-  lr: 2e-3
+  lr: 2e-3 # higher than LoRA, could use more tuning
 
 lr_scheduler:
   _component_: torchtune.training.lr_schedulers.get_cosine_schedule_with_warmup
