@@ -382,6 +382,7 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
             "ff_collate_fn", "torchtune.data.padded_collate_sft"
         )
 
+        # enables FF in training loop
         if self.do_ff:
             self.ff_verbose = cfg.fast_forward.verbose
             self.evaluate_every = cfg.fast_forward.evaluate_every
@@ -847,6 +848,7 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
         running_loss = 0
         num_tokens = 0
 
+        # initialize dicts for storing params for FF
         if self.do_ff:
             log.info(
                 f"Fast Forward is enabled with evaluate_every = {self.evaluate_every}"
@@ -960,6 +962,7 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
                         num_tokens = 0
                         t0 = time.perf_counter()
 
+                    # FF logic - if we've done enough stabilization steps and the current step is going to take a GD step, save state dict before update
                     if (
                         self.do_ff
                         and not (curr_epoch == 0 and idx < self.num_stabilization_steps)
@@ -971,6 +974,7 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
                                 f"FF step {predictor_steps} / {next_predictor_step}"
                             )
 
+                        # if we've reached the next FF step or are one step away (we need prev two to calculate diff), save the state dict
                         if (
                             predictor_steps == next_predictor_step
                             or predictor_steps == next_predictor_step - 1
@@ -983,6 +987,8 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
                                 if predictor_steps == next_predictor_step:
                                     param_dict[key] = torch.stack(param_dict[key])
 
+                    # if we've reached the next FF step, calculate the difference between the current and previous state dicts
+                    # keep making that same diff until the loss stops improving
                     if self.do_ff and predictor_steps == next_predictor_step:
                         keys = list(param_dict.keys())
 
