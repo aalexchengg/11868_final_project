@@ -1,21 +1,16 @@
-"""
-Processes Github-Code dataset into CodeXGLUE format.
-"""
-repo_name = "codeparrot/github-code"
-out_name = "aalexchengg/github-code-formatted"
-
-import requests
 import datasets
-import uuid
 from datasets import load_dataset
-import logging
 
-logger = logging.getLogger(__name__)
-
+repo_name = "google/code_x_glue_cc_code_completion_line"
+out_name = "aalexchengg/codexglue-code-formatted"
 
 def format_text(text: str) -> str:
-    # all we need to do is append the end of text special token
-    return text + " <|endoftext|>"
+    #remove all the special tokens
+    text = re.sub('<s>', '', text)
+    text = re.sub('</s>', '', text)
+    # keep <EOL> token for now
+    return text
+
 
 
 def format_examples(examples):
@@ -27,13 +22,12 @@ def format_examples(examples):
         texts.append(format_text(text))
         ids.append(uuid.uuid4())
         languages.append(examples['languages'][i])
-        sources.append(f"githubcode_{examples['repo_name'][i]}/{examples['path'][i]}")
+        sources.append(f"codexglue_{examples['id'][i]}")
     result = {"id": ids, "text": texts, "language": languages, "source": sources}
     return result
 
 
-
-def process_github():
+def process_codexglue():
     # first check if this work has already been done
     api_url = f"https://datasets-server.huggingface.co/is-valid?dataset={out_name}"
     response = requests.get(api_url)
@@ -42,7 +36,9 @@ def process_github():
         raise AssertionError("This dataset has already been processed. If you want to overwrite, please manually delete on HuggingFace Hub and try again.")
     # otherwise, do the work
     logger.info("Loading in source dataset...")
-    dataset = load_dataset(repo_name, streaming = True, trust_remote_code = True)
+    py_dataset = load_dataset(repo_name, split = "train", "python") 
+    java_dataset = load_dataset(repo_name, split = "train", "java")
+    dataset = datasets.concatenate_datasets([py_dataset, java_dataset])
     logger.info("Mapping dataset...")
     dataset.map(format_examples, batched = True)
     logger.info("Pushing to hub...")
@@ -52,4 +48,3 @@ def process_github():
 
 
 if __name__ == "__main__":
-    process_github()

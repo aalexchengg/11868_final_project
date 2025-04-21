@@ -1,8 +1,8 @@
 """
-Processes Github-Code dataset into CodeXGLUE format.
+Processes The Vault dataset into CodeXGLUE/Qwen format.
 """
-repo_name = "codeparrot/github-code"
-out_name = "aalexchengg/github-code-formatted"
+repo_name = "Fsoft-AIC/the-vault-function"
+out_name = "aalexchengg/the-vault-formatted"
 
 import requests
 import datasets
@@ -27,7 +27,7 @@ def format_examples(examples):
         texts.append(format_text(text))
         ids.append(uuid.uuid4())
         languages.append(examples['languages'][i])
-        sources.append(f"githubcode_{examples['repo_name'][i]}/{examples['path'][i]}")
+        sources.append(f"githubcode_{examples['hexsha'][i]}")
     result = {"id": ids, "text": texts, "language": languages, "source": sources}
     return result
 
@@ -42,7 +42,7 @@ def process_github():
         raise AssertionError("This dataset has already been processed. If you want to overwrite, please manually delete on HuggingFace Hub and try again.")
     # otherwise, do the work
     logger.info("Loading in source dataset...")
-    dataset = load_dataset(repo_name, streaming = True, trust_remote_code = True)
+    dataset = load_dataset(repo_name, streaming = False, trust_remote_code = True) # cannot map over streaming dataset
     logger.info("Mapping dataset...")
     dataset.map(format_examples, batched = True)
     logger.info("Pushing to hub...")
