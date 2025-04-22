@@ -137,16 +137,13 @@ class FimDataset(Dataset):
                 and "<|fim_middle|>" in test_middle_decode
                 and "<|endoftext|>" in test_eos_decode
             ):
-                log.error(
-                    f"FIM tokens don't decode correctly: {test_prefix_decode}, {test_suffix_decode}, {test_middle_decode}, {test_eos_decode}",
-                )
-                raise ValueError(
-                    f"FIM tokens don't decode correctly: {test_prefix_decode}, {test_suffix_decode}, {test_middle_decode}"
-                )
+                error_msg = f"FIM tokens don't decode correctly: {test_prefix_decode}, {test_suffix_decode}, {test_middle_decode}, {test_eos_decode}"
+                log.error(error_msg)
+                raise ValueError(error_msg)
 
             else:
                 log.info(
-                    f"FIM token decoding validated: {test_prefix_decode}, {test_suffix_decode}, {test_middle_decode}"
+                    f"FIM token decoding validated: {test_prefix_decode}, {test_suffix_decode}, {test_middle_decode}, {test_eos_decode}"
                 )
 
     def __len__(self):

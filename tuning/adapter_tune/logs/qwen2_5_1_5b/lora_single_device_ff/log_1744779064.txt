@@ -1,0 +1,462 @@
+Step 1 | loss:1.1927647590637207 lr:1.0000000000000002e-06 tokens_per_second_per_gpu:170.56289672851562 peak_memory_active:70.34336519241333 peak_memory_alloc:70.34336519241333 peak_memory_reserved:73.130859375 grad_norm:0.78125 
+Step 2 | loss:1.0110727548599243 lr:2.0000000000000003e-06 tokens_per_second_per_gpu:2404.138916015625 peak_memory_active:70.33249092102051 peak_memory_alloc:70.33249092102051 peak_memory_reserved:73.16015625 grad_norm:0.68359375 
+Step 3 | loss:1.0783149003982544 lr:3e-06 tokens_per_second_per_gpu:2614.978515625 peak_memory_active:70.33249092102051 peak_memory_alloc:70.33249092102051 peak_memory_reserved:73.16015625 grad_norm:0.79296875 
+Step 4 | loss:1.1278181076049805 lr:4.000000000000001e-06 tokens_per_second_per_gpu:2514.097412109375 peak_memory_active:70.33249092102051 peak_memory_alloc:70.33249092102051 peak_memory_reserved:73.16015625 grad_norm:0.6640625 
+Step 5 | loss:1.0290205478668213 lr:5e-06 tokens_per_second_per_gpu:2323.33349609375 peak_memory_active:70.33249092102051 peak_memory_alloc:70.33249092102051 peak_memory_reserved:73.16015625 grad_norm:0.65625 
+Step 6 | loss:1.1351230144500732 lr:6e-06 tokens_per_second_per_gpu:2661.4443359375 peak_memory_active:70.33249092102051 peak_memory_alloc:70.33249092102051 peak_memory_reserved:73.16015625 grad_norm:0.71875 
+Step 7 | loss:1.1627135276794434 lr:7.000000000000001e-06 tokens_per_second_per_gpu:2208.098876953125 peak_memory_active:70.33249092102051 peak_memory_alloc:70.33249092102051 peak_memory_reserved:73.16015625 grad_norm:0.7890625 
+Step 8 | loss:1.1116195917129517 lr:8.000000000000001e-06 tokens_per_second_per_gpu:2818.02099609375 peak_memory_active:70.33249092102051 peak_memory_alloc:70.33249092102051 peak_memory_reserved:73.16015625 grad_norm:0.70703125 
+Step 9 | loss:0.9754237532615662 lr:9e-06 tokens_per_second_per_gpu:2446.7421875 peak_memory_active:70.33249092102051 peak_memory_alloc:70.33249092102051 peak_memory_reserved:73.16015625 grad_norm:0.58984375 
+Step 10 | loss:1.0585780143737793 lr:1e-05 tokens_per_second_per_gpu:2380.42333984375 peak_memory_active:70.33249092102051 peak_memory_alloc:70.33249092102051 peak_memory_reserved:73.16015625 grad_norm:0.72265625 
+Step 11 | loss:1.1388016939163208 lr:1.1000000000000001e-05 tokens_per_second_per_gpu:2466.3720703125 peak_memory_active:70.33249092102051 peak_memory_alloc:70.33249092102051 peak_memory_reserved:73.16015625 grad_norm:0.62109375 
+Step 12 | loss:1.0889345407485962 lr:1.2e-05 tokens_per_second_per_gpu:2306.613525390625 peak_memory_active:70.40127754211426 peak_memory_alloc:70.40127754211426 peak_memory_reserved:73.228515625 grad_norm:0.56640625 
+Step 13 | ff_loss:0.7799814939498901 ff_step:1 
+Step 14 | ff_loss:0.7797878980636597 ff_step:2 
+Step 15 | ff_loss:0.7796127200126648 ff_step:3 
+Step 16 | ff_loss:0.7794216871261597 ff_step:4 
+Step 17 | ff_loss:0.7793152332305908 ff_step:5 
+Step 18 | ff_loss:0.7791363596916199 ff_step:6 
+Step 19 | ff_loss:0.7790602445602417 ff_step:7 
+Step 20 | ff_loss:0.778979480266571 ff_step:8 
+Step 21 | ff_loss:0.7788114547729492 ff_step:9 
+Step 22 | ff_loss:0.7787380218505859 ff_step:10 
+Step 23 | ff_loss:0.7784879207611084 ff_step:11 
+Step 24 | ff_loss:0.7785921096801758 ff_step:12 
+Step 24 | loss:1.0266013145446777 lr:1.3000000000000001e-05 tokens_per_second_per_gpu:316.77423095703125 peak_memory_active:70.47006416320801 peak_memory_alloc:70.47006416320801 peak_memory_reserved:73.33984375 grad_norm:0.55859375 
+Step 25 | loss:1.0239499807357788 lr:1.4000000000000001e-05 tokens_per_second_per_gpu:2330.26123046875 peak_memory_active:70.47006416320801 peak_memory_alloc:70.47006416320801 peak_memory_reserved:73.33984375 grad_norm:0.57421875 
+Step 26 | loss:1.0511006116867065 lr:1.5e-05 tokens_per_second_per_gpu:2393.938232421875 peak_memory_active:70.47006416320801 peak_memory_alloc:70.47006416320801 peak_memory_reserved:73.33984375 grad_norm:0.5625 
+Step 27 | loss:0.9452730417251587 lr:1.6000000000000003e-05 tokens_per_second_per_gpu:2588.40673828125 peak_memory_active:70.47006416320801 peak_memory_alloc:70.47006416320801 peak_memory_reserved:73.33984375 grad_norm:0.392578125 
+Step 28 | loss:1.1761913299560547 lr:1.7000000000000003e-05 tokens_per_second_per_gpu:2298.566650390625 peak_memory_active:70.47006416320801 peak_memory_alloc:70.47006416320801 peak_memory_reserved:73.33984375 grad_norm:0.625 
+Step 29 | loss:0.991109311580658 lr:1.8e-05 tokens_per_second_per_gpu:2379.471923828125 peak_memory_active:70.53885078430176 peak_memory_alloc:70.53885078430176 peak_memory_reserved:73.37109375 grad_norm:0.41796875 
+Step 30 | ff_loss:0.7785423994064331 ff_step:1 
+Step 31 | ff_loss:0.7787522673606873 ff_step:2 
+Step 31 | loss:0.9968372583389282 lr:1.9e-05 tokens_per_second_per_gpu:1423.7305908203125 peak_memory_active:70.60763740539551 peak_memory_alloc:70.60763740539551 peak_memory_reserved:73.482421875 grad_norm:0.396484375 
+Step 32 | loss:0.8512411117553711 lr:2e-05 tokens_per_second_per_gpu:2499.49267578125 peak_memory_active:70.60763740539551 peak_memory_alloc:70.60763740539551 peak_memory_reserved:73.482421875 grad_norm:0.431640625 
+Step 33 | loss:1.0009007453918457 lr:2.1e-05 tokens_per_second_per_gpu:2673.7216796875 peak_memory_active:70.60763740539551 peak_memory_alloc:70.60763740539551 peak_memory_reserved:73.482421875 grad_norm:0.455078125 
+Step 34 | loss:0.9384134411811829 lr:2.2000000000000003e-05 tokens_per_second_per_gpu:2622.60595703125 peak_memory_active:70.60763740539551 peak_memory_alloc:70.60763740539551 peak_memory_reserved:73.482421875 grad_norm:0.42578125 
+Step 35 | loss:1.0174047946929932 lr:2.3000000000000003e-05 tokens_per_second_per_gpu:2489.504638671875 peak_memory_active:70.60763740539551 peak_memory_alloc:70.60763740539551 peak_memory_reserved:73.482421875 grad_norm:0.6171875 
+Step 36 | loss:0.9875062108039856 lr:2.4e-05 tokens_per_second_per_gpu:2305.74267578125 peak_memory_active:70.67642402648926 peak_memory_alloc:70.67642402648926 peak_memory_reserved:73.537109375 grad_norm:0.3984375 
+Step 37 | ff_loss:0.7775925993919373 ff_step:1 
+Step 38 | ff_loss:0.7772504091262817 ff_step:2 
+Step 39 | ff_loss:0.7771118879318237 ff_step:3 
+Step 40 | ff_loss:0.7767578363418579 ff_step:4 
+Step 41 | ff_loss:0.776394248008728 ff_step:5 
+Step 42 | ff_loss:0.7763757705688477 ff_step:6 
+Step 43 | ff_loss:0.7760411500930786 ff_step:7 
+Step 44 | ff_loss:0.776120126247406 ff_step:8 
+Step 44 | loss:0.8809711337089539 lr:2.5e-05 tokens_per_second_per_gpu:604.448486328125 peak_memory_active:70.74521064758301 peak_memory_alloc:70.74521064758301 peak_memory_reserved:73.650390625 grad_norm:0.419921875 
+Step 45 | loss:0.8603646755218506 lr:2.6000000000000002e-05 tokens_per_second_per_gpu:2359.704345703125 peak_memory_active:70.74521064758301 peak_memory_alloc:70.74521064758301 peak_memory_reserved:73.650390625 grad_norm:0.396484375 
+Step 46 | loss:0.8852307796478271 lr:2.7000000000000002e-05 tokens_per_second_per_gpu:2490.310302734375 peak_memory_active:70.74521064758301 peak_memory_alloc:70.74521064758301 peak_memory_reserved:73.650390625 grad_norm:0.400390625 
+Step 47 | loss:0.9624423384666443 lr:2.8000000000000003e-05 tokens_per_second_per_gpu:2070.79150390625 peak_memory_active:70.74521064758301 peak_memory_alloc:70.74521064758301 peak_memory_reserved:73.650390625 grad_norm:0.392578125 
+Step 48 | loss:0.8750394582748413 lr:2.9e-05 tokens_per_second_per_gpu:2413.51904296875 peak_memory_active:70.74521064758301 peak_memory_alloc:70.74521064758301 peak_memory_reserved:73.650390625 grad_norm:0.33984375 
+Step 49 | loss:0.7771685719490051 lr:3e-05 tokens_per_second_per_gpu:2520.738037109375 peak_memory_active:70.81399726867676 peak_memory_alloc:70.81399726867676 peak_memory_reserved:73.65234375 grad_norm:0.28515625 
+Step 50 | ff_loss:0.7715350985527039 ff_step:1 
+Step 51 | ff_loss:0.7711643576622009 ff_step:2 
+Step 52 | ff_loss:0.7704282999038696 ff_step:3 
+Step 53 | ff_loss:0.7698887586593628 ff_step:4 
+Step 54 | ff_loss:0.769217848777771 ff_step:5 
+Step 55 | ff_loss:0.7688230872154236 ff_step:6 
+Step 56 | ff_loss:0.7683275938034058 ff_step:7 
+Step 57 | ff_loss:0.7680892944335938 ff_step:8 
+Step 58 | ff_loss:0.7673823237419128 ff_step:9 
+Step 59 | ff_loss:0.7670537829399109 ff_step:10 
+Step 60 | ff_loss:0.7667238116264343 ff_step:11 
+Step 61 | ff_loss:0.7663900256156921 ff_step:12 
+Step 62 | ff_loss:0.7661353349685669 ff_step:13 
+Step 63 | ff_loss:0.7660338282585144 ff_step:14 
+Step 64 | ff_loss:0.7661657333374023 ff_step:15 
+Step 64 | loss:0.8925257921218872 lr:3.1e-05 tokens_per_second_per_gpu:335.41119384765625 peak_memory_active:70.88278388977051 peak_memory_alloc:70.88278388977051 peak_memory_reserved:73.83984375 grad_norm:0.462890625 
+Step 65 | loss:0.9844081401824951 lr:3.2000000000000005e-05 tokens_per_second_per_gpu:2462.781005859375 peak_memory_active:70.88278388977051 peak_memory_alloc:70.88278388977051 peak_memory_reserved:73.83984375 grad_norm:0.59765625 
+Step 66 | loss:0.8141582012176514 lr:3.3e-05 tokens_per_second_per_gpu:2296.205810546875 peak_memory_active:70.88278388977051 peak_memory_alloc:70.88278388977051 peak_memory_reserved:73.83984375 grad_norm:0.43359375 
+Step 67 | loss:0.8288098573684692 lr:3.4000000000000007e-05 tokens_per_second_per_gpu:2028.5697021484375 peak_memory_active:70.88278388977051 peak_memory_alloc:70.88278388977051 peak_memory_reserved:73.83984375 grad_norm:0.41796875 
+Step 68 | loss:0.884204626083374 lr:3.5e-05 tokens_per_second_per_gpu:2342.726318359375 peak_memory_active:70.88278388977051 peak_memory_alloc:70.88278388977051 peak_memory_reserved:73.83984375 grad_norm:0.423828125 
+Step 69 | loss:0.817304253578186 lr:3.6e-05 tokens_per_second_per_gpu:2415.54150390625 peak_memory_active:70.95157051086426 peak_memory_alloc:70.95157051086426 peak_memory_reserved:73.83984375 grad_norm:0.333984375 
+Step 70 | ff_loss:0.765709400177002 ff_step:1 
+Step 71 | ff_loss:0.7658688426017761 ff_step:2 
+Step 71 | loss:0.9609910249710083 lr:3.7e-05 tokens_per_second_per_gpu:1208.6019287109375 peak_memory_active:71.02035713195801 peak_memory_alloc:71.02035713195801 peak_memory_reserved:74.033203125 grad_norm:0.388671875 
+Step 72 | loss:0.8220354914665222 lr:3.8e-05 tokens_per_second_per_gpu:2388.342041015625 peak_memory_active:71.02035713195801 peak_memory_alloc:71.02035713195801 peak_memory_reserved:74.033203125 grad_norm:0.380859375 
+Step 73 | loss:0.9952512979507446 lr:3.9000000000000006e-05 tokens_per_second_per_gpu:2386.743408203125 peak_memory_active:71.02035713195801 peak_memory_alloc:71.02035713195801 peak_memory_reserved:74.033203125 grad_norm:0.439453125 
+Step 74 | loss:0.8279566764831543 lr:4e-05 tokens_per_second_per_gpu:2372.821044921875 peak_memory_active:71.02035713195801 peak_memory_alloc:71.02035713195801 peak_memory_reserved:74.033203125 grad_norm:0.3984375 
+Step 75 | loss:0.8693181276321411 lr:4.1e-05 tokens_per_second_per_gpu:2461.433349609375 peak_memory_active:71.02035713195801 peak_memory_alloc:71.02035713195801 peak_memory_reserved:74.033203125 grad_norm:0.419921875 
+Step 76 | loss:0.8530927896499634 lr:4.2e-05 tokens_per_second_per_gpu:2471.933837890625 peak_memory_active:71.08914375305176 peak_memory_alloc:71.08914375305176 peak_memory_reserved:74.033203125 grad_norm:0.357421875 
+Step 77 | ff_loss:0.761873185634613 ff_step:1 
+Step 78 | ff_loss:0.7610282897949219 ff_step:2 
+Step 79 | ff_loss:0.7602190971374512 ff_step:3 
+Step 80 | ff_loss:0.7593132257461548 ff_step:4 
+Step 81 | ff_loss:0.7587164640426636 ff_step:5 
+Step 82 | ff_loss:0.7580887079238892 ff_step:6 
+Step 83 | ff_loss:0.7574299573898315 ff_step:7 
+Step 84 | ff_loss:0.7570232152938843 ff_step:8 
+Step 85 | ff_loss:0.7564557790756226 ff_step:9 
+Step 86 | ff_loss:0.7559987902641296 ff_step:10 
+Step 87 | ff_loss:0.7558305263519287 ff_step:11 
+Step 88 | ff_loss:0.755475640296936 ff_step:12 
+Step 89 | ff_loss:0.7551292777061462 ff_step:13 
+Step 90 | ff_loss:0.7548710107803345 ff_step:14 
+Step 91 | ff_loss:0.7545058727264404 ff_step:15 
+Step 92 | ff_loss:0.7544124126434326 ff_step:16 
+Step 93 | ff_loss:0.7543011903762817 ff_step:17 
+Step 94 | ff_loss:0.7543112635612488 ff_step:18 
+Step 94 | loss:0.7844240665435791 lr:4.3e-05 tokens_per_second_per_gpu:306.0259094238281 peak_memory_active:71.15793037414551 peak_memory_alloc:71.15793037414551 peak_memory_reserved:74.220703125 grad_norm:0.5625 
+Step 95 | loss:0.8103590607643127 lr:4.4000000000000006e-05 tokens_per_second_per_gpu:2418.2470703125 peak_memory_active:71.15793037414551 peak_memory_alloc:71.15793037414551 peak_memory_reserved:74.220703125 grad_norm:0.51171875 
+Step 96 | loss:0.8679131269454956 lr:4.5e-05 tokens_per_second_per_gpu:2521.688232421875 peak_memory_active:71.15793037414551 peak_memory_alloc:71.15793037414551 peak_memory_reserved:74.220703125 grad_norm:0.546875 
+Step 97 | loss:0.8125609755516052 lr:4.600000000000001e-05 tokens_per_second_per_gpu:2414.284423828125 peak_memory_active:71.15793037414551 peak_memory_alloc:71.15793037414551 peak_memory_reserved:74.220703125 grad_norm:0.48046875 
+Step 98 | loss:0.7484277486801147 lr:4.7e-05 tokens_per_second_per_gpu:2336.714111328125 peak_memory_active:71.15793037414551 peak_memory_alloc:71.15793037414551 peak_memory_reserved:74.220703125 grad_norm:0.43359375 
+Step 99 | loss:0.7955265641212463 lr:4.8e-05 tokens_per_second_per_gpu:2082.68212890625 peak_memory_active:71.22671699523926 peak_memory_alloc:71.22671699523926 peak_memory_reserved:74.220703125 grad_norm:0.39453125 
+Step 100 | ff_loss:0.7527956366539001 ff_step:1 
+Step 101 | ff_loss:0.7538868188858032 ff_step:2 
+Step 101 | loss:0.7001166939735413 lr:4.9e-05 tokens_per_second_per_gpu:1378.5867919921875 peak_memory_active:71.29550361633301 peak_memory_alloc:71.29550361633301 peak_memory_reserved:74.220703125 grad_norm:0.341796875 
+Step 102 | loss:0.8313049077987671 lr:5e-05 tokens_per_second_per_gpu:2606.25439453125 peak_memory_active:71.29550361633301 peak_memory_alloc:71.29550361633301 peak_memory_reserved:74.220703125 grad_norm:0.380859375 
+Step 103 | loss:0.7054888010025024 lr:5.1000000000000006e-05 tokens_per_second_per_gpu:2561.61669921875 peak_memory_active:71.29550361633301 peak_memory_alloc:71.29550361633301 peak_memory_reserved:74.220703125 grad_norm:0.359375 
+Step 104 | loss:0.7874501347541809 lr:5.2000000000000004e-05 tokens_per_second_per_gpu:2146.451171875 peak_memory_active:71.29550361633301 peak_memory_alloc:71.29550361633301 peak_memory_reserved:74.220703125 grad_norm:0.41796875 
+Step 105 | loss:0.7728126645088196 lr:5.300000000000001e-05 tokens_per_second_per_gpu:2570.931640625 peak_memory_active:71.29550361633301 peak_memory_alloc:71.29550361633301 peak_memory_reserved:74.220703125 grad_norm:0.37890625 
+Step 106 | loss:0.7149337530136108 lr:5.4000000000000005e-05 tokens_per_second_per_gpu:2572.44189453125 peak_memory_active:71.36429023742676 peak_memory_alloc:71.36429023742676 peak_memory_reserved:74.22265625 grad_norm:0.322265625 
+Step 107 | ff_loss:0.7462418079376221 ff_step:1 
+Step 108 | ff_loss:0.7450772523880005 ff_step:2 
+Step 109 | ff_loss:0.7442203760147095 ff_step:3 
+Step 110 | ff_loss:0.743461012840271 ff_step:4 
+Step 111 | ff_loss:0.7429811358451843 ff_step:5 
+Step 112 | ff_loss:0.7423439025878906 ff_step:6 
+Step 113 | ff_loss:0.7419416904449463 ff_step:7 
+Step 114 | ff_loss:0.7416185736656189 ff_step:8 
+Step 115 | ff_loss:0.7416576147079468 ff_step:9 
+Step 115 | loss:0.7195424437522888 lr:5.500000000000001e-05 tokens_per_second_per_gpu:519.3944091796875 peak_memory_active:71.43307685852051 peak_memory_alloc:71.43307685852051 peak_memory_reserved:74.33203125 grad_norm:0.326171875 
+Step 116 | loss:0.6821746230125427 lr:5.6000000000000006e-05 tokens_per_second_per_gpu:2189.091552734375 peak_memory_active:71.43307685852051 peak_memory_alloc:71.43307685852051 peak_memory_reserved:74.33203125 grad_norm:0.36328125 
+Step 117 | loss:0.7499234080314636 lr:5.6999999999999996e-05 tokens_per_second_per_gpu:2617.23193359375 peak_memory_active:71.43307685852051 peak_memory_alloc:71.43307685852051 peak_memory_reserved:74.33203125 grad_norm:0.40234375 
+Step 118 | loss:0.7246603965759277 lr:5.8e-05 tokens_per_second_per_gpu:2466.38623046875 peak_memory_active:71.43307685852051 peak_memory_alloc:71.43307685852051 peak_memory_reserved:74.33203125 grad_norm:0.337890625 
+Step 119 | loss:0.7111164927482605 lr:5.9e-05 tokens_per_second_per_gpu:2467.55908203125 peak_memory_active:71.43307685852051 peak_memory_alloc:71.43307685852051 peak_memory_reserved:74.33203125 grad_norm:0.3203125 
+Step 120 | loss:0.6583518385887146 lr:6e-05 tokens_per_second_per_gpu:2364.112060546875 peak_memory_active:71.50186347961426 peak_memory_alloc:71.50186347961426 peak_memory_reserved:74.361328125 grad_norm:0.318359375 
+Step 121 | ff_loss:0.7368072271347046 ff_step:1 
+Step 122 | ff_loss:0.7365615367889404 ff_step:2 
+Step 123 | ff_loss:0.7359439134597778 ff_step:3 
+Step 124 | ff_loss:0.735466718673706 ff_step:4 
+Step 125 | ff_loss:0.7351305484771729 ff_step:5 
+Step 126 | ff_loss:0.7351152896881104 ff_step:6 
+Step 127 | ff_loss:0.7349357008934021 ff_step:7 
+Step 128 | ff_loss:0.7353472113609314 ff_step:8 
+Step 128 | loss:0.817470371723175 lr:6.1e-05 tokens_per_second_per_gpu:534.31396484375 peak_memory_active:71.57065010070801 peak_memory_alloc:71.57065010070801 peak_memory_reserved:74.474609375 grad_norm:0.69921875 
+Step 129 | loss:0.7727299928665161 lr:6.2e-05 tokens_per_second_per_gpu:2328.35302734375 peak_memory_active:71.57065010070801 peak_memory_alloc:71.57065010070801 peak_memory_reserved:74.474609375 grad_norm:0.76953125 
+Step 130 | loss:0.77335524559021 lr:6.3e-05 tokens_per_second_per_gpu:2311.016845703125 peak_memory_active:71.57065010070801 peak_memory_alloc:71.57065010070801 peak_memory_reserved:74.474609375 grad_norm:0.41796875 
+Step 131 | loss:0.72105473279953 lr:6.400000000000001e-05 tokens_per_second_per_gpu:2422.200439453125 peak_memory_active:71.57065010070801 peak_memory_alloc:71.57065010070801 peak_memory_reserved:74.474609375 grad_norm:0.34765625 
+Step 132 | loss:0.7996103763580322 lr:6.500000000000001e-05 tokens_per_second_per_gpu:2438.408447265625 peak_memory_active:71.57065010070801 peak_memory_alloc:71.57065010070801 peak_memory_reserved:74.474609375 grad_norm:0.337890625 
+Step 133 | loss:0.6272791028022766 lr:6.6e-05 tokens_per_second_per_gpu:2564.794921875 peak_memory_active:71.63943672180176 peak_memory_alloc:71.63943672180176 peak_memory_reserved:74.50390625 grad_norm:0.3125 
+Step 134 | ff_loss:0.7286369800567627 ff_step:1 
+Step 135 | ff_loss:0.7277564406394958 ff_step:2 
+Step 136 | ff_loss:0.727284848690033 ff_step:3 
+Step 137 | ff_loss:0.7266745567321777 ff_step:4 
+Step 138 | ff_loss:0.7262973785400391 ff_step:5 
+Step 139 | ff_loss:0.7259346842765808 ff_step:6 
+Step 140 | ff_loss:0.7257587909698486 ff_step:7 
+Step 141 | ff_loss:0.7253920435905457 ff_step:8 
+Step 142 | ff_loss:0.7252551913261414 ff_step:9 
+Step 143 | ff_loss:0.7254071235656738 ff_step:10 
+Step 143 | loss:0.7024590373039246 lr:6.7e-05 tokens_per_second_per_gpu:461.9098815917969 peak_memory_active:71.70822334289551 peak_memory_alloc:71.70822334289551 peak_memory_reserved:74.61328125 grad_norm:0.640625 
+Step 144 | loss:0.6684123873710632 lr:6.800000000000001e-05 tokens_per_second_per_gpu:2616.146240234375 peak_memory_active:71.70822334289551 peak_memory_alloc:71.70822334289551 peak_memory_reserved:74.61328125 grad_norm:0.6953125 
+Step 145 | loss:0.7815865874290466 lr:6.9e-05 tokens_per_second_per_gpu:2423.8134765625 peak_memory_active:71.70822334289551 peak_memory_alloc:71.70822334289551 peak_memory_reserved:74.61328125 grad_norm:0.79296875 
+Step 146 | loss:0.6376568078994751 lr:7e-05 tokens_per_second_per_gpu:2272.003662109375 peak_memory_active:71.70822334289551 peak_memory_alloc:71.70822334289551 peak_memory_reserved:74.61328125 grad_norm:0.478515625 
+Step 147 | loss:0.7323148846626282 lr:7.1e-05 tokens_per_second_per_gpu:1817.8004150390625 peak_memory_active:71.70822334289551 peak_memory_alloc:71.70822334289551 peak_memory_reserved:74.61328125 grad_norm:0.423828125 
+Step 148 | loss:0.6436783075332642 lr:7.2e-05 tokens_per_second_per_gpu:2023.0892333984375 peak_memory_active:71.77700996398926 peak_memory_alloc:71.77700996398926 peak_memory_reserved:74.64453125 grad_norm:0.34375 
+Step 149 | ff_loss:0.7302850484848022 ff_step:1 
+Step 150 | ff_loss:0.7328784465789795 ff_step:2 
+Step 150 | loss:0.7590811252593994 lr:7.3e-05 tokens_per_second_per_gpu:1402.9122314453125 peak_memory_active:71.84579658508301 peak_memory_alloc:71.84579658508301 peak_memory_reserved:74.73046875 grad_norm:0.5390625 
+Step 151 | loss:0.7609184980392456 lr:7.4e-05 tokens_per_second_per_gpu:2528.396728515625 peak_memory_active:71.84579658508301 peak_memory_alloc:71.84579658508301 peak_memory_reserved:74.73046875 grad_norm:0.44921875 
+Step 152 | loss:0.7383063435554504 lr:7.500000000000001e-05 tokens_per_second_per_gpu:2326.770751953125 peak_memory_active:71.84579658508301 peak_memory_alloc:71.84579658508301 peak_memory_reserved:74.73046875 grad_norm:0.4140625 
+Step 153 | loss:0.7665372490882874 lr:7.6e-05 tokens_per_second_per_gpu:2618.492919921875 peak_memory_active:71.84579658508301 peak_memory_alloc:71.84579658508301 peak_memory_reserved:74.73046875 grad_norm:0.330078125 
+Step 154 | loss:0.7201423645019531 lr:7.7e-05 tokens_per_second_per_gpu:2425.5673828125 peak_memory_active:71.84579658508301 peak_memory_alloc:71.84579658508301 peak_memory_reserved:74.73046875 grad_norm:0.310546875 
+Step 155 | loss:0.6296294331550598 lr:7.800000000000001e-05 tokens_per_second_per_gpu:2557.53515625 peak_memory_active:71.91458320617676 peak_memory_alloc:71.91458320617676 peak_memory_reserved:74.78515625 grad_norm:0.3046875 
+Step 156 | ff_loss:0.7198554873466492 ff_step:1 
+Step 157 | ff_loss:0.7192469835281372 ff_step:2 
+Step 158 | ff_loss:0.7188999652862549 ff_step:3 
+Step 159 | ff_loss:0.7186200022697449 ff_step:4 
+Step 160 | ff_loss:0.7184621691703796 ff_step:5 
+Step 161 | ff_loss:0.7184270620346069 ff_step:6 
+Step 162 | ff_loss:0.7185849547386169 ff_step:7 
+Step 162 | loss:0.7397205829620361 lr:7.900000000000001e-05 tokens_per_second_per_gpu:747.6119384765625 peak_memory_active:71.98336982727051 peak_memory_alloc:71.98336982727051 peak_memory_reserved:74.8984375 grad_norm:0.421875 
+Step 163 | loss:0.7351763844490051 lr:8e-05 tokens_per_second_per_gpu:2201.294921875 peak_memory_active:71.98336982727051 peak_memory_alloc:71.98336982727051 peak_memory_reserved:74.8984375 grad_norm:0.447265625 
+Step 164 | loss:0.6809768080711365 lr:8.1e-05 tokens_per_second_per_gpu:2735.333740234375 peak_memory_active:71.98336982727051 peak_memory_alloc:71.98336982727051 peak_memory_reserved:74.8984375 grad_norm:0.375 
+Step 165 | loss:0.7444297075271606 lr:8.2e-05 tokens_per_second_per_gpu:2178.1025390625 peak_memory_active:71.98336982727051 peak_memory_alloc:71.98336982727051 peak_memory_reserved:74.8984375 grad_norm:0.455078125 
+Step 166 | loss:0.7388702034950256 lr:8.3e-05 tokens_per_second_per_gpu:2641.5263671875 peak_memory_active:71.98336982727051 peak_memory_alloc:71.98336982727051 peak_memory_reserved:74.8984375 grad_norm:0.337890625 
+Step 167 | loss:0.8572075963020325 lr:8.4e-05 tokens_per_second_per_gpu:2219.73291015625 peak_memory_active:72.05215644836426 peak_memory_alloc:72.05215644836426 peak_memory_reserved:74.927734375 grad_norm:0.3203125 
+Step 168 | ff_loss:0.7226345539093018 ff_step:1 
+Step 169 | ff_loss:0.725416362285614 ff_step:2 
+Step 169 | loss:0.6128196716308594 lr:8.5e-05 tokens_per_second_per_gpu:1311.7254638671875 peak_memory_active:72.12094306945801 peak_memory_alloc:72.12094306945801 peak_memory_reserved:75.009765625 grad_norm:0.32421875 
+Step 170 | loss:0.7089772820472717 lr:8.6e-05 tokens_per_second_per_gpu:2397.1005859375 peak_memory_active:72.12094306945801 peak_memory_alloc:72.12094306945801 peak_memory_reserved:75.009765625 grad_norm:0.392578125 
+Step 171 | loss:0.6747322678565979 lr:8.7e-05 tokens_per_second_per_gpu:2594.72998046875 peak_memory_active:72.12094306945801 peak_memory_alloc:72.12094306945801 peak_memory_reserved:75.009765625 grad_norm:0.44921875 
+Step 172 | loss:0.6503342986106873 lr:8.800000000000001e-05 tokens_per_second_per_gpu:2267.46630859375 peak_memory_active:72.12094306945801 peak_memory_alloc:72.12094306945801 peak_memory_reserved:75.009765625 grad_norm:0.419921875 
+Step 173 | loss:0.7295458316802979 lr:8.900000000000001e-05 tokens_per_second_per_gpu:2571.8037109375 peak_memory_active:72.12094306945801 peak_memory_alloc:72.12094306945801 peak_memory_reserved:75.009765625 grad_norm:0.373046875 
+Step 174 | loss:0.6869319081306458 lr:9e-05 tokens_per_second_per_gpu:2521.504638671875 peak_memory_active:72.18972969055176 peak_memory_alloc:72.18972969055176 peak_memory_reserved:75.068359375 grad_norm:0.3046875 
+Step 175 | ff_loss:0.7147166728973389 ff_step:1 
+Step 176 | ff_loss:0.7132298946380615 ff_step:2 
+Step 177 | ff_loss:0.712256133556366 ff_step:3 
+Step 178 | ff_loss:0.711646318435669 ff_step:4 
+Step 179 | ff_loss:0.7111877202987671 ff_step:5 
+Step 180 | ff_loss:0.7110576033592224 ff_step:6 
+Step 181 | ff_loss:0.7110371589660645 ff_step:7 
+Step 182 | ff_loss:0.7114467620849609 ff_step:8 
+Step 182 | loss:0.7471643090248108 lr:9.1e-05 tokens_per_second_per_gpu:507.8660888671875 peak_memory_active:72.25851631164551 peak_memory_alloc:72.25851631164551 peak_memory_reserved:75.181640625 grad_norm:0.443359375 
+Step 183 | loss:0.7271353602409363 lr:9.200000000000001e-05 tokens_per_second_per_gpu:2397.283203125 peak_memory_active:72.25851631164551 peak_memory_alloc:72.25851631164551 peak_memory_reserved:75.181640625 grad_norm:0.47265625 
+Step 184 | loss:0.6885852813720703 lr:9.300000000000001e-05 tokens_per_second_per_gpu:2480.477783203125 peak_memory_active:72.25851631164551 peak_memory_alloc:72.25851631164551 peak_memory_reserved:75.181640625 grad_norm:0.400390625 
+Step 185 | loss:0.7447263598442078 lr:9.4e-05 tokens_per_second_per_gpu:2716.36083984375 peak_memory_active:72.25851631164551 peak_memory_alloc:72.25851631164551 peak_memory_reserved:75.181640625 grad_norm:0.38671875 
+Step 186 | loss:0.5968424081802368 lr:9.5e-05 tokens_per_second_per_gpu:2595.874755859375 peak_memory_active:72.25851631164551 peak_memory_alloc:72.25851631164551 peak_memory_reserved:75.181640625 grad_norm:0.3515625 
+Step 187 | loss:0.6753051280975342 lr:9.6e-05 tokens_per_second_per_gpu:2392.652587890625 peak_memory_active:72.32730293273926 peak_memory_alloc:72.32730293273926 peak_memory_reserved:75.2109375 grad_norm:0.314453125 
+Step 188 | ff_loss:0.719610869884491 ff_step:1 
+Step 189 | ff_loss:0.7240142226219177 ff_step:2 
+Step 189 | loss:0.7780413627624512 lr:9.7e-05 tokens_per_second_per_gpu:1264.1728515625 peak_memory_active:72.39608955383301 peak_memory_alloc:72.39608955383301 peak_memory_reserved:75.29296875 grad_norm:0.3125 
+Step 190 | loss:0.6463576555252075 lr:9.8e-05 tokens_per_second_per_gpu:2501.8505859375 peak_memory_active:72.39608955383301 peak_memory_alloc:72.39608955383301 peak_memory_reserved:75.29296875 grad_norm:0.298828125 
+Step 191 | loss:0.6750744581222534 lr:9.900000000000001e-05 tokens_per_second_per_gpu:2597.8017578125 peak_memory_active:72.39608955383301 peak_memory_alloc:72.39608955383301 peak_memory_reserved:75.29296875 grad_norm:0.333984375 
+Step 192 | loss:0.7078754901885986 lr:0.0001 tokens_per_second_per_gpu:2119.079833984375 peak_memory_active:72.39608955383301 peak_memory_alloc:72.39608955383301 peak_memory_reserved:75.29296875 grad_norm:0.3671875 
+Step 193 | loss:0.809349000453949 lr:9.999998019885453e-05 tokens_per_second_per_gpu:2406.740966796875 peak_memory_active:72.39608955383301 peak_memory_alloc:72.39608955383301 peak_memory_reserved:75.29296875 grad_norm:0.36328125 
+Step 194 | loss:0.6802525520324707 lr:9.999992079543376e-05 tokens_per_second_per_gpu:2476.181396484375 peak_memory_active:72.46487617492676 peak_memory_alloc:72.46487617492676 peak_memory_reserved:75.3515625 grad_norm:0.3046875 
+Step 195 | ff_loss:0.7173706889152527 ff_step:1 
+Step 196 | ff_loss:0.7152788639068604 ff_step:2 
+Step 197 | ff_loss:0.7134243845939636 ff_step:3 
+Step 198 | ff_loss:0.7120024561882019 ff_step:4 
+Step 199 | ff_loss:0.7111148238182068 ff_step:5 
+Step 200 | ff_loss:0.7107335925102234 ff_step:6 
+Step 201 | ff_loss:0.7104076147079468 ff_step:7 
+Step 202 | ff_loss:0.7100352048873901 ff_step:8 
+Step 203 | ff_loss:0.7104235887527466 ff_step:9 
+Step 203 | loss:0.7061944007873535 lr:9.999982178978477e-05 tokens_per_second_per_gpu:516.6365356445312 peak_memory_active:72.53366279602051 peak_memory_alloc:72.53366279602051 peak_memory_reserved:75.46875 grad_norm:0.435546875 
+Step 204 | loss:0.7142568826675415 lr:9.999968318198596e-05 tokens_per_second_per_gpu:2460.06298828125 peak_memory_active:72.53366279602051 peak_memory_alloc:72.53366279602051 peak_memory_reserved:75.46875 grad_norm:0.43359375 
+Step 205 | loss:0.7256378531455994 lr:9.999950497214712e-05 tokens_per_second_per_gpu:2103.6083984375 peak_memory_active:72.53366279602051 peak_memory_alloc:72.53366279602051 peak_memory_reserved:75.46875 grad_norm:0.37890625 
+Step 206 | loss:0.6729151606559753 lr:9.99992871604094e-05 tokens_per_second_per_gpu:2439.663330078125 peak_memory_active:72.53366279602051 peak_memory_alloc:72.53366279602051 peak_memory_reserved:75.46875 grad_norm:0.353515625 
+Step 207 | loss:0.8037790656089783 lr:9.99990297469453e-05 tokens_per_second_per_gpu:2392.447509765625 peak_memory_active:72.53366279602051 peak_memory_alloc:72.53366279602051 peak_memory_reserved:75.46875 grad_norm:0.400390625 
+Step 208 | loss:0.639337420463562 lr:9.999873273195874e-05 tokens_per_second_per_gpu:2293.177734375 peak_memory_active:72.60244941711426 peak_memory_alloc:72.60244941711426 peak_memory_reserved:75.494140625 grad_norm:0.28515625 
+Step 209 | ff_loss:0.7114635705947876 ff_step:1 
+Step 210 | ff_loss:0.7129513621330261 ff_step:2 
+Step 210 | loss:0.6636014580726624 lr:9.999839611568496e-05 tokens_per_second_per_gpu:1417.0352783203125 peak_memory_active:72.67123603820801 peak_memory_alloc:72.67123603820801 peak_memory_reserved:75.568359375 grad_norm:0.27734375 
+Step 211 | loss:0.7165364623069763 lr:9.999801989839055e-05 tokens_per_second_per_gpu:2316.74853515625 peak_memory_active:72.67123603820801 peak_memory_alloc:72.67123603820801 peak_memory_reserved:75.568359375 grad_norm:0.314453125 
+Step 212 | loss:0.6336846351623535 lr:9.99976040803735e-05 tokens_per_second_per_gpu:2564.50390625 peak_memory_active:72.67123603820801 peak_memory_alloc:72.67123603820801 peak_memory_reserved:75.568359375 grad_norm:0.3125 
+Step 213 | loss:0.6950801610946655 lr:9.999714866196318e-05 tokens_per_second_per_gpu:2410.2919921875 peak_memory_active:72.67123603820801 peak_memory_alloc:72.67123603820801 peak_memory_reserved:75.568359375 grad_norm:0.33984375 
+Step 214 | loss:0.6530174612998962 lr:9.999665364352027e-05 tokens_per_second_per_gpu:2447.481201171875 peak_memory_active:72.67123603820801 peak_memory_alloc:72.67123603820801 peak_memory_reserved:75.568359375 grad_norm:0.3046875 
+Step 215 | loss:0.6324473023414612 lr:9.999611902543688e-05 tokens_per_second_per_gpu:2581.747314453125 peak_memory_active:72.74002265930176 peak_memory_alloc:72.74002265930176 peak_memory_reserved:75.634765625 grad_norm:0.255859375 
+Step 216 | ff_loss:0.7078957557678223 ff_step:1 
+Step 217 | ff_loss:0.7069932222366333 ff_step:2 
+Step 218 | ff_loss:0.7063727378845215 ff_step:3 
+Step 219 | ff_loss:0.7058636546134949 ff_step:4 
+Step 220 | ff_loss:0.7056282758712769 ff_step:5 
+Step 221 | ff_loss:0.7057069540023804 ff_step:6 
+Step 221 | loss:0.6626956462860107 lr:9.999554480813642e-05 tokens_per_second_per_gpu:699.917724609375 peak_memory_active:72.80880928039551 peak_memory_alloc:72.80880928039551 peak_memory_reserved:75.755859375 grad_norm:0.32421875 
+Step 222 | loss:0.6547001004219055 lr:9.999493099207372e-05 tokens_per_second_per_gpu:2084.865478515625 peak_memory_active:72.80880928039551 peak_memory_alloc:72.80880928039551 peak_memory_reserved:75.755859375 grad_norm:0.3359375 
+Step 223 | loss:0.7285398244857788 lr:9.999427757773495e-05 tokens_per_second_per_gpu:2172.04345703125 peak_memory_active:72.80880928039551 peak_memory_alloc:72.80880928039551 peak_memory_reserved:75.755859375 grad_norm:0.306640625 
+Step 224 | loss:0.6278186440467834 lr:9.999358456563761e-05 tokens_per_second_per_gpu:2678.7177734375 peak_memory_active:72.80880928039551 peak_memory_alloc:72.80880928039551 peak_memory_reserved:75.755859375 grad_norm:0.26171875 
+Step 225 | loss:0.7084766030311584 lr:9.999285195633064e-05 tokens_per_second_per_gpu:2435.591064453125 peak_memory_active:72.80880928039551 peak_memory_alloc:72.80880928039551 peak_memory_reserved:75.755859375 grad_norm:0.3203125 
+Step 226 | loss:0.7015935182571411 lr:9.999207975039429e-05 tokens_per_second_per_gpu:2399.19677734375 peak_memory_active:72.87759590148926 peak_memory_alloc:72.87759590148926 peak_memory_reserved:75.779296875 grad_norm:0.28125 
+Step 227 | ff_loss:0.7091425657272339 ff_step:1 
+Step 228 | ff_loss:0.7105249762535095 ff_step:2 
+Step 228 | loss:0.6031815409660339 lr:9.999126794844015e-05 tokens_per_second_per_gpu:1295.610595703125 peak_memory_active:72.94638252258301 peak_memory_alloc:72.94638252258301 peak_memory_reserved:75.849609375 grad_norm:0.265625 
+Step 229 | loss:0.6909875869750977 lr:9.999041655111125e-05 tokens_per_second_per_gpu:2761.146728515625 peak_memory_active:72.94638252258301 peak_memory_alloc:72.94638252258301 peak_memory_reserved:75.849609375 grad_norm:0.2734375 
+Step 230 | loss:0.7194564342498779 lr:9.998952555908193e-05 tokens_per_second_per_gpu:2467.791259765625 peak_memory_active:72.94638252258301 peak_memory_alloc:72.94638252258301 peak_memory_reserved:75.849609375 grad_norm:0.279296875 
+Step 231 | loss:0.6528273224830627 lr:9.998859497305786e-05 tokens_per_second_per_gpu:2408.414794921875 peak_memory_active:72.94638252258301 peak_memory_alloc:72.94638252258301 peak_memory_reserved:75.849609375 grad_norm:0.298828125 
+Step 232 | loss:0.6237800121307373 lr:9.998762479377613e-05 tokens_per_second_per_gpu:2438.799072265625 peak_memory_active:72.94638252258301 peak_memory_alloc:72.94638252258301 peak_memory_reserved:75.849609375 grad_norm:0.271484375 
+Step 233 | loss:0.7225496172904968 lr:9.998661502200517e-05 tokens_per_second_per_gpu:2287.160400390625 peak_memory_active:73.01516914367676 peak_memory_alloc:73.01516914367676 peak_memory_reserved:75.91796875 grad_norm:0.326171875 
+Step 234 | ff_loss:0.7065722346305847 ff_step:1 
+Step 235 | ff_loss:0.705005407333374 ff_step:2 
+Step 236 | ff_loss:0.7043360471725464 ff_step:3 
+Step 237 | ff_loss:0.703498363494873 ff_step:4 
+Step 238 | ff_loss:0.7026400566101074 ff_step:5 
+Step 239 | ff_loss:0.7016353607177734 ff_step:6 
+Step 240 | ff_loss:0.7011432647705078 ff_step:7 
+Step 241 | ff_loss:0.7009207010269165 ff_step:8 
+Step 242 | ff_loss:0.7004901766777039 ff_step:9 
+Step 243 | ff_loss:0.700298011302948 ff_step:10 
+Step 244 | ff_loss:0.7005419731140137 ff_step:11 
+Step 244 | loss:0.7257357239723206 lr:9.998556565854476e-05 tokens_per_second_per_gpu:444.1285705566406 peak_memory_active:73.08395576477051 peak_memory_alloc:73.08395576477051 peak_memory_reserved:76.03125 grad_norm:0.431640625 
+Step 245 | loss:0.6359180808067322 lr:9.998447670422604e-05 tokens_per_second_per_gpu:2497.918212890625 peak_memory_active:73.08395576477051 peak_memory_alloc:73.08395576477051 peak_memory_reserved:76.03125 grad_norm:0.41796875 
+Step 246 | loss:0.6074117422103882 lr:9.998334815991153e-05 tokens_per_second_per_gpu:2294.796875 peak_memory_active:73.08395576477051 peak_memory_alloc:73.08395576477051 peak_memory_reserved:76.03125 grad_norm:0.3671875 
+Step 247 | loss:0.6139838099479675 lr:9.998218002649506e-05 tokens_per_second_per_gpu:2656.650146484375 peak_memory_active:73.08395576477051 peak_memory_alloc:73.08395576477051 peak_memory_reserved:76.03125 grad_norm:0.291015625 
+Step 248 | loss:0.6674536466598511 lr:9.998097230490188e-05 tokens_per_second_per_gpu:2768.485595703125 peak_memory_active:73.08395576477051 peak_memory_alloc:73.08395576477051 peak_memory_reserved:76.03125 grad_norm:0.263671875 
+Step 249 | loss:0.6916761994361877 lr:9.997972499608851e-05 tokens_per_second_per_gpu:2194.1552734375 peak_memory_active:73.15274238586426 peak_memory_alloc:73.15274238586426 peak_memory_reserved:76.060546875 grad_norm:0.306640625 
+Step 250 | ff_loss:0.7038542032241821 ff_step:1 
+Step 251 | ff_loss:0.7057709097862244 ff_step:2 
+Step 251 | loss:0.6358834505081177 lr:9.997843810104295e-05 tokens_per_second_per_gpu:1367.2337646484375 peak_memory_active:73.22152900695801 peak_memory_alloc:73.22152900695801 peak_memory_reserved:76.134765625 grad_norm:0.357421875 
+Step 252 | loss:0.7408600449562073 lr:9.99771116207844e-05 tokens_per_second_per_gpu:2292.57958984375 peak_memory_active:73.22152900695801 peak_memory_alloc:73.22152900695801 peak_memory_reserved:76.134765625 grad_norm:0.369140625 
+Step 253 | loss:0.6785911321640015 lr:9.997574555636356e-05 tokens_per_second_per_gpu:2410.94921875 peak_memory_active:73.22152900695801 peak_memory_alloc:73.22152900695801 peak_memory_reserved:76.134765625 grad_norm:0.400390625 
+Step 254 | loss:0.5682550668716431 lr:9.997433990886236e-05 tokens_per_second_per_gpu:2116.17919921875 peak_memory_active:73.22152900695801 peak_memory_alloc:73.22152900695801 peak_memory_reserved:76.134765625 grad_norm:0.31640625 
+Step 255 | loss:0.6162741780281067 lr:9.997289467939418e-05 tokens_per_second_per_gpu:2240.205810546875 peak_memory_active:73.22152900695801 peak_memory_alloc:73.22152900695801 peak_memory_reserved:76.134765625 grad_norm:0.27734375 
+Step 256 | loss:0.6193488240242004 lr:9.99714098691037e-05 tokens_per_second_per_gpu:2094.212158203125 peak_memory_active:73.29031562805176 peak_memory_alloc:73.29031562805176 peak_memory_reserved:76.203125 grad_norm:0.435546875 
+Step 257 | ff_loss:0.6983422636985779 ff_step:1 
+Step 258 | ff_loss:0.6974970102310181 ff_step:2 
+Step 259 | ff_loss:0.6970928907394409 ff_step:3 
+Step 260 | ff_loss:0.6964435577392578 ff_step:4 
+Step 261 | ff_loss:0.6962904930114746 ff_step:5 
+Step 262 | ff_loss:0.6966513991355896 ff_step:6 
+Step 262 | loss:0.6564751863479614 lr:9.996988547916692e-05 tokens_per_second_per_gpu:755.2410888671875 peak_memory_active:73.35910224914551 peak_memory_alloc:73.35910224914551 peak_memory_reserved:76.3125 grad_norm:0.375 
+Step 263 | loss:0.6356073617935181 lr:9.996832151079127e-05 tokens_per_second_per_gpu:2406.09912109375 peak_memory_active:73.35910224914551 peak_memory_alloc:73.35910224914551 peak_memory_reserved:76.3125 grad_norm:0.3359375 
+Step 264 | loss:0.677335262298584 lr:9.996671796521548e-05 tokens_per_second_per_gpu:2464.224853515625 peak_memory_active:73.35910224914551 peak_memory_alloc:73.35910224914551 peak_memory_reserved:76.3125 grad_norm:0.34765625 
+Step 265 | loss:0.6502587795257568 lr:9.996507484370961e-05 tokens_per_second_per_gpu:2490.451171875 peak_memory_active:73.35910224914551 peak_memory_alloc:73.35910224914551 peak_memory_reserved:76.3125 grad_norm:0.328125 
+Step 266 | loss:0.6152597069740295 lr:9.996339214757509e-05 tokens_per_second_per_gpu:2651.812744140625 peak_memory_active:73.35910224914551 peak_memory_alloc:73.35910224914551 peak_memory_reserved:76.3125 grad_norm:0.30078125 
+Step 267 | loss:0.6538199782371521 lr:9.996166987814471e-05 tokens_per_second_per_gpu:2525.748046875 peak_memory_active:73.42788887023926 peak_memory_alloc:73.42788887023926 peak_memory_reserved:76.34375 grad_norm:0.275390625 
+Step 268 | ff_loss:0.7031465768814087 ff_step:1 
+Step 269 | ff_loss:0.7051552534103394 ff_step:2 
+Step 269 | loss:0.6276441216468811 lr:9.995990803678259e-05 tokens_per_second_per_gpu:1113.7196044921875 peak_memory_active:73.49667549133301 peak_memory_alloc:73.49667549133301 peak_memory_reserved:76.421875 grad_norm:0.328125 
+Step 270 | loss:0.6654942631721497 lr:9.995810662488417e-05 tokens_per_second_per_gpu:2950.58935546875 peak_memory_active:73.49667549133301 peak_memory_alloc:73.49667549133301 peak_memory_reserved:76.421875 grad_norm:0.27734375 
+Step 271 | loss:0.7020685076713562 lr:9.995626564387626e-05 tokens_per_second_per_gpu:2262.759521484375 peak_memory_active:73.49667549133301 peak_memory_alloc:73.49667549133301 peak_memory_reserved:76.421875 grad_norm:0.349609375 
+Step 272 | loss:0.5474628806114197 lr:9.995438509521698e-05 tokens_per_second_per_gpu:2094.46240234375 peak_memory_active:73.49667549133301 peak_memory_alloc:73.49667549133301 peak_memory_reserved:76.421875 grad_norm:0.396484375 
+Step 273 | loss:0.5721768736839294 lr:9.995246498039586e-05 tokens_per_second_per_gpu:2421.96875 peak_memory_active:73.49667549133301 peak_memory_alloc:73.49667549133301 peak_memory_reserved:76.421875 grad_norm:0.3125 
+Step 274 | loss:0.7692657113075256 lr:9.995050530093367e-05 tokens_per_second_per_gpu:2077.122314453125 peak_memory_active:73.56546211242676 peak_memory_alloc:73.56546211242676 peak_memory_reserved:76.486328125 grad_norm:0.33203125 
+Step 275 | ff_loss:0.7008950114250183 ff_step:1 
+Step 276 | ff_loss:0.7000648975372314 ff_step:2 
+Step 277 | ff_loss:0.6994442939758301 ff_step:3 
+Step 278 | ff_loss:0.6989130973815918 ff_step:4 
+Step 279 | ff_loss:0.6988455057144165 ff_step:5 
+Step 280 | ff_loss:0.6988073587417603 ff_step:6 
+Step 281 | ff_loss:0.6993514895439148 ff_step:7 
+Step 281 | loss:0.7145265340805054 lr:9.994850605838259e-05 tokens_per_second_per_gpu:611.2225952148438 peak_memory_active:73.63424873352051 peak_memory_alloc:73.63424873352051 peak_memory_reserved:76.599609375 grad_norm:0.345703125 
+Step 282 | loss:0.7070658206939697 lr:9.99464672543261e-05 tokens_per_second_per_gpu:2421.15478515625 peak_memory_active:73.63424873352051 peak_memory_alloc:73.63424873352051 peak_memory_reserved:76.599609375 grad_norm:0.345703125 
+Step 283 | loss:0.6581683158874512 lr:9.994438889037904e-05 tokens_per_second_per_gpu:2773.656494140625 peak_memory_active:73.63424873352051 peak_memory_alloc:73.63424873352051 peak_memory_reserved:76.599609375 grad_norm:0.294921875 
+Step 284 | loss:0.7212203145027161 lr:9.994227096818756e-05 tokens_per_second_per_gpu:2549.359130859375 peak_memory_active:73.63424873352051 peak_memory_alloc:73.63424873352051 peak_memory_reserved:76.599609375 grad_norm:0.310546875 
+Step 285 | loss:0.6213893294334412 lr:9.994011348942915e-05 tokens_per_second_per_gpu:2402.484619140625 peak_memory_active:73.63424873352051 peak_memory_alloc:73.63424873352051 peak_memory_reserved:76.599609375 grad_norm:0.29296875 
+Step 286 | loss:0.7317391633987427 lr:9.993791645581263e-05 tokens_per_second_per_gpu:2147.491455078125 peak_memory_active:73.70303535461426 peak_memory_alloc:73.70303535461426 peak_memory_reserved:76.62890625 grad_norm:0.326171875 
+Step 287 | ff_loss:0.7002632021903992 ff_step:1 
+Step 288 | ff_loss:0.7008532285690308 ff_step:2 
+Step 288 | loss:0.5972488522529602 lr:9.993567986907817e-05 tokens_per_second_per_gpu:1141.2547607421875 peak_memory_active:73.77182197570801 peak_memory_alloc:73.77182197570801 peak_memory_reserved:76.712890625 grad_norm:0.28515625 
+Step 289 | loss:0.6806550621986389 lr:9.993340373099724e-05 tokens_per_second_per_gpu:2287.0087890625 peak_memory_active:73.77182197570801 peak_memory_alloc:73.77182197570801 peak_memory_reserved:76.712890625 grad_norm:0.30859375 
+Step 290 | loss:0.6685792207717896 lr:9.993108804337263e-05 tokens_per_second_per_gpu:2486.806884765625 peak_memory_active:73.77182197570801 peak_memory_alloc:73.77182197570801 peak_memory_reserved:76.712890625 grad_norm:0.28515625 
+Step 291 | loss:0.581164538860321 lr:9.992873280803849e-05 tokens_per_second_per_gpu:2799.411865234375 peak_memory_active:73.77182197570801 peak_memory_alloc:73.77182197570801 peak_memory_reserved:76.712890625 grad_norm:0.330078125 
+Step 292 | loss:0.660351037979126 lr:9.992633802686025e-05 tokens_per_second_per_gpu:2438.955322265625 peak_memory_active:73.77182197570801 peak_memory_alloc:73.77182197570801 peak_memory_reserved:76.712890625 grad_norm:0.314453125 
+Step 293 | loss:0.709951639175415 lr:9.992390370173473e-05 tokens_per_second_per_gpu:2285.8330078125 peak_memory_active:73.84060859680176 peak_memory_alloc:73.84060859680176 peak_memory_reserved:76.771484375 grad_norm:0.34375 
+Step 294 | ff_loss:0.6989544630050659 ff_step:1 
+Step 295 | ff_loss:0.6984116435050964 ff_step:2 
+Step 296 | ff_loss:0.6976658701896667 ff_step:3 
+Step 297 | ff_loss:0.6967775225639343 ff_step:4 
+Step 298 | ff_loss:0.6963814496994019 ff_step:5 
+Step 299 | ff_loss:0.6960945129394531 ff_step:6 
+Step 300 | ff_loss:0.6957735419273376 ff_step:7 
+Step 301 | ff_loss:0.6954125761985779 ff_step:8 
+Step 302 | ff_loss:0.6952768564224243 ff_step:9 
+Step 303 | ff_loss:0.6952173709869385 ff_step:10 
+Step 304 | ff_loss:0.6952959299087524 ff_step:11 
+Step 304 | loss:0.7237592339515686 lr:9.992142983458998e-05 tokens_per_second_per_gpu:432.2803039550781 peak_memory_active:73.90939521789551 peak_memory_alloc:73.90939521789551 peak_memory_reserved:76.8828125 grad_norm:0.3828125 
+Step 305 | loss:0.7399420142173767 lr:9.991891642738544e-05 tokens_per_second_per_gpu:2088.865234375 peak_memory_active:73.90939521789551 peak_memory_alloc:73.90939521789551 peak_memory_reserved:76.8828125 grad_norm:0.419921875 
+Step 306 | loss:0.7026364803314209 lr:9.991636348211184e-05 tokens_per_second_per_gpu:2484.876220703125 peak_memory_active:73.90939521789551 peak_memory_alloc:73.90939521789551 peak_memory_reserved:76.8828125 grad_norm:0.302734375 
+Step 307 | loss:0.6103624105453491 lr:9.991377100079122e-05 tokens_per_second_per_gpu:2298.090087890625 peak_memory_active:73.90939521789551 peak_memory_alloc:73.90939521789551 peak_memory_reserved:76.8828125 grad_norm:0.31640625 
+Step 308 | loss:0.6791383028030396 lr:9.991113898547698e-05 tokens_per_second_per_gpu:2592.45166015625 peak_memory_active:73.90939521789551 peak_memory_alloc:73.90939521789551 peak_memory_reserved:76.8828125 grad_norm:0.28515625 
+Step 309 | loss:0.5895520448684692 lr:9.990846743825375e-05 tokens_per_second_per_gpu:2381.301513671875 peak_memory_active:73.97818183898926 peak_memory_alloc:73.97818183898926 peak_memory_reserved:76.912109375 grad_norm:0.275390625 
+Step 310 | ff_loss:0.6976233720779419 ff_step:1 
+Step 311 | ff_loss:0.6982440948486328 ff_step:2 
+Step 311 | loss:0.7166739106178284 lr:9.990575636123753e-05 tokens_per_second_per_gpu:1326.0821533203125 peak_memory_active:74.04696846008301 peak_memory_alloc:74.04696846008301 peak_memory_reserved:76.998046875 grad_norm:0.30859375 
+Step 312 | loss:0.6689916849136353 lr:9.990300575657565e-05 tokens_per_second_per_gpu:2463.498291015625 peak_memory_active:74.04696846008301 peak_memory_alloc:74.04696846008301 peak_memory_reserved:76.998046875 grad_norm:0.28125 
+Step 313 | loss:0.6147977709770203 lr:9.990021562644669e-05 tokens_per_second_per_gpu:2412.86962890625 peak_memory_active:74.04696846008301 peak_memory_alloc:74.04696846008301 peak_memory_reserved:76.998046875 grad_norm:0.330078125 
+Step 314 | loss:0.6436460018157959 lr:9.989738597306053e-05 tokens_per_second_per_gpu:2426.2490234375 peak_memory_active:74.04696846008301 peak_memory_alloc:74.04696846008301 peak_memory_reserved:76.998046875 grad_norm:0.302734375 
+Step 315 | loss:0.7212638854980469 lr:9.989451679865845e-05 tokens_per_second_per_gpu:2518.8896484375 peak_memory_active:74.04696846008301 peak_memory_alloc:74.04696846008301 peak_memory_reserved:76.998046875 grad_norm:0.33203125 
+Step 316 | loss:0.635812520980835 lr:9.989160810551291e-05 tokens_per_second_per_gpu:2338.800537109375 peak_memory_active:74.11575508117676 peak_memory_alloc:74.11575508117676 peak_memory_reserved:77.0546875 grad_norm:0.291015625 
+Step 317 | ff_loss:0.6960780620574951 ff_step:1 
+Step 318 | ff_loss:0.6955024003982544 ff_step:2 
+Step 319 | ff_loss:0.6953048706054688 ff_step:3 
+Step 320 | ff_loss:0.6954299211502075 ff_step:4 
+Step 320 | loss:0.6576616764068604 lr:9.988865989592777e-05 tokens_per_second_per_gpu:854.3676147460938 peak_memory_active:74.18454170227051 peak_memory_alloc:74.18454170227051 peak_memory_reserved:77.166015625 grad_norm:0.27734375 
+Step 321 | loss:0.6700705289840698 lr:9.988567217223813e-05 tokens_per_second_per_gpu:2295.793212890625 peak_memory_active:74.18454170227051 peak_memory_alloc:74.18454170227051 peak_memory_reserved:77.166015625 grad_norm:0.341796875 
+Step 322 | loss:0.6456084251403809 lr:9.988264493681038e-05 tokens_per_second_per_gpu:2381.1689453125 peak_memory_active:74.18454170227051 peak_memory_alloc:74.18454170227051 peak_memory_reserved:77.166015625 grad_norm:0.3125 
+Step 323 | loss:0.6181281805038452 lr:9.987957819204227e-05 tokens_per_second_per_gpu:2534.7470703125 peak_memory_active:74.18454170227051 peak_memory_alloc:74.18454170227051 peak_memory_reserved:77.166015625 grad_norm:0.322265625 
+Step 324 | loss:0.6230126619338989 lr:9.987647194036278e-05 tokens_per_second_per_gpu:2497.087158203125 peak_memory_active:74.18454170227051 peak_memory_alloc:74.18454170227051 peak_memory_reserved:77.166015625 grad_norm:0.294921875 
+Step 325 | loss:0.6347012519836426 lr:9.987332618423221e-05 tokens_per_second_per_gpu:2424.2548828125 peak_memory_active:74.25332832336426 peak_memory_alloc:74.25332832336426 peak_memory_reserved:77.1953125 grad_norm:0.2470703125 
+Step 326 | ff_loss:0.6952285766601562 ff_step:1 
+Step 327 | ff_loss:0.6956316828727722 ff_step:2 
+Step 327 | loss:0.6566454768180847 lr:9.987014092614214e-05 tokens_per_second_per_gpu:1236.1119384765625 peak_memory_active:74.32211494445801 peak_memory_alloc:74.32211494445801 peak_memory_reserved:77.28515625 grad_norm:0.291015625 
+Step 328 | loss:0.623871922492981 lr:9.986691616861544e-05 tokens_per_second_per_gpu:2449.140625 peak_memory_active:74.32211494445801 peak_memory_alloc:74.32211494445801 peak_memory_reserved:77.28515625 grad_norm:0.3125 
+Step 329 | loss:0.5972054600715637 lr:9.986365191420628e-05 tokens_per_second_per_gpu:2617.276123046875 peak_memory_active:74.32211494445801 peak_memory_alloc:74.32211494445801 peak_memory_reserved:77.28515625 grad_norm:0.275390625 
+Step 330 | loss:0.6685383319854736 lr:9.986034816550007e-05 tokens_per_second_per_gpu:2381.412841796875 peak_memory_active:74.32211494445801 peak_memory_alloc:74.32211494445801 peak_memory_reserved:77.28515625 grad_norm:0.28515625 
+Step 331 | loss:0.6750191450119019 lr:9.985700492511356e-05 tokens_per_second_per_gpu:2434.135498046875 peak_memory_active:74.32211494445801 peak_memory_alloc:74.32211494445801 peak_memory_reserved:77.28515625 grad_norm:0.314453125 
+Step 332 | loss:0.6665957570075989 lr:9.985362219569473e-05 tokens_per_second_per_gpu:2295.892333984375 peak_memory_active:74.39090156555176 peak_memory_alloc:74.39090156555176 peak_memory_reserved:77.337890625 grad_norm:0.283203125 
+Step 333 | ff_loss:0.6946018934249878 ff_step:1 
+Step 334 | ff_loss:0.694419801235199 ff_step:2 
+Step 335 | ff_loss:0.6941006183624268 ff_step:3 
+Step 336 | ff_loss:0.6936730742454529 ff_step:4 
+Step 337 | ff_loss:0.6937524676322937 ff_step:5 
+Step 337 | loss:0.7113131284713745 lr:9.985019997992287e-05 tokens_per_second_per_gpu:882.8531494140625 peak_memory_active:74.45968818664551 peak_memory_alloc:74.45968818664551 peak_memory_reserved:77.44921875 grad_norm:0.314453125 
+Step 338 | loss:0.5825154185295105 lr:9.984673828050851e-05 tokens_per_second_per_gpu:2708.3857421875 peak_memory_active:74.45968818664551 peak_memory_alloc:74.45968818664551 peak_memory_reserved:77.44921875 grad_norm:0.248046875 
+Step 339 | loss:0.6331623196601868 lr:9.98432371001935e-05 tokens_per_second_per_gpu:2463.692626953125 peak_memory_active:74.45968818664551 peak_memory_alloc:74.45968818664551 peak_memory_reserved:77.44921875 grad_norm:0.267578125 
+Step 340 | loss:0.6198412179946899 lr:9.983969644175091e-05 tokens_per_second_per_gpu:2413.171142578125 peak_memory_active:74.45968818664551 peak_memory_alloc:74.45968818664551 peak_memory_reserved:77.44921875 grad_norm:0.28515625 
+Step 341 | loss:0.5870319604873657 lr:9.983611630798515e-05 tokens_per_second_per_gpu:2705.109375 peak_memory_active:74.45968818664551 peak_memory_alloc:74.45968818664551 peak_memory_reserved:77.44921875 grad_norm:0.3515625 
+Step 342 | loss:0.630633533000946 lr:9.983249670173179e-05 tokens_per_second_per_gpu:2460.461181640625 peak_memory_active:74.52847480773926 peak_memory_alloc:74.52847480773926 peak_memory_reserved:77.48046875 grad_norm:0.3046875 
+Step 343 | ff_loss:0.6941792368888855 ff_step:1 
+Step 344 | ff_loss:0.6938051581382751 ff_step:2 
+Step 345 | ff_loss:0.6938221454620361 ff_step:3 
+Step 345 | loss:0.6386100649833679 lr:9.982883762585776e-05 tokens_per_second_per_gpu:1146.285888671875 peak_memory_active:74.59726142883301 peak_memory_alloc:74.59726142883301 peak_memory_reserved:77.58984375 grad_norm:0.283203125 
+Step 346 | loss:0.5988722443580627 lr:9.982513908326121e-05 tokens_per_second_per_gpu:2738.5283203125 peak_memory_active:74.59726142883301 peak_memory_alloc:74.59726142883301 peak_memory_reserved:77.58984375 grad_norm:0.2734375 
+Step 347 | loss:0.632844090461731 lr:9.982140107687156e-05 tokens_per_second_per_gpu:2552.571044921875 peak_memory_active:74.59726142883301 peak_memory_alloc:74.59726142883301 peak_memory_reserved:77.58984375 grad_norm:0.267578125 
+Step 348 | loss:0.529301643371582 lr:9.981762360964946e-05 tokens_per_second_per_gpu:2369.216796875 peak_memory_active:74.59726142883301 peak_memory_alloc:74.59726142883301 peak_memory_reserved:77.58984375 grad_norm:0.259765625 
+Step 349 | loss:0.5939800143241882 lr:9.981380668458686e-05 tokens_per_second_per_gpu:2410.16259765625 peak_memory_active:74.59726142883301 peak_memory_alloc:74.59726142883301 peak_memory_reserved:77.58984375 grad_norm:0.267578125 
+Step 350 | loss:0.5481257438659668 lr:9.980995030470695e-05 tokens_per_second_per_gpu:2131.32080078125 peak_memory_active:74.66604804992676 peak_memory_alloc:74.66604804992676 peak_memory_reserved:77.62109375 grad_norm:0.294921875 
+Step 351 | ff_loss:0.6936448812484741 ff_step:1 
+Step 352 | ff_loss:0.6936613917350769 ff_step:2 
+Step 352 | loss:0.6993921399116516 lr:9.980605447306412e-05 tokens_per_second_per_gpu:1189.9189453125 peak_memory_active:74.73483467102051 peak_memory_alloc:74.73483467102051 peak_memory_reserved:77.71484375 grad_norm:0.29296875 
+Step 353 | loss:0.6220744252204895 lr:9.980211919274407e-05 tokens_per_second_per_gpu:2500.319580078125 peak_memory_active:74.73483467102051 peak_memory_alloc:74.73483467102051 peak_memory_reserved:77.71484375 grad_norm:0.244140625 
+Step 354 | loss:0.6305238604545593 lr:9.979814446686373e-05 tokens_per_second_per_gpu:2563.294921875 peak_memory_active:74.73483467102051 peak_memory_alloc:74.73483467102051 peak_memory_reserved:77.71484375 grad_norm:0.283203125 
+Step 355 | loss:0.5972638130187988 lr:9.979413029857125e-05 tokens_per_second_per_gpu:2416.837890625 peak_memory_active:74.73483467102051 peak_memory_alloc:74.73483467102051 peak_memory_reserved:77.71484375 grad_norm:0.27734375 
+Step 356 | loss:0.5261049270629883 lr:9.979007669104604e-05 tokens_per_second_per_gpu:2538.51611328125 peak_memory_active:74.73483467102051 peak_memory_alloc:74.73483467102051 peak_memory_reserved:77.71484375 grad_norm:0.26953125 
+Step 357 | loss:0.5977409482002258 lr:9.978598364749875e-05 tokens_per_second_per_gpu:2512.409912109375 peak_memory_active:74.80362129211426 peak_memory_alloc:74.80362129211426 peak_memory_reserved:77.76171875 grad_norm:0.265625 
+Step 358 | ff_loss:0.6910499930381775 ff_step:1 
+Step 359 | ff_loss:0.6906675696372986 ff_step:2 
+Step 360 | ff_loss:0.6904065012931824 ff_step:3 
+Step 361 | ff_loss:0.690210223197937 ff_step:4 
+Step 362 | ff_loss:0.6898894309997559 ff_step:5 
+Step 363 | ff_loss:0.6896412372589111 ff_step:6 
+Step 364 | ff_loss:0.689759373664856 ff_step:7 
+Step 364 | loss:0.6279919147491455 lr:9.978185117117125e-05 tokens_per_second_per_gpu:670.4337158203125 peak_memory_active:74.87240791320801 peak_memory_alloc:74.87240791320801 peak_memory_reserved:77.873046875 grad_norm:0.373046875 
+Step 365 | loss:0.6043627262115479 lr:9.977767926533665e-05 tokens_per_second_per_gpu:2475.464599609375 peak_memory_active:74.87240791320801 peak_memory_alloc:74.87240791320801 peak_memory_reserved:77.873046875 grad_norm:0.3515625 
+Step 366 | loss:0.7261410355567932 lr:9.977346793329931e-05 tokens_per_second_per_gpu:2335.454833984375 peak_memory_active:74.87240791320801 peak_memory_alloc:74.87240791320801 peak_memory_reserved:77.873046875 grad_norm:0.359375 
+Step 367 | loss:0.617834746837616 lr:9.976921717839476e-05 tokens_per_second_per_gpu:2148.513427734375 peak_memory_active:74.87240791320801 peak_memory_alloc:74.87240791320801 peak_memory_reserved:77.873046875 grad_norm:0.30859375 
+Step 368 | loss:0.6069312691688538 lr:9.976492700398982e-05 tokens_per_second_per_gpu:2658.75 peak_memory_active:74.87240791320801 peak_memory_alloc:74.87240791320801 peak_memory_reserved:77.873046875 grad_norm:0.38671875 
+Step 369 | loss:0.6218041181564331 lr:9.976059741348251e-05 tokens_per_second_per_gpu:1984.2415771484375 peak_memory_active:74.94119453430176 peak_memory_alloc:74.94119453430176 peak_memory_reserved:77.904296875 grad_norm:0.431640625 
+Step 370 | ff_loss:0.692916750907898 ff_step:1 
+Step 371 | ff_loss:0.6925475597381592 ff_step:2 
+Step 372 | ff_loss:0.6926193237304688 ff_step:3 
+Step 372 | loss:0.6487094759941101 lr:9.975622841030205e-05 tokens_per_second_per_gpu:977.270263671875 peak_memory_active:75.00998115539551 peak_memory_alloc:75.00998115539551 peak_memory_reserved:78.013671875 grad_norm:0.287109375 
+Step 373 | loss:0.5720613598823547 lr:9.975181999790888e-05 tokens_per_second_per_gpu:2823.447265625 peak_memory_active:75.00998115539551 peak_memory_alloc:75.00998115539551 peak_memory_reserved:78.013671875 grad_norm:0.2353515625 
+Step 374 | loss:0.7210147380828857 lr:9.974737217979468e-05 tokens_per_second_per_gpu:2476.205078125 peak_memory_active:75.00998115539551 peak_memory_alloc:75.00998115539551 peak_memory_reserved:78.013671875 grad_norm:0.306640625 
+Step 375 | loss:0.6271094083786011 lr:9.974288495948234e-05 tokens_per_second_per_gpu:2235.654296875 peak_memory_active:75.00998115539551 peak_memory_alloc:75.00998115539551 peak_memory_reserved:78.013671875 grad_norm:0.2890625 
+Step 376 | loss:0.6020547151565552 lr:9.973835834052591e-05 tokens_per_second_per_gpu:2175.88623046875 peak_memory_active:75.00998115539551 peak_memory_alloc:75.00998115539551 peak_memory_reserved:78.013671875 grad_norm:0.26171875 
+Step 377 | loss:0.6388039588928223 lr:9.973379232651072e-05 tokens_per_second_per_gpu:2162.477294921875 peak_memory_active:75.07876777648926 peak_memory_alloc:75.07876777648926 peak_memory_reserved:78.044921875 grad_norm:0.28125 
+Step 378 | ff_loss:0.6916710734367371 ff_step:1 
+Step 379 | ff_loss:0.6916279196739197 ff_step:2 
+Step 380 | ff_loss:0.6919199228286743 ff_step:3 
+Step 380 | loss:0.7132810354232788 lr:9.972918692105321e-05 tokens_per_second_per_gpu:1028.114501953125 peak_memory_active:75.14755439758301 peak_memory_alloc:75.14755439758301 peak_memory_reserved:78.154296875 grad_norm:0.30859375 
+Step 381 | loss:0.6393571496009827 lr:9.972454212780113e-05 tokens_per_second_per_gpu:2295.0380859375 peak_memory_active:75.14755439758301 peak_memory_alloc:75.14755439758301 peak_memory_reserved:78.154296875 grad_norm:0.30859375 
+Step 382 | loss:0.6375258564949036 lr:9.971985795043334e-05 tokens_per_second_per_gpu:2218.475830078125 peak_memory_active:75.14755439758301 peak_memory_alloc:75.14755439758301 peak_memory_reserved:78.154296875 grad_norm:0.294921875 
+Step 383 | loss:0.5847649574279785 lr:9.971513439265991e-05 tokens_per_second_per_gpu:2374.71044921875 peak_memory_active:75.14755439758301 peak_memory_alloc:75.14755439758301 peak_memory_reserved:78.154296875 grad_norm:0.26171875 
+Step 384 | loss:0.5493154525756836 lr:9.971037145822212e-05 tokens_per_second_per_gpu:1909.7813720703125 peak_memory_active:75.14755439758301 peak_memory_alloc:75.14755439758301 peak_memory_reserved:78.154296875 grad_norm:0.33203125 
+Step 385 | loss:0.5755928158760071 lr:9.970556915089247e-05 tokens_per_second_per_gpu:2323.096435546875 peak_memory_active:75.21634101867676 peak_memory_alloc:75.21634101867676 peak_memory_reserved:78.185546875 grad_norm:0.28515625 
+Step 386 | ff_loss:0.6912915706634521 ff_step:1 
+Step 387 | ff_loss:0.6910686492919922 ff_step:2 
+Step 388 | ff_loss:0.691036581993103 ff_step:3 
+Step 389 | ff_loss:0.6909899115562439 ff_step:4 
+Step 390 | ff_loss:0.69115149974823 ff_step:5 
+Step 390 | loss:0.6647969484329224 lr:9.970072747447456e-05 tokens_per_second_per_gpu:764.0007934570312 peak_memory_active:75.28512763977051 peak_memory_alloc:75.28512763977051 peak_memory_reserved:78.294921875 grad_norm:0.34375 
+Step 391 | loss:0.6163883209228516 lr:9.969584643280326e-05 tokens_per_second_per_gpu:2299.948486328125 peak_memory_active:75.28512763977051 peak_memory_alloc:75.28512763977051 peak_memory_reserved:78.294921875 grad_norm:0.306640625 
+Step 392 | loss:0.7115046381950378 lr:9.969092602974452e-05 tokens_per_second_per_gpu:2337.878173828125 peak_memory_active:75.28512763977051 peak_memory_alloc:75.28512763977051 peak_memory_reserved:78.294921875 grad_norm:0.314453125 
+Step 393 | loss:0.6045157313346863 lr:9.968596626919559e-05 tokens_per_second_per_gpu:2553.334228515625 peak_memory_active:75.28512763977051 peak_memory_alloc:75.28512763977051 peak_memory_reserved:78.294921875 grad_norm:0.271484375 
+Step 394 | loss:0.5549370050430298 lr:9.968096715508479e-05 tokens_per_second_per_gpu:2340.48095703125 peak_memory_active:75.28512763977051 peak_memory_alloc:75.28512763977051 peak_memory_reserved:78.294921875 grad_norm:0.298828125 
+Step 395 | loss:0.6519496440887451 lr:9.967592869137164e-05 tokens_per_second_per_gpu:2575.9775390625 peak_memory_active:75.35391426086426 peak_memory_alloc:75.35391426086426 peak_memory_reserved:78.326171875 grad_norm:0.271484375 
+Step 396 | ff_loss:0.6921005249023438 ff_step:1 
+Step 397 | ff_loss:0.6922974586486816 ff_step:2 
+Step 397 | loss:0.6554033756256104 lr:9.967085088204687e-05 tokens_per_second_per_gpu:1281.3409423828125 peak_memory_active:75.42270088195801 peak_memory_alloc:75.42270088195801 peak_memory_reserved:78.396484375 grad_norm:0.306640625 
+Step 398 | loss:0.6460171341896057 lr:9.96657337311323e-05 tokens_per_second_per_gpu:2556.665771484375 peak_memory_active:75.42270088195801 peak_memory_alloc:75.42270088195801 peak_memory_reserved:78.396484375 grad_norm:0.345703125 
+Step 399 | loss:0.5795376300811768 lr:9.966057724268099e-05 tokens_per_second_per_gpu:2401.092529296875 peak_memory_active:75.42270088195801 peak_memory_alloc:75.42270088195801 peak_memory_reserved:78.396484375 grad_norm:0.267578125 
+Step 400 | loss:0.5753675699234009 lr:9.965538142077708e-05 tokens_per_second_per_gpu:2602.466064453125 peak_memory_active:75.42270088195801 peak_memory_alloc:75.42270088195801 peak_memory_reserved:78.396484375 grad_norm:0.251953125 
+Step 401 | loss:0.6620498299598694 lr:9.965014626953591e-05 tokens_per_second_per_gpu:2475.1806640625 peak_memory_active:75.42270088195801 peak_memory_alloc:75.42270088195801 peak_memory_reserved:78.396484375 grad_norm:0.27734375 
+Step 402 | loss:0.5981859564781189 lr:9.964487179310396e-05 tokens_per_second_per_gpu:2066.50146484375 peak_memory_active:75.49148750305176 peak_memory_alloc:75.49148750305176 peak_memory_reserved:78.466796875 grad_norm:0.302734375 
+Step 403 | ff_loss:0.6885194778442383 ff_step:1 
+Step 404 | ff_loss:0.6886957883834839 ff_step:2 
+Step 404 | loss:0.651879608631134 lr:9.963955799565885e-05 tokens_per_second_per_gpu:1336.6649169921875 peak_memory_active:75.56613349914551 peak_memory_alloc:75.56613349914551 peak_memory_reserved:78.47265625 grad_norm:0.275390625 
+Step 405 | loss:0.6832034587860107 lr:9.963420488140938e-05 tokens_per_second_per_gpu:2311.23876953125 peak_memory_active:75.56613349914551 peak_memory_alloc:75.56613349914551 peak_memory_reserved:78.126953125 grad_norm:0.306640625 
+Step 406 | loss:0.5244461297988892 lr:9.962881245459541e-05 tokens_per_second_per_gpu:2462.740966796875 peak_memory_active:75.56613349914551 peak_memory_alloc:75.56613349914551 peak_memory_reserved:78.126953125 grad_norm:0.25390625 
+Step 407 | loss:0.5866362452507019 lr:9.962338071948803e-05 tokens_per_second_per_gpu:2385.998779296875 peak_memory_active:75.56613349914551 peak_memory_alloc:75.56613349914551 peak_memory_reserved:78.126953125 grad_norm:0.275390625 
+Step 408 | loss:0.580016016960144 lr:9.961790968038943e-05 tokens_per_second_per_gpu:2745.903564453125 peak_memory_active:75.56613349914551 peak_memory_alloc:75.56613349914551 peak_memory_reserved:78.126953125 grad_norm:0.26953125 
+Step 409 | loss:0.6540305614471436 lr:9.961239934163289e-05 tokens_per_second_per_gpu:2189.108642578125 peak_memory_active:75.63492012023926 peak_memory_alloc:75.63492012023926 peak_memory_reserved:78.197265625 grad_norm:0.291015625 
+Step 410 | ff_loss:0.6896601915359497 ff_step:1 
+Step 411 | ff_loss:0.6900938749313354 ff_step:2 
+Step 411 | loss:0.6089835166931152 lr:9.960684970758285e-05 tokens_per_second_per_gpu:1380.2373046875 peak_memory_active:75.70370674133301 peak_memory_alloc:75.70370674133301 peak_memory_reserved:78.267578125 grad_norm:0.302734375 
+Step 412 | loss:0.595475971698761 lr:9.960126078263492e-05 tokens_per_second_per_gpu:2239.3828125 peak_memory_active:75.70370674133301 peak_memory_alloc:75.70370674133301 peak_memory_reserved:78.267578125 grad_norm:0.294921875 
+Step 413 | loss:0.6432861685752869 lr:9.959563257121573e-05 tokens_per_second_per_gpu:2069.270751953125 peak_memory_active:75.70370674133301 peak_memory_alloc:75.70370674133301 peak_memory_reserved:78.267578125 grad_norm:0.31640625 
+Step 414 | loss:0.592351496219635 lr:9.958996507778313e-05 tokens_per_second_per_gpu:2481.589599609375 peak_memory_active:75.70370674133301 peak_memory_alloc:75.70370674133301 peak_memory_reserved:78.267578125 grad_norm:0.27734375 
+Step 415 | loss:0.5925545692443848 lr:9.958425830682599e-05 tokens_per_second_per_gpu:2516.0654296875 peak_memory_active:75.70370674133301 peak_memory_alloc:75.70370674133301 peak_memory_reserved:78.267578125 grad_norm:0.279296875 
+Step 416 | loss:0.6141154766082764 lr:9.957851226286437e-05 tokens_per_second_per_gpu:2414.83203125 peak_memory_active:75.77249336242676 peak_memory_alloc:75.77249336242676 peak_memory_reserved:78.337890625 grad_norm:0.2734375 
+Step 417 | ff_loss:0.6872865557670593 ff_step:1 
+Step 418 | ff_loss:0.6874791979789734 ff_step:2 
+Step 418 | loss:0.5885050892829895 lr:9.957272695044938e-05 tokens_per_second_per_gpu:1305.192626953125 peak_memory_active:75.84127998352051 peak_memory_alloc:75.84127998352051 peak_memory_reserved:78.408203125 grad_norm:0.271484375 
+Step 419 | loss:0.582350492477417 lr:9.956690237416327e-05 tokens_per_second_per_gpu:2516.047607421875 peak_memory_active:75.84127998352051 peak_memory_alloc:75.84127998352051 peak_memory_reserved:78.408203125 grad_norm:0.2734375 
+Step 420 | loss:0.60268634557724 lr:9.956103853861934e-05 tokens_per_second_per_gpu:2590.745849609375 peak_memory_active:75.84127998352051 peak_memory_alloc:75.84127998352051 peak_memory_reserved:78.408203125 grad_norm:0.2578125 
+Step 421 | loss:0.6172526478767395 lr:9.955513544846205e-05 tokens_per_second_per_gpu:2297.776611328125 peak_memory_active:75.84127998352051 peak_memory_alloc:75.84127998352051 peak_memory_reserved:78.408203125 grad_norm:0.2890625 
+Step 422 | loss:0.6945915818214417 lr:9.954919310836688e-05 tokens_per_second_per_gpu:2602.287109375 peak_memory_active:75.84127998352051 peak_memory_alloc:75.84127998352051 peak_memory_reserved:78.408203125 grad_norm:0.298828125 

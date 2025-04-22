@@ -15,11 +15,15 @@
 #
 # This config works only for training on single device.
 
-output_dir: ./torchtune/qwen2_5_0_5b/debug_lora_single_device # /tmp may be deleted by your system. Change it to your preference.
+output_dir: ./torchtune/qwen2_5_0_5b/debug_prop_single_device # /tmp may be deleted by your system. Change it to your preference.
+
+do_lora: False
+do_prop: True
 
 # Model Arguments
 model:
-  _component_: torchtune.models.qwen2_5.lora_qwen2_5_0_5b
+  # TO CHANGE WHETHER DOING LORA+PROP OR JUST PROP, CHANGE THE BASE MODEL HERE
+  _component_: tuning.custom_qwen.qwen2_5.propulsion_qwen2_5_0_5b
 
   # other options are [k_proj, output_proj]
   lora_attn_modules: ['q_proj', 'v_proj', 'output_proj']
@@ -36,17 +40,22 @@ model:
   lora_alpha: 4 # usually alpha=2*rank
   lora_dropout: 0.0
 
+  prop_attn_modules: ['q_proj', 'v_proj', 'k_proj', 'output_proj']
+  apply_prop_to_mlp: True
+  apply_prop_to_output: False
+  prop_degree: 10
+
 tokenizer:
   _component_: torchtune.models.qwen2_5.qwen2_5_tokenizer
   path: /tmp/Qwen2_5-0_5B-Base/vocab.json
   merges_file: /tmp/Qwen2_5-0_5B-Base/merges.txt
   max_seq_len: 4096
 
-upload_final_checkpoint: False
+upload_checkpoints: False
 upload_repo_name: null
 
 checkpointer:
-  _component_: torchtune.training.FullModelHFCheckpointer
+  _component_: tuning.custom_qwen.qwen2_5.CustomFullModelHFCheckpointer
   checkpoint_dir: /tmp/Qwen2_5-0_5B-Base
   checkpoint_files: [model.safetensors]
   recipe_checkpoint: null
@@ -66,8 +75,8 @@ dataset:
   # source, column, split, add_eos etc are arguments to the builder function
   source: google/code_x_glue_cc_code_completion_token
   column: code
-  split: train[:1]
-  verbose: True # Enable verbose logging in the dataset
+  split: train[:5]
+  verbose: False # Enable verbose logging in the dataset
   packed: True # VERY IMPORTANT - Uncommented to ensure proper packing is used
 
 make_fim:
@@ -75,9 +84,25 @@ make_fim:
   fim_prob: 1.0 # prob a single sample is converted to FIM
   min_fim_middle_percent: 0.01 # min length of middle portion as percent of total length
   max_fim_middle_percent: 0.1 # max length of middle portion as percent of total length
-  verbose: True # whether to include debug output about the FIM-transformation process
+  verbose: False # whether to include debug output about the FIM-transformation process
 
-seed: null
+fast_forward:
+  do_ff: False # whether to do FF
+  evaluate_every: 4 # How many GD steps between FF runs
+  num_stabilization_steps: 10 # how many initial GD steps to take in epoch 0 before starting any FF runs
+  verbose: True # whether to include debug output about the FF process
+
+  # TODO - CHANGE THIS TO BE A 'REAL' VALIDATION SET
+  # ff_collate_fn: None
+  ff_dataset:
+    _component_: tuning.custom_datasets.codexglue.text_completion_dataset
+    source: google/code_x_glue_cc_code_completion_token
+    column: code
+    split: test[:32]
+    verbose: False # Enable verbose logging in the dataset
+    packed: True # VERY IMPORTANT - Uncommented to ensure proper packing is used
+
+seed: 15122
 shuffle: True
 batch_size: 1
 
@@ -86,7 +111,7 @@ optimizer:
   _component_: torch.optim.AdamW
   fused: True
   weight_decay: 0.01
-  lr: 2e-3
+  lr: 2e-3 # higher than LoRA, could use more tuning
 
 lr_scheduler:
   _component_: torchtune.training.lr_schedulers.get_cosine_schedule_with_warmup
@@ -96,7 +121,7 @@ loss:
   _component_: torchtune.modules.loss.CEWithChunkedOutputLoss
 
 # Training
-epochs: 1
+epochs: 5
 max_steps_per_epoch: null
 gradient_accumulation_steps: 1 # Use to increase effective batch size
 clip_grad_norm: null

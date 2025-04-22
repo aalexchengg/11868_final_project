@@ -180,6 +180,7 @@ class TextCompletionDataset(Dataset):
                     f"Sample {index}: Final Tokens ({len(final_tokens)}):\n{decoded_final_tokens}"
                 )
 
+                # -100 is the default ignore index of CEWithChunkedOutputLoss
                 target_tokens_from_labels = [
                     t for t, l in zip(final_tokens, final_labels) if l != -100
                 ]

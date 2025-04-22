@@ -108,7 +108,6 @@ def tokenize_and_align(tokenizer):
 def get_dataset(args, tokenizer, token_mapping):
     # load from huggingface
     ds = load_dataset(args.dataset, split = 'train', streaming = False)
-    ds = ds.select(list(range(4000)))
     # first we need to tokenize
     ds = ds.map(tokenize_and_align(tokenizer), batched = True)
     # then we need to generate labels with fim
@@ -124,6 +123,7 @@ def compute_metrics(eval_preds):
     labels = labels[:, 1:].reshape(-1)
     preds = preds[:, :-1].reshape(-1)
     return metric.compute(predictions=preds, references=labels)
+
 
 
 def top_k(predictions, labels, p):
@@ -160,7 +160,6 @@ def main(args):
     model.resize_token_embeddings(len(tokenizer))
 
     dataset = get_dataset(args, tokenizer, token_mapping)
-
     # step one: train the small model with our dataset
     training_args = TrainingArguments(
         output_dir="yelp_review_classifier",
@@ -190,6 +189,7 @@ def main(args):
 
     variance_subset = dataset.select(variance_idx)
     variance_subset.push_to_hub(f"aalexchengg/{dataset_name}_variance_subset")
+    # step four: push the new dataset to the hub
 
     print("All finished.")
 
