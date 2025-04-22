@@ -30,7 +30,6 @@ def stack_format_fn(examples):
         sources.append(f"stack_{examples['hexsha'][i]}")
     result = {"id": ids, "code": texts, "language": languages, "source": sources}
     return result
-<<<<<<< HEAD
 
 
 def csn_format_fn(examples):
@@ -45,5 +44,3 @@ def csn_format_fn(examples):
         sources.append(f"csn_{examples['sha'][i]}")
     result = {"id": ids, "code": texts, "language": languages, "source": sources}
     return result
-=======
->>>>>>> d1b4bb9 (created iterable dataset for stack, github code)
