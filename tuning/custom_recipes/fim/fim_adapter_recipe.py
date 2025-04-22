@@ -383,9 +383,11 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
         )
 
         # enables FF in training loop
+        self.ff_val_loss_every_iter = cfg.get(
+            "fast_forward.ff_val_loss_every_iter", False
+        )
         if self.do_ff:
             self.ff_verbose = cfg.fast_forward.verbose
-            self.ff_val_loss_every_iter = cfg.fast_forward.ff_val_loss_every_iter
             self.evaluate_every = cfg.fast_forward.evaluate_every
             self.num_stabilization_steps = cfg.fast_forward.num_stabilization_steps
             self.ff_dataset = cfg.fast_forward.ff_dataset
