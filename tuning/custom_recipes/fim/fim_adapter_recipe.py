@@ -805,7 +805,7 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
         # Ensure model is in eval mode and restore original mode afterwards
         original_mode = self._model.training
         self._model.eval()
-        log.debug(f"Starting evaluation on dataloader...")
+        # log.debug(f"Starting evaluation on dataloader...")
         total_loss = 0.0
         total_batches = 0
         try:
@@ -844,7 +844,7 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
         finally:
             # Ensure model is set back to original mode even if errors occur
             self._model.train(original_mode)
-            log.debug(f"Finished evaluation. Model mode restored to {original_mode}.")
+            # log.debug(f"Finished evaluation. Model mode restored to {original_mode}.")
 
         if total_batches == 0:
             log.warning("Evaluation dataloader was empty. Returning NaN.")
