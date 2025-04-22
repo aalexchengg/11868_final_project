@@ -132,7 +132,7 @@ compile: True # Changed to False for initial debugging - prevents potential issu
 # Logging
 metric_logger:
   _component_: torchtune.training.metric_logging.DiskLogger
-  log_dir: ./logs/qwen2_5_0_5b/ff_gd_steps_4_try1/
+  log_dir: ./logs/qwen2_5_0_5b/ff_gd_steps_4_try2/
 log_every_n_steps: 1
 log_peak_memory_stats: True
 
