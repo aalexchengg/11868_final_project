@@ -2,6 +2,7 @@ from datasets import load_dataset
 import datasets
 import argparse
 from transformers import Trainer, TrainingArguments, AutoModelForCausalLM, AutoTokenizer
+
 # fim imports
 from typing import Optional, Dict, List
 import random
@@ -10,25 +11,26 @@ import evaluate
 
 logger = logging.getLogger(__name__)
 
+
 def setup_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-model', type = str,
-                        default = 'google-bert/bert-base-uncased',
-                        help = "Model to do dataset cartography with")
-    parser.add_argument('-dataset', type = str,
-                        default = 'Nan-Do/code-search-net-python')
-    parser.add_argument('-min_fim', type = float,
-                        default = 0.1)
-    parser.add_argument('-max_fim', type = float,
-                        default = 0.3)
-    parser.add_argument('-p', type = float,
-                        default = 0.6)
+    parser.add_argument(
+        "-model",
+        type=str,
+        default="google-bert/bert-base-uncased",
+        help="Model to do dataset cartography with",
+    )
+    parser.add_argument("-dataset", type=str, default="Nan-Do/code-search-net-python")
+    parser.add_argument("-min_fim", type=float, default=0.1)
+    parser.add_argument("-max_fim", type=float, default=0.3)
+    parser.add_argument("-p", type=float, default=0.6)
     return parser
+
 
 def fim_wrapper(args, token_mapping):
     def transform_to_fim(example) -> Optional[Dict[str, List[int]]]:
         """Attempts to transform a token sequence into FIM format."""
-        tokens = example['input_ids']
+        tokens = example["input_ids"]
         try:
             # Content length excludes BOS/EOS for span calculation
             content_start_offset = 1
@@ -45,9 +47,7 @@ def fim_wrapper(args, token_mapping):
 
             # Calculate middle span length based on percentages of content_len
             min_middle_len = max(1, int(content_len * args.min_fim))
-            max_middle_len = max(
-                min_middle_len, int(content_len * args.max_fim)
-            )
+            max_middle_len = max(min_middle_len, int(content_len * args.max_fim))
             # Ensure max_middle leaves at least 1 token for prefix and 1 for suffix
             max_middle_len = min(max_middle_len, content_len - 2)
 
@@ -77,39 +77,50 @@ def fim_wrapper(args, token_mapping):
             # Construct FIM input and target sequences
             # Input: <prefix> PREFIX <suffix> SUFFIX <middle>
             fim_input = (
-                [token_mapping['[FIM_START]']]
+                [token_mapping["[FIM_START]"]]
                 + prefix_tokens
-                + [token_mapping['[FIM_END]']]
+                + [token_mapping["[FIM_END]"]]
                 + suffix_tokens
-                + [token_mapping['[FIM_MID]']]
+                + [token_mapping["[FIM_MID]"]]
             )
 
             # Target: MIDDLE <eos>
-            fim_target = middle_tokens + [token_mapping['[EOS]']]
+            fim_target = middle_tokens + [token_mapping["[EOS]"]]
 
             # Final sequence for model input (PSM format for generation)
             final_tokens = fim_input + fim_target
             # Labels for loss calculation (Mask input, keep target)
             final_labels = [-100] * len(fim_input) + fim_target
 
-            return {"input_ids": final_tokens, "labels": final_labels, "token_type_ids": [0]*len(final_tokens), "attention_mask": [1]*len(final_tokens)}
+            return {
+                "input_ids": final_tokens,
+                "labels": final_labels,
+                "token_type_ids": [0] * len(final_tokens),
+                "attention_mask": [1] * len(final_tokens),
+            }
 
         except Exception as e:
             logging.warning(f"Error during FIM transformation logic: {e}")
             return None  # Fallback on any error within transformation
+
     return transform_to_fim
+
 
 def tokenize_and_align(tokenizer):
     def inner_lambda(examples):
-        return tokenizer(examples["code"], padding='max_length', max_length = 500, truncation=True)
+        return tokenizer(
+            examples["code"], padding="max_length", max_length=500, truncation=True
+        )
+
     return inner_lambda
+
 
 def get_dataset(args, tokenizer, token_mapping):
     # load from huggingface
-    ds = load_dataset(args.dataset, split = 'train', streaming = False)
+    ds = load_dataset(args.dataset, split="train", streaming=False)
     ds = ds.select(list(range(100)))
     # first we need to tokenize
-    ds = ds.map(tokenize_and_align(tokenizer), batched = True)
+    ds = ds.map(tokenize_and_align(tokenizer), batched=True)
     # then we need to generate labels with fim
     ds = ds.map(fim_wrapper(args, token_mapping))
     return ds
@@ -125,24 +136,25 @@ def compute_metrics(eval_preds):
     return metric.compute(predictions=preds, references=labels)
 
 
-def top_k(eval_preds): 
+def top_k(eval_preds):
     print(eval_preds.shape)
-    eval_predictions = np.argmax(eval_preds.predictions, axis = 2)
+    eval_predictions = np.argmax(eval_preds.predictions, axis=2)
     raise AssertionError("stop here")
+
 
 def main(args):
     # step zero: load in model, tokenizer, dataset
-    if args.model == 'google-bert/bert-base-uncased':
-        model = AutoModelForCausalLM.from_pretrained(args.model, is_decoder = True)
+    if args.model == "google-bert/bert-base-uncased":
+        model = AutoModelForCausalLM.from_pretrained(args.model, is_decoder=True)
     else:
         model = AutoModelForCausalLM.from_pretrained(args.model)
 
     tokenizer = AutoTokenizer.from_pretrained(args.model)
     # add special tokens
     n = len(tokenizer)
-    tokens_added = ["[FIM_START]", "[FIM_MID]", "[FIM_END]", '[BOS]', '[EOS]']
-    num_added_toks = tokenizer.add_tokens(tokens_added, special_tokens = True)
-    assert(num_added_toks == 5)
+    tokens_added = ["[FIM_START]", "[FIM_MID]", "[FIM_END]", "[BOS]", "[EOS]"]
+    num_added_toks = tokenizer.add_tokens(tokens_added, special_tokens=True)
+    assert num_added_toks == 5
     token_mapping = {token: n + i for i, token in enumerate(tokens_added)}
     model.resize_token_embeddings(len(tokenizer))
 
@@ -151,15 +163,15 @@ def main(args):
     training_args = TrainingArguments(
         output_dir="yelp_review_classifier",
         push_to_hub=False,
-        eval_strategy= "no",
-        per_device_eval_batch_size = 32
+        eval_strategy="no",
+        per_device_eval_batch_size=32,
     )
     trainer = Trainer(
-    model=model,
-    args=training_args,
-    train_dataset=dataset,
-    eval_dataset = None,
-    compute_metrics = compute_metrics,
+        model=model,
+        args=training_args,
+        train_dataset=dataset,
+        eval_dataset=None,
+        compute_metrics=compute_metrics,
     )
     trainer.train()
     # step two: run predictions and get the probability of the tokens
