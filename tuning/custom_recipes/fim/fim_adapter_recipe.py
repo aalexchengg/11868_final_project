@@ -383,21 +383,19 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
         )
 
         # enables FF in training loop
-        self.ff_val_loss_every_iter = cfg.get(
-            "fast_forward.ff_val_loss_every_iter", False
+        # if self.do_ff:
+        self.ff_val_loss_every_iter = cfg.fast_forward.ff_val_loss_every_iter
+        self.ff_verbose = cfg.fast_forward.verbose
+        self.evaluate_every = cfg.fast_forward.evaluate_every
+        self.num_stabilization_steps = cfg.fast_forward.num_stabilization_steps
+        self.ff_dataset = cfg.fast_forward.ff_dataset
+        self.ff_dataloader = self._setup_data(
+            cfg_dataset=self.ff_dataset,
+            shuffle=False,
+            batch_size=cfg.batch_size,
+            collate_fn=self.ff_collate_fn,
+            cfg_fim=None,
         )
-        if self.do_ff:
-            self.ff_verbose = cfg.fast_forward.verbose
-            self.evaluate_every = cfg.fast_forward.evaluate_every
-            self.num_stabilization_steps = cfg.fast_forward.num_stabilization_steps
-            self.ff_dataset = cfg.fast_forward.ff_dataset
-            self.ff_dataloader = self._setup_data(
-                cfg_dataset=self.ff_dataset,
-                shuffle=False,
-                batch_size=cfg.batch_size,
-                collate_fn=self.ff_collate_fn,
-                cfg_fim=None,
-            )
 
         # right after you build model & optimizer, before your first step:
         # opt_list = self._optimizer.param_groups[0]["params"]
