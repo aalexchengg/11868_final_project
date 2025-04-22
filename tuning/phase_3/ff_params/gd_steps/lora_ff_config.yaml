@@ -56,7 +56,7 @@ upload_checkpoints: True
 upload_repo_name: 'qwen2-0.5b-lora-ff-gd-steps-6'
 
 checkpointer:
-  _component_: torchtune.training.FullModelHFCheckpointer
+  _component_: tuning.custom_qwen.qwen2_5.CustomFullModelHFCheckpointer
   checkpoint_dir: /local/Qwen2_5-0_5B-Base
   checkpoint_files: [model.safetensors]
   recipe_checkpoint: null
@@ -105,7 +105,7 @@ fast_forward:
 
 seed: 15122
 shuffle: True
-batch_size: 10
+batch_size: 8
 
 # Optimizer and Scheduler
 optimizer:

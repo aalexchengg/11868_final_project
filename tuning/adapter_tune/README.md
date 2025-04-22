@@ -12,6 +12,7 @@ See [debug_lora_config.yaml](debug_lora_config.yaml) for an example of setting u
   - This changes whether the base model architecture supports just LoRA, just Propulsion, or both - if doing just LoRA we can use the model directly form `torchtune`
 - `lora_attn_modules`, `apply_lora_to_mlp`, `apply_lora_to_output`
   - Which layers get lora projection matrices added
+- `_component_: tuning.custom_qwen.qwen2_5.CustomFullModelHFCheckpointer`
 
 Everything else is pretty self-explanatory and doesn't differ from the default config
 

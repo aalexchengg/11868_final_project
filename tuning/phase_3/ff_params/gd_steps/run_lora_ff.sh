@@ -1,6 +1,8 @@
 #!/bin/bash
 
-export PYTHONPATH=$PYTHONPATH:../..
+export PYTHONPATH=$PYTHONPATH:../../../..
+
+CONFIG_OPTION=$1
 
 # download base model
 tune download Qwen/Qwen2.5-0.5B --output-dir /local/Qwen2_5-0_5B-Base
