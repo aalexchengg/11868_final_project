@@ -38,7 +38,13 @@ dataset:
   add_eos: True
   split: train[:100%]
   packed: True # VERY IMPORTANT
-  fim_prob: 1.0
+
+make_fim:
+  convert_to_fim: True # whether to convert dataset to FIM
+  fim_prob: 1.0 # prob a single sample is converted to FIM
+  min_fim_middle_percent: 0.01 # min length of middle portion as percent of total length
+  max_fim_middle_percent: 0.1 # max length of middle portion as percent of total length
+  verbose: False # whether to include debug output about the FIM-transformation process
 
 seed: 15122
 shuffle: True
