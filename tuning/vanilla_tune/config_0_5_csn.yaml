@@ -31,7 +31,7 @@ resume_from_checkpoint: False
 
 dataset:
   # Use the custom builder function from the modified file
-  _component_: custom_datasets.codesearchnet.text_completion_dataset
+  _component_: tuning.custom_datasets.codesearchnet.text_completion_dataset
   # source, column, split, add_eos etc are arguments to the builder function
   sourcse: [
         "Nan-Do/code-search-net-python",
