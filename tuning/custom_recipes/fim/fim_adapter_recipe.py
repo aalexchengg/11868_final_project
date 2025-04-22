@@ -385,6 +385,7 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
         # enables FF in training loop
         if self.do_ff:
             self.ff_verbose = cfg.fast_forward.verbose
+            self.ff_val_loss_every_iter = cfg.fast_forward.ff_val_loss_every_iter
             self.evaluate_every = cfg.fast_forward.evaluate_every
             self.num_stabilization_steps = cfg.fast_forward.num_stabilization_steps
             self.ff_dataset = cfg.fast_forward.ff_dataset
@@ -799,39 +800,58 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
 
         return loss
 
-    def evaluate_ff(self):
-        with torch.no_grad():
-            self._model.eval()
-            losses = []
-            for step, batch in enumerate(self.ff_dataloader):
-                utils.batch_to_device(batch, self._device)
-                labels = batch.pop("labels")
-                logits = self._model(**batch)
+    def _evaluate_loss_on_dataloader(self, dataloader: StatefulDataLoader) -> float:
+        """Evaluates the model loss on the provided dataloader."""
+        # Ensure model is in eval mode and restore original mode afterwards
+        original_mode = self._model.training
+        self._model.eval()
+        log.debug(f"Starting evaluation on dataloader...")
+        total_loss = 0.0
+        total_batches = 0
+        try:
+            with torch.no_grad():
+                for step, batch in enumerate(dataloader):
+                    utils.batch_to_device(batch, self._device)
+                    labels = batch.pop("labels")
 
-                # Create ignore tensor dynamically based on current batch size
-                current_batch_size = labels.shape[0]
-                ignore_tensor = torch.full(
-                    (current_batch_size, 1),
-                    self._loss_fn.ignore_index,
-                    device=self._device,
-                )
-                labels = torch.hstack((labels[..., 1:], ignore_tensor))
+                    logits = self._model(**batch)
 
-                if not isinstance(logits, list):
-                    labels = labels.reshape(-1)
-                    logits = logits.reshape(-1, logits.size(-1))
+                    # Create ignore tensor dynamically based on current batch size
+                    current_batch_size = labels.shape[0]
+                    ignore_tensor = torch.full(
+                        (current_batch_size, 1),
+                        self._loss_fn.ignore_index,
+                        device=self._device,
+                    )
+                    # Shift labels
+                    labels = torch.hstack((labels[..., 1:], ignore_tensor))
 
-                loss = self._loss_fn(logits, labels)
+                    if not isinstance(logits, list):
+                        labels = labels.reshape(-1)
+                        logits = logits.reshape(-1, logits.size(-1))
 
-                del logits
+                    loss = self._loss_fn(logits, labels)
 
-                losses.append(loss.flatten())
+                    total_loss += loss.item()
+                    total_batches += 1
+                    del logits  # Free memory
 
-            # if self.ff_verbose:
-            #     log.info(f"Eval losses: {losses}")
+        except Exception as e:
+            log.error(f"Error during evaluation step {step}: {e}")
+            # Optionally re-raise or handle differently
+            # For now, return NaN if evaluation fails mid-way
+            return float("nan")
+        finally:
+            # Ensure model is set back to original mode even if errors occur
+            self._model.train(original_mode)
+            log.debug(f"Finished evaluation. Model mode restored to {original_mode}.")
 
-            loss = torch.cat(losses).mean()
-            return loss.item()
+        if total_batches == 0:
+            log.warning("Evaluation dataloader was empty. Returning NaN.")
+            return float("nan")
+
+        avg_loss = total_loss / total_batches
+        return avg_loss
 
     def train(self) -> None:
         """
@@ -929,17 +949,40 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
                         # after = self._model.layers[0].attn.q_proj.propulsion
                         # print("max Δ propulsion:", (after - before).abs().max().item())
 
+                        # Evaluate on validation set after optimizer step
+                        # NOTE: This can significantly slow down training if the validation set is large
+                        # or evaluation is computationally expensive.
+                        # This is also independent of do_ff so we can use it to evaluate the loss for normal training as well
+                        eval_loss = float(
+                            "nan"
+                        )  # Default in case evaluation fails or ff_dataloader is not available
+                        if (
+                            hasattr(self, "ff_dataloader")
+                            and hasattr(self, "ff_val_loss_every_iter")
+                            and self.ff_dataloader
+                            and self.ff_val_loss_every_iter
+                        ):
+                            eval_loss = self._evaluate_loss_on_dataloader(
+                                self.ff_dataloader
+                            )
+                        else:
+                            log.warning(
+                                "ff_dataloader not found, cannot compute eval_loss after optimizer step."
+                            )
+
                         loss_to_log = running_loss.item() / num_tokens
                         pbar.update(1)
                         pbar.set_description(
-                            f"{curr_epoch + 1}|{self.global_step}|Loss: {loss_to_log}"
+                            f"{curr_epoch + 1}|{self.global_step}|Loss: {loss_to_log:.4f}|Eval: {eval_loss:.4f}"
                         )
 
                         # Log per-step metrics
                         if self.global_step % self._log_every_n_steps == 0:
                             time_per_step = time.perf_counter() - t0
                             log_dict = {
-                                "loss": loss_to_log,
+                                "train_loss": loss_to_log,  # Renamed for clarity
+                                "eval_loss": eval_loss,
+                                # "loss": loss_to_log, # Keep original loss key if needed by other tools
                                 "lr": self._optimizer.param_groups[0]["lr"],
                                 "tokens_per_second_per_gpu": num_tokens / time_per_step,
                             }
@@ -1025,20 +1068,22 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
                             param_dict.update(results)
                             self._model.load_state_dict(param_dict, strict=False)
 
-                            # Set model to eval mode
-                            self._model.eval()
+                            # Evaluate using the refactored function
+                            # No need to manage model mode here, _evaluate_loss_on_dataloader handles it
+                            eval_loss_ff = self._evaluate_loss_on_dataloader(
+                                self.ff_dataloader
+                            )
 
                             fast_forward_step += 1
                             self.global_step += 1
-                            total_loss = self.evaluate_ff()
 
                             if self.ff_verbose:
                                 log.info(
-                                    f"FF step {fast_forward_step}, loss: {total_loss}"
+                                    f"FF step {fast_forward_step}, loss: {eval_loss_ff}"
                                 )
 
                             ff_log_dict = {
-                                "ff_loss": total_loss,
+                                "ff_loss": eval_loss_ff,  # Use the evaluated loss
                                 "ff_step": fast_forward_step,
                             }
                             self._metric_logger.log_dict(
@@ -1046,15 +1091,14 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
                                 step=self.global_step,
                             )
 
-                            self._model.train()
-                            if prev_loss is not None and total_loss > prev_loss:
+                            if prev_loss is not None and eval_loss_ff > prev_loss:
                                 self._model.load_state_dict(
                                     prev_param_dict, strict=False
                                 )
                                 self.global_step -= 1
                                 break
 
-                            prev_loss = total_loss
+                            prev_loss = eval_loss_ff  # Store the evaluated loss
 
                         next_predictor_step = next_predictor_step + self.evaluate_every
                         param_dict.update(param_dict_empty)

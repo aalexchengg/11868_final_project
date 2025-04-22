@@ -63,7 +63,7 @@ checkpointer:
   output_dir: ${output_dir}
   model_type: QWEN2
 
-resume_from_checkpoint: True
+resume_from_checkpoint: False
 
 # Dataset and Sampler
 # dataset:

@@ -89,6 +89,7 @@ make_fim:
 
 fast_forward:
   do_ff: False # whether to do FF
+  ff_val_loss_every_iter: True
   evaluate_every: 6 # How many GD steps between FF runs
   num_stabilization_steps: 10 # how many initial GD steps to take in epoch 0 before starting any FF runs
   verbose: True # whether to include debug output about the FF process
