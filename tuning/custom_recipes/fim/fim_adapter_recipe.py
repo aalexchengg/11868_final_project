@@ -9,7 +9,7 @@ import sys
 import time
 
 from functools import partial
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Any, Dict, Optional, Union
 from warnings import warn
 
 import huggingface_hub
@@ -42,19 +42,12 @@ from tuning.custom_datasets.utils._make_fim import fim_dataset
 from torchtune.datasets._packed import PackedDataset
 import concurrent.futures
 
-from tuning.custom_qwen.peft.prop_utils import (
-    validate_missing_and_unexpected_for_lora_and_propulsion,
-    validate_missing_and_unexpected_for_propulsion,
-)
-
-# from torchviz import make_dot
-
 log = utils.get_logger("DEBUG")
 
 
-class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
+class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
     """
-    Adapter finetuning recipe for dense transformer-based LLMs such as Llama2. This recipe is optimized
+    LoRA finetuning recipe for dense transformer-based LLMs such as Llama2. This recipe is optimized
     for single GPU training. Training on CPU is not supported.
 
     Features:
@@ -197,14 +190,8 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
             )
 
         self._checkpointer_output_dir = cfg.checkpointer.output_dir
-        self._upload_checkpoints = cfg.get("upload_checkpoints", False)
+        self._upload_final_checkpoint = cfg.get("upload_final_checkpoint", False)
         self._upload_repo_name = cfg.upload_repo_name
-
-        self._do_lora = cfg.do_lora
-        self._do_prop = cfg.do_prop
-
-        if not self._do_lora and not self._do_prop:
-            raise ValueError("do_lora and do_prop cannot both be False")
 
     def load_checkpoint(self, cfg_checkpointer: DictConfig) -> Dict[str, Any]:
         """
@@ -296,7 +283,7 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
             enable_activation_offloading=self._enable_activation_offloading,
             compile_model=cfg.compile,
             base_model_state_dict=checkpoint_dict[training.MODEL_KEY],
-            adapter_weights_state_dict=(
+            lora_weights_state_dict=(
                 checkpoint_dict[training.ADAPTER_KEY]
                 if self._resume_from_checkpoint
                 else None
@@ -382,28 +369,17 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
             "ff_collate_fn", "torchtune.data.padded_collate_sft"
         )
 
-        # enables FF in training loop
         if self.do_ff:
-            self.ff_verbose = cfg.fast_forward.verbose
             self.evaluate_every = cfg.fast_forward.evaluate_every
             self.num_stabilization_steps = cfg.fast_forward.num_stabilization_steps
             self.ff_dataset = cfg.fast_forward.ff_dataset
             self.ff_dataloader = self._setup_data(
                 cfg_dataset=self.ff_dataset,
                 shuffle=False,
-                batch_size=cfg.batch_size,
+                batch_size=cfg.fast_forward.ff_batch_size,
                 collate_fn=self.ff_collate_fn,
                 cfg_fim=None,
             )
-
-        # right after you build model & optimizer, before your first step:
-        # opt_list = self._optimizer.param_groups[0]["params"]
-        # to_opt = [
-        #     name
-        #     for name, p in self._model.named_parameters()
-        #     if any(p is q for q in opt_list)
-        # ]
-        # print("Optimizing these params:", to_opt)
 
     def _setup_profiler(
         self, cfg_profiler: Optional[DictConfig] = None
@@ -479,35 +455,19 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
         enable_activation_offloading: bool,
         compile_model: bool,
         base_model_state_dict: Dict[str, Any],
-        adapter_weights_state_dict: Optional[Dict[str, Any]] = None,
+        lora_weights_state_dict: Optional[Dict[str, Any]] = None,
     ) -> nn.Module:
         with training.set_default_dtype(self._dtype), self._device:
             model = config.instantiate(cfg_model)
 
-        if self._do_lora:
-            self._lora_rank = cfg_model.lora_rank
-            self._lora_alpha = cfg_model.lora_alpha
-            self._lora_attn_modules = list(cfg_model.lora_attn_modules)
-            self._apply_lora_to_mlp = cfg_model.apply_lora_to_mlp
-            self._apply_lora_to_output = getattr(
-                cfg_model, "apply_lora_to_output", False
-            )
-
-        if self._do_prop:
-            self._prop_attn_modules = list(cfg_model.prop_attn_modules)
-            self._apply_prop_to_mlp = cfg_model.apply_prop_to_mlp
-            self._apply_prop_to_output = getattr(
-                cfg_model, "apply_prop_to_output", False
-            )
-            self._prop_degree = cfg_model.prop_degree
-
+        self._lora_rank = cfg_model.lora_rank
+        self._lora_alpha = cfg_model.lora_alpha
+        self._lora_attn_modules = list(cfg_model.lora_attn_modules)
+        self._apply_lora_to_mlp = cfg_model.apply_lora_to_mlp
+        self._apply_lora_to_output = getattr(cfg_model, "apply_lora_to_output", False)
         self.adapter_params = get_adapter_params(model)
         self._is_dora = any(["magnitude" in k for k in self.adapter_params.keys()])
         set_trainable_params(model, self.adapter_params)
-
-        # immediately after set_trainable_params(...)
-        # for n, p in model.named_parameters():
-        #     print(f"{n:80s}  requires_grad={p.requires_grad}")
 
         if compile_model:
             training.compile_model(model)
@@ -526,47 +486,22 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
             for m in model.modules():
                 if hasattr(m, "initialize_dora_magnitude"):
                     m.initialize_dora_magnitude()
-        if adapter_weights_state_dict:
-            adapter_missing, adapter_unexpected = model.load_state_dict(
-                adapter_weights_state_dict, strict=False
+        if lora_weights_state_dict:
+            lora_missing, lora_unexpected = model.load_state_dict(
+                lora_weights_state_dict, strict=False
             )
         else:
-            adapter_missing, adapter_unexpected = None, None
+            lora_missing, lora_unexpected = None, None
 
-        if self._do_lora and self._do_prop:
-            validate_missing_and_unexpected_for_lora_and_propulsion(
-                lora_attn_modules=self._lora_attn_modules,
-                apply_lora_to_mlp=self._apply_lora_to_mlp,
-                apply_lora_to_output=self._apply_lora_to_output,
-                prop_attn_modules=self._prop_attn_modules,
-                apply_prop_to_mlp=self._apply_prop_to_mlp,
-                apply_prop_to_output=self._apply_prop_to_output,
-                base_missing=base_missing,
-                base_unexpected=base_unexpected,
-                adapter_missing=adapter_missing,
-                adapter_unexpected=adapter_unexpected,
-            )
-        elif self._do_lora:
-            validate_missing_and_unexpected_for_lora(
-                lora_attn_modules=self._lora_attn_modules,
-                apply_lora_to_mlp=self._apply_lora_to_mlp,
-                apply_lora_to_output=self._apply_lora_to_output,
-                base_missing=base_missing,
-                base_unexpected=base_unexpected,
-                lora_missing=adapter_missing,
-                lora_unexpected=adapter_unexpected,
-            )
-        elif self._do_prop:
-            validate_missing_and_unexpected_for_propulsion(
-                prop_attn_modules=self._prop_attn_modules,
-                apply_prop_to_mlp=self._apply_prop_to_mlp,
-                apply_prop_to_output=self._apply_prop_to_output,
-                base_missing=base_missing,
-                base_unexpected=base_unexpected,
-                prop_missing=adapter_missing,
-                prop_unexpected=adapter_unexpected,
-            )
-
+        validate_missing_and_unexpected_for_lora(
+            lora_attn_modules=self._lora_attn_modules,
+            apply_lora_to_mlp=self._apply_lora_to_mlp,
+            apply_lora_to_output=self._apply_lora_to_output,
+            base_missing=base_missing,
+            base_unexpected=base_unexpected,
+            lora_missing=lora_missing,
+            lora_unexpected=lora_unexpected,
+        )
         # Validate model adapter params were loaded in with the expected dtype
         # TODO (rohan-varma): Further validation to ensure the appropriate base params
         # are NF4 vs bf16 based on the quantization config.
@@ -720,15 +655,12 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
         adapter_state_dict = get_adapter_state_dict(self._model.state_dict())
         ckpt_dict.update({training.ADAPTER_KEY: adapter_state_dict})
 
-        # print(ckpt_dict.keys())
-
-        if not self._save_adapter_weights_only and self._do_lora:
+        if not self._save_adapter_weights_only:
             # Construct the full state dict with LoRA weights merged into base LLM weights
 
             # Move to CPU to avoid a copy on GPU
             state_dict = {k: v.cpu() for k, v in self._model.state_dict().items()}
 
-            # TODO ADD PROPULSION MERGING when doing LoRA merging, prolly need custom function
             merged_state_dict = get_merged_lora_ckpt(
                 state_dict,
                 rank=self._lora_rank,
@@ -737,40 +669,21 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
 
             ckpt_dict.update({training.MODEL_KEY: merged_state_dict})
 
-        if not self._do_lora:
-            state_dict = {k: v.cpu() for k, v in self._model.state_dict().items()}
-            ckpt_dict.update({training.MODEL_KEY: state_dict})
-
-        adapter_config = {}
-        if self._do_lora:
-            adapter_config.update(
-                {
-                    "r": self._lora_rank,
-                    "lora_alpha": self._lora_alpha,
-                    "target_modules": get_lora_module_names(
-                        self._lora_attn_modules,
-                        self._apply_lora_to_mlp,
-                        self._apply_lora_to_output,
-                    ),
-                    "peft_type": "LORA",
-                }
-            )
-
-        if self._do_prop:
-            adapter_config.update(
-                {
-                    "target_modules": self._prop_attn_modules,
-                    "peft_type": "PROPULSION",
-                    "prop_degree": self._prop_degree,
-                }
-            )
-
+        adapter_config = {
+            "r": self._lora_rank,
+            "lora_alpha": self._lora_alpha,
+            "target_modules": get_lora_module_names(
+                self._lora_attn_modules,
+                self._apply_lora_to_mlp,
+                self._apply_lora_to_output,
+            ),
+            "peft_type": "LORA",
+        }
         ckpt_dict.update({training.ADAPTER_CONFIG: adapter_config})
 
         self._checkpointer.save_checkpoint(
             ckpt_dict,
             epoch=epoch,
-            allowed_new_layer_types=["propulsion"],
             intermediate_checkpoint=intermediate_checkpoint,
             adapter_only=self._save_adapter_weights_only,
         )
@@ -808,14 +721,12 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
                 labels = batch.pop("labels")
                 logits = self._model(**batch)
 
-                # Create ignore tensor dynamically based on current batch size
-                current_batch_size = labels.shape[0]
-                ignore_tensor = torch.full(
-                    (current_batch_size, 1),
-                    self._loss_fn.ignore_index,
-                    device=self._device,
+                print(f"labels[:10]: {labels[:10]}")
+                print(f"logits[:10]: {logits[:10]}")
+
+                labels = torch.hstack(
+                    (labels[..., 1:], self.ignore_labels_cache[: labels.shape[0]])
                 )
-                labels = torch.hstack((labels[..., 1:], ignore_tensor))
 
                 if not isinstance(logits, list):
                     labels = labels.reshape(-1)
@@ -825,11 +736,9 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
 
                 del logits
 
-                losses.append(loss.flatten())
+                losses.append(loss)
 
-            # if self.ff_verbose:
-            #     log.info(f"Eval losses: {losses}")
-
+            log.info(f"Losses: {losses}")
             loss = torch.cat(losses).mean()
             return loss.item()
 
@@ -848,7 +757,6 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
         running_loss = 0
         num_tokens = 0
 
-        # initialize dicts for storing params for FF
         if self.do_ff:
             log.info(
                 f"Fast Forward is enabled with evaluate_every = {self.evaluate_every}"
@@ -860,8 +768,7 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
             prev_param_dict = {}
             param_dict_empty = {}
             for name, _ in self._model.named_parameters():
-                # TODO - IS THIS RIGHT?
-                if "lora" in name or "prop" in name:
+                if "lora" in name:
                     param_dict[name] = []
                     prev_param_dict[name] = []
                     param_dict_empty[name] = []
@@ -893,22 +800,8 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
                     # Loss is normalized by default so we multiply by the number of tokens
                     # This way we can normalize by the total number of tokens if we're accumulating gradients
                     current_loss = self._loss_step(batch) * current_num_tokens
-
-                    # dot = make_dot(
-                    #     current_loss, params=dict(self._model.named_parameters())
-                    # )
-                    # dot.render("current_loss", format="png")
-
                     running_loss += current_loss
                     current_loss.backward()
-
-                    # grad = self._model.layers[0].attn.q_proj.propulsion.grad
-                    # print(
-                    #     "q_proj.propulsion.grad →",
-                    #     None if grad is None else grad.norm().item(),
-                    # )
-
-                    # before = self._model.layers[0].attn.q_proj.propulsion.clone()
 
                     # Step with optimizer
                     if (idx + 1) % self._gradient_accumulation_steps == 0:
@@ -919,15 +812,11 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
                                 error_if_nonfinite=True,
                                 max_norm=float(self._clip_grad_norm),
                             )
-                        # print("stepping the optimizer")
                         self._optimizer.step()
                         self._optimizer.zero_grad(set_to_none=True)
                         self._lr_scheduler.step()
                         # Update the number of steps when the weights are updated
                         self.global_step += 1
-
-                        # after = self._model.layers[0].attn.q_proj.propulsion
-                        # print("max Δ propulsion:", (after - before).abs().max().item())
 
                         loss_to_log = running_loss.item() / num_tokens
                         pbar.update(1)
@@ -962,19 +851,13 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
                         num_tokens = 0
                         t0 = time.perf_counter()
 
-                    # FF logic - if we've done enough stabilization steps and the current step is going to take a GD step, save state dict before update
                     if (
                         self.do_ff
                         and not (curr_epoch == 0 and idx < self.num_stabilization_steps)
                         and (idx + 1) % self._gradient_accumulation_steps == 0
                     ):
                         predictor_steps += 1
-                        if self.ff_verbose:
-                            log.info(
-                                f"FF step {predictor_steps} / {next_predictor_step}"
-                            )
-
-                        # if we've reached the next FF step or are one step away (we need prev two to calculate diff), save the state dict
+                        log.info(f"FF step {predictor_steps} / {next_predictor_step}")
                         if (
                             predictor_steps == next_predictor_step
                             or predictor_steps == next_predictor_step - 1
@@ -987,8 +870,6 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
                                 if predictor_steps == next_predictor_step:
                                     param_dict[key] = torch.stack(param_dict[key])
 
-                    # if we've reached the next FF step, calculate the difference between the current and previous state dicts
-                    # keep making that same diff until the loss stops improving
                     if self.do_ff and predictor_steps == next_predictor_step:
                         keys = list(param_dict.keys())
 
@@ -1029,29 +910,16 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
                             self._model.eval()
 
                             fast_forward_step += 1
-                            self.global_step += 1
                             total_loss = self.evaluate_ff()
 
-                            if self.ff_verbose:
-                                log.info(
-                                    f"FF step {fast_forward_step}, loss: {total_loss}"
-                                )
-
-                            ff_log_dict = {
-                                "ff_loss": total_loss,
-                                "ff_step": fast_forward_step,
-                            }
-                            self._metric_logger.log_dict(
-                                ff_log_dict,
-                                step=self.global_step,
-                            )
+                            log.info(f"FF step {fast_forward_step}, loss: {total_loss}")
 
                             self._model.train()
+
                             if prev_loss is not None and total_loss > prev_loss:
                                 self._model.load_state_dict(
                                     prev_param_dict, strict=False
                                 )
-                                self.global_step -= 1
                                 break
 
                             prev_loss = total_loss
@@ -1091,12 +959,11 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
                     )
                 )
 
-                self.upload(epoch=curr_epoch)
-
-    def upload(self, epoch: int) -> None:
-        if self._upload_checkpoints:
+    def upload(self) -> None:
+        if self._upload_final_checkpoint:
+            last_epoch = self.epochs_run - 1
             trained_model_path = os.path.join(
-                self._checkpointer_output_dir, f"epoch_{epoch}"
+                self._checkpointer_output_dir, f"epoch_{last_epoch}"
             )
 
             username = huggingface_hub.whoami()["name"]
@@ -1130,10 +997,11 @@ def recipe_main(cfg: DictConfig) -> None:
         - Parameters specified in config (see available configs through ``tune ls``)
         - Overwritten by arguments from the command-line
     """
-    config.log_config(recipe_name="AdapterFinetuneRecipeSingleDevice", cfg=cfg)
-    recipe = AdapterFinetuneRecipeSingleDevice(cfg=cfg)
+    config.log_config(recipe_name="LoRAFinetuneRecipeSingleDevice", cfg=cfg)
+    recipe = LoRAFinetuneRecipeSingleDevice(cfg=cfg)
     recipe.setup(cfg=cfg)
     recipe.train()
+    recipe.upload()
     recipe.cleanup()
 
 

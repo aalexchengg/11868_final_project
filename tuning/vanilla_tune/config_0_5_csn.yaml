@@ -1,4 +1,4 @@
-output_dir: /ocean/projects/cis240137p/lchu2/torchtune/qwen2_5_0_5b/vanilla_single_device
+output_dir: /local/torchtune/qwen2_5_0_5b/vanilla_single_device
 # using project storage for psc
 # /tmp may be deleted by your system. Change it to your preference.
 
@@ -21,7 +21,7 @@ checkpointer:
   model_type: QWEN2
 
 upload_final_checkpoint: True
-upload_repo_name: 'qwen2-0.5b-vanilla-single-device'
+upload_repo_name: 'phase1_qwen2.5_0.5b_csn'
 resume_from_checkpoint: False
 
 # Dataset and Sampler
@@ -31,16 +31,22 @@ resume_from_checkpoint: False
 
 dataset:
   # Use the custom builder function from the modified file
-  _component_: custom_datasets.text_completion_dataset
+  _component_: custom_datasets.codesearchnet.text_completion_dataset
   # source, column, split, add_eos etc are arguments to the builder function
-  source: google/code_x_glue_cc_code_completion_token
+  sourcse: [
+        "Nan-Do/code-search-net-python",
+        "Nan-Do/code-search-net-go",
+        "Nan-Do/code-search-net-php",
+        "Nan-Do/code-search-net-javascript",
+        "Nan-Do/code-search-net-java",
+        "Nan-Do/code-search-net-ruby"]
   column: code
   add_eos: True
   split: train[:100%]
   packed: True # VERY IMPORTANT
   fim_prob: 1.0
 
-seed: null
+seed: 15122
 shuffle: True
 batch_size: 12
 
@@ -69,7 +75,7 @@ compile: True # torch.compile the model + loss, True increases speed + decreases
 # Logging
 metric_logger:
   _component_: torchtune.training.metric_logging.DiskLogger
-  log_dir: /ocean/projects/cis240137p/lchu2/logs/vanilla_0_5B
+  log_dir: /local/logs/vanilla_0_5B
 log_every_n_steps: 1
 log_peak_memory_stats: True
 
