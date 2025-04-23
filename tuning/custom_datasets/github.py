@@ -15,7 +15,7 @@ from torchtune.data._utils import truncate
 from torchtune.datasets._packed import PackedDataset
 from torchtune.modules.transforms.tokenizers import ModelTokenizer
 from torchtune import utils  # Import torchtune utils
-from format_fns import github_format_fn
+from .format_fns import github_format_fn
 
 # Use the torchtune logger with DEBUG level
 log = utils.get_logger("DEBUG")
