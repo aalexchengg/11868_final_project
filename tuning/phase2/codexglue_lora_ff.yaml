@@ -1,0 +1,146 @@
+# Config for single device LoRA finetuning in lora_finetune_single_device.py
+# using a Qwen2 0.5B model
+#
+# This config assumes that you've run the following command before launching
+# this run:
+#   tune download Qwen/Qwen/Qwen2.5-0.5B --output-dir /local/Qwen2_5-0_5B-Base
+#
+# To launch on a single device, run the following command from root:
+#   tune run lora_finetune_single_device --config qwen2/0.5B_lora_single_device
+#
+# You can add specific overrides through the command line. For example
+# to override the checkpointer directory while launching training
+# you can run:
+#   tune run lora_finetune_single_device --config qwen2/0.5B_lora_single_device checkpointer.checkpoint_dir=<YOUR_CHECKPOINT_DIR>
+#
+# This config works only for training on single device.
+
+output_dir: /local/torchtune/qwen2_5_0_5b/phase2_codexglue_lora_ff # /local may be deleted by your system. Change it to your preference.
+
+do_lora: True
+do_prop: False
+
+# Model Arguments
+model:
+  # TO CHANGE WHETHER DOING LORA+PROP OR JUST PROP, CHANGE THE BASE MODEL HERE
+  _component_: torchtune.models.qwen2_5.lora_qwen2_5_0_5b
+
+  # other options are [k_proj, output_proj]
+  lora_attn_modules: ['q_proj', 'v_proj', 'k_proj', 'output_proj']
+
+  apply_lora_to_mlp: True
+  # apply_lora_to_output: True
+
+  # option only available for Qwen2.5 >= 7B
+
+  # whether or not to do QLoRA
+  # quantize_base: True
+
+  lora_rank: 32 # higher increases accuracy and memory
+  lora_alpha: 64 # usually alpha=2*rank
+  lora_dropout: 0.0
+
+  # ignored because _component_ is not propulsion
+  # prop_attn_modules: ['q_proj', 'v_proj', 'k_proj', 'output_proj']
+  # apply_prop_to_mlp: True
+  # apply_prop_to_output: False
+  # prop_degree: 10
+
+tokenizer:
+  _component_: torchtune.models.qwen2_5.qwen2_5_tokenizer
+  path: /local/Qwen2_5-0_5B-Phase1/vocab.json
+  merges_file: /local/Qwen2_5-0_5B-Phase1/merges.txt
+  max_seq_len: 4096
+
+upload_checkpoints: True
+upload_repo_name: 'qwen2-0.5b-phase2-codexglue-lora-ff'
+
+checkpointer:
+  _component_: tuning.custom_qwen.qwen2_5.CustomFullModelHFCheckpointer
+  checkpoint_dir: /local/Qwen2_5-0_5B-Phase1
+  checkpoint_files: [model.safetensors]
+  recipe_checkpoint: null
+  output_dir: ${output_dir}
+  model_type: QWEN2
+
+resume_from_checkpoint: False
+
+# Dataset and Sampler
+# dataset:
+#   _component_: torchtune.datasets.alpaca_cleaned_dataset
+#   packed: True # True increases speed
+
+dataset:
+  # Use the custom builder function from the modified file
+  _component_: tuning.custom_datasets.codexglue.text_completion_dataset
+  # source, column, split, add_eos etc are arguments to the builder function
+  source: google/code_x_glue_cc_code_completion_token
+  column: code
+  split: train[:100%]
+  verbose: False # Enable verbose logging in the dataset
+  packed: True # VERY IMPORTANT - Uncommented to ensure proper packing is used
+
+make_fim:
+  convert_to_fim: True # whether to convert dataset to FIM
+  fim_prob: 0.1 # prob a single sample is converted to FIM
+  min_fim_middle_percent: 0.05 # min length of middle portion as percent of total length
+  max_fim_middle_percent: 0.2 # max length of middle portion as percent of total length
+  verbose: False # whether to include debug output about the FIM-transformation process
+
+fast_forward:
+  do_ff: True # whether to do FF
+  ff_val_loss_every_iter: True
+  evaluate_every: 6 # How many GD steps between FF runs
+  num_stabilization_steps: 10 # how many initial GD steps to take in epoch 0 before starting any FF runs
+  verbose: True # whether to include debug output about the FF process
+
+  # TODO - CHANGE THIS TO BE A 'REAL' VALIDATION SET
+  # ff_collate_fn: None
+  ff_dataset:
+    _component_: tuning.custom_datasets.codexglue.text_completion_dataset
+    source: google/code_x_glue_cc_code_completion_token
+    column: code
+    split: test[:16]
+    verbose: False # Enable verbose logging in the dataset
+    packed: True # VERY IMPORTANT - Uncommented to ensure proper packing is used
+
+seed: 15122
+shuffle: True
+batch_size: 4
+
+# Optimizer and Scheduler
+optimizer:
+  _component_: torch.optim.AdamW
+  fused: True
+  weight_decay: 0.001
+  lr: 2e-5 # Trying value similar to FF paper
+
+lr_scheduler:
+  _component_: torchtune.training.lr_schedulers.get_cosine_schedule_with_warmup
+  num_warmup_steps: 100
+
+loss:
+  _component_: torchtune.modules.loss.CEWithChunkedOutputLoss
+
+# Training
+epochs: 5
+max_steps_per_epoch: null
+gradient_accumulation_steps: 8 # Use to increase effective batch size
+clip_grad_norm: null
+compile: True # Changed to False for initial debugging - prevents potential issues with FIM
+
+# Logging
+metric_logger:
+  _component_: torchtune.training.metric_logging.DiskLogger
+  log_dir: ./logs/qwen2_5_0_5b/phase2_codexglue_lora_ff/
+log_every_n_steps: 1
+log_peak_memory_stats: True
+
+# Environment
+device: cuda
+# NOTE - set to 'fp32' instead of bf16 because running on RTX 2070 on Jackson's Desktop - Change on PSC
+dtype: bf16
+
+# Activations Memory - leave on for 2070
+enable_activation_checkpointing: False # True reduces memory a lot, medium perf impact
+enable_activation_offloading: False # True reduces memory a bit, small perf impact
