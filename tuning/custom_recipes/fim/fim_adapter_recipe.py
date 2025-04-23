@@ -933,7 +933,7 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
                     #     None if grad is None else grad.norm().item(),
                     # )
 
-                    before = self._model.layers[0].attn.q_proj.propulsion.clone()
+                    # before = self._model.layers[0].attn.q_proj.propulsion.clone()
 
                     # Step with optimizer
                     if (idx + 1) % self._gradient_accumulation_steps == 0:
