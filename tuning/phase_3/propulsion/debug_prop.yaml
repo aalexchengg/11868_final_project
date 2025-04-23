@@ -15,14 +15,14 @@
 #
 # This config works only for training on single device.
 
-output_dir: /local/torchtune/qwen2_5_0_5b/prop_lora_ff # /local may be deleted by your system. Change it to your preference.
+output_dir: /local/torchtune/qwen2_5_0_5b/prop # /local may be deleted by your system. Change it to your preference.
 
-do_lora: True
+do_lora: False
 do_prop: True
 
 # Model Arguments
 model:
-  _component_: tuning.custom_qwen.qwen2_5.propulsion_lora_qwen2_5_0_5b
+  _component_: tuning.custom_qwen.qwen2_5.propulsion_qwen2_5_0_5b
 
   # other options are [k_proj, output_proj]
   lora_attn_modules: ['q_proj', 'v_proj', 'k_proj', 'output_proj']
@@ -35,12 +35,13 @@ model:
   # whether or not to do QLoRA
   quantize_base: True
 
-  lora_rank: 32 # higher increases accuracy and memory
-  lora_alpha: 64 # usually alpha=2*rank
+  lora_rank: 2 # higher increases accuracy and memory
+  lora_alpha: 4 # usually alpha=2*rank
   lora_dropout: 0.0
 
-  prop_attn_modules: ['q_proj', 'v_proj', 'k_proj', 'output_proj']
-  apply_prop_to_mlp: True
+  # prop_attn_modules: ['q_proj', 'v_proj', 'k_proj', 'output_proj']
+  prop_attn_modules: ['q_proj', 'v_proj', 'k_proj']
+  apply_prop_to_mlp: False
   apply_prop_to_output: False
   prop_degree: 15
 
@@ -59,7 +60,7 @@ checkpointer:
   model_type: QWEN2
 
 upload_checkpoints: True
-upload_repo_name: 'qwen2-0.5b-prop-lora-ff'
+upload_repo_name: 'qwen2-0.5b-prop-no-ff'
 
 resume_from_checkpoint: False
 
@@ -74,7 +75,7 @@ dataset:
   # source, column, split, add_eos etc are arguments to the builder function
   source: google/code_x_glue_cc_code_completion_token
   column: code
-  split: train[:100%]
+  split: train[:10]
   packed: True # VERY IMPORTANT
 
 make_fim:
@@ -86,9 +87,9 @@ make_fim:
 
 fast_forward:
   do_ff: True # whether to do FF
-  ff_val_loss_every_iter: True
-  evaluate_every: 6 # How many GD steps between FF runs
-  num_stabilization_steps: 50 # how many initial GD steps to take in epoch 0 before starting any FF runs
+  ff_val_loss_every_iter: False
+  evaluate_every: 2 # How many GD steps between FF runs
+  num_stabilization_steps: 5 # how many initial GD steps to take in epoch 0 before starting any FF runs
   verbose: True # whether to include debug output about the FF process
 
   # TODO - CHANGE THIS TO BE A 'REAL' VALIDATION SET
@@ -97,13 +98,13 @@ fast_forward:
     _component_: tuning.custom_datasets.codexglue.text_completion_dataset
     source: google/code_x_glue_cc_code_completion_token
     column: code
-    split: test[:16]
+    split: test[:4]
     verbose: False # Enable verbose logging in the dataset
     packed: True # VERY IMPORTANT - Uncommented to ensure proper packing is used
 
 seed: 15122
 shuffle: True
-batch_size: 4
+batch_size: 1
 
 # Optimizer and Scheduler
 optimizer:
@@ -122,21 +123,21 @@ loss:
 # Training
 epochs: 5
 max_steps_per_epoch: null
-gradient_accumulation_steps: 8 # Use to increase effective batch size
-clip_grad_norm: 1
+gradient_accumulation_steps: 1 # Use to increase effective batch size
+clip_grad_norm: null
 compile: True # torch.compile the model + loss, True increases speed + decreases memory
 
 # Logging
 metric_logger:
   _component_: torchtune.training.metric_logging.DiskLogger
-  log_dir: ./logs/qwen2_5_0_5b/prop_lora_ff/
+  log_dir: ./logs/qwen2_5_0_5b/prop_noff/
 log_every_n_steps: 1
 log_peak_memory_stats: True
 
 # Environment
 device: cuda
 # NOTE - set to 'fp32' instead of bf16 because running on RTX 2070 on Jackson's Desktop - Change on PSC
-dtype: bf16
+dtype: fp32
 
 # Activations Memory - leave on for 2070
 enable_activation_checkpointing: False # True reduces memory a lot, medium perf impact
