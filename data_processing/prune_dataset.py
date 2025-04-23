@@ -15,6 +15,8 @@ import random
 import logging
 import evaluate
 import numpy as np
+import time
+import torch
 
 logger = logging.getLogger(__name__)
 
@@ -28,9 +30,12 @@ def setup_parser():
         help="Model to do dataset cartography with",
     )
     parser.add_argument("-dataset", type=str, default="Nan-Do/code-search-net-python")
-    parser.add_argument("-min_fim", type=float, default=0.1)
-    parser.add_argument("-max_fim", type=float, default=0.3)
-    parser.add_argument("-p", type=float, default=0.6)
+    parser.add_argument("-min_fim", type=float, default=0.01)
+    parser.add_argument("-max_fim", type=float, default=0.1)
+    parser.add_argument("-p", type=float, default=0.4)
+    parser.add_argument("-token", type = str)
+    parser.add_argument("-username", type = str, default = "aalexchengg")
+    parser.add_argument("-size", type = int, default = -1)
     return parser
 
 
@@ -125,6 +130,8 @@ def tokenize_and_align(tokenizer):
 def get_dataset(args, tokenizer, token_mapping):
     # load from huggingface
     ds = load_dataset(args.dataset, split="train", streaming=False)
+    if args.size != -1:
+        ds = ds.select(list(range(args.size)))
     # first we need to tokenize
     ds = ds.map(tokenize_and_align(tokenizer), batched=True)
     # then we need to generate labels with fim
@@ -142,19 +149,14 @@ def compute_metrics(eval_preds):
     return metric.compute(predictions=preds, references=labels)
 
 
-def top_k(predictions, labels, p):
+def top_k(probabilities, p):
     """
     takes in the predictions and labels, as well as the percent of samples we are taking
     and return p% of those indices of those with lowest probability and highest variance
     """
     # predictions should have shape dataset size x sequence length x vocab length
     # labels should have shape dataset size x sequence length
-    k = int(len(predictions) * p)
-    if len(labels.shape) == 2:  # expand dims if necessary
-        labels = np.expand_dims(labels, axis=2)
-    probabilities = np.take_along_axis(
-        predictions, labels, axis=2
-    ).squeeze()  # shape of (dataset size, seq length)
+    k = int(probabilities.shape[0] * p)
     averages = np.mean(probabilities, axis=1)
     averages = np.argsort(averages)[:k]  # only take top k
     variances = np.std(probabilities, axis=1)
@@ -168,11 +170,13 @@ def main(args):
         model = AutoModelForCausalLM.from_pretrained(args.model, is_decoder=True)
     else:
         model = AutoModelForCausalLM.from_pretrained(args.model)
+    # model = AutoModelForCausalLM.from_pretrained("ref_model/checkpoint-1250")
 
     tokenizer = AutoTokenizer.from_pretrained(args.model)
     # add special tokens
     n = len(tokenizer)
     tokens_added = ["[FIM_START]", "[FIM_MID]", "[FIM_END]", "[BOS]", "[EOS]"]
+    # tokenizer.pad_token = tokenizer.eos_token
     num_added_toks = tokenizer.add_tokens(tokens_added, special_tokens=True)
     assert num_added_toks == 5
     token_mapping = {token: n + i for i, token in enumerate(tokens_added)}
@@ -181,35 +185,49 @@ def main(args):
     dataset = get_dataset(args, tokenizer, token_mapping)
     # step one: train the small model with our dataset
     training_args = TrainingArguments(
-        output_dir="yelp_review_classifier",
+        output_dir="ref_model",
         push_to_hub=False,
+        save_strategy = "no",
         eval_strategy="no",
-        per_device_train_batch_size=4,
-        per_device_eval_batch_size=2,
+        per_device_train_batch_size = 16,
+        eval_accumulation_steps = 1,
+        fp16 = True
     )
     trainer = Trainer(
         model=model,
         args=training_args,
         train_dataset=dataset,
-        eval_dataset=None,
-        compute_metrics=compute_metrics,
     )
     print("beginning train.")
     trainer.train()
     # step two: run predictions and get the probability of the tokens
-    print("Getting predictions")
-    trainer_preds = trainer.predict(dataset)
+    trainer._train_batch_size = 8 # number of GPUs.
+    dataloader = trainer.get_train_dataloader()
+    model.eval()
+    vals = []
+    print(len(dataloader))
+    start_time = time.time()
+    for i, batch in enumerate(dataloader):
+        if (i % 100 == 0):
+            print(f"on batch {i}")
+        with torch.no_grad():
+            outputs = model(**batch)
+            labels = np.expand_dims(batch['labels'].cpu(), axis=2)
+            probabilities = np.take_along_axis(outputs['logits'].cpu(), labels, axis=2).squeeze() 
+            vals.append(probabilities)
+            torch.cuda.empty_cache()
+    vals = np.concatenate(vals)
+    end_time = time.time()
+    print(f"predictions for {len(dataset)} took {end_time - start_time} seconds")
     # step three: sort by probability and only take the top p% of tokens
-    average_idx, variance_idx = top_k(
-        trainer_preds.predictions, trainer_preds.labels, args.p
-    )
+    average_idx, variance_idx = top_k(vals, args.p)
     # step four: push the new dataset to the hub
     dataset_name = args.dataset.split("/")[1]  # get back half
     average_subset = dataset.select(average_idx)
-    average_subset.push_to_hub(f"aalexchengg/{dataset_name}_avg_subset")
+    average_subset.push_to_hub(f"{args.username}/{dataset_name}_avg_subset", token = args.token)
 
     variance_subset = dataset.select(variance_idx)
-    variance_subset.push_to_hub(f"aalexchengg/{dataset_name}_variance_subset")
+    variance_subset.push_to_hub(f"{args.username}/{dataset_name}_variance_subset", token = args.token)
     # step four: push the new dataset to the hub
 
     print("All finished.")

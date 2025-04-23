@@ -1,4 +1,4 @@
-output_dir: /ocean/projects/cis240137p/lchu2/torchtune/qwen2_5_0_5b/vanilla_single_device
+output_dir: /data/user_data/abcheng/torchtune/qwen2_5_0_5b/vanilla_single_device
 # using project storage for psc
 # /tmp may be deleted by your system. Change it to your preference.
 
