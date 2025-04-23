@@ -7,6 +7,7 @@
 # Modified by @jacksontromero
 
 import random  # Add import
+import re
 from typing import Any, Callable, Dict, List, Mapping, Optional, Union
 
 from datasets import load_dataset, concatenate_datasets
@@ -149,6 +150,11 @@ class TextCompletionDataset(Dataset):
         if self.verbose:
             log.info(f"\n--- Sample {index} ---")
             log.info(f"Original Prompt (joined):\n{prompt}...")
+
+        # remove dataset-specific tokens, standardize <EOL> to \n
+        prompt = re.sub("<s>", "", prompt)
+        prompt = re.sub("</s>", "", prompt)
+        prompt = re.sub("<EOL>", "\n", prompt)
 
         # --- Initial Tokenization (add BOS/EOS based on config/tokenizer defaults) ---
         # Let tokenizer handle BOS based on its settings. Add EOS based on self.add_eos for standard completion.

@@ -1,5 +1,6 @@
 import datasets
 from datasets import load_dataset
+import re
 
 repo_name = "google/code_x_glue_cc_code_completion_line"
 out_name = "aalexchengg/codexglue-code-formatted"
@@ -8,7 +9,7 @@ def format_text(text: str) -> str:
     #remove all the special tokens
     text = re.sub('<s>', '', text)
     text = re.sub('</s>', '', text)
-    # keep <EOL> token for now
+    text = re.sub('<EOL>', '\n', text)
     return text
 
 
@@ -36,7 +37,7 @@ def process_codexglue():
         raise AssertionError("This dataset has already been processed. If you want to overwrite, please manually delete on HuggingFace Hub and try again.")
     # otherwise, do the work
     logger.info("Loading in source dataset...")
-    py_dataset = load_dataset(repo_name, split = "train", "python") 
+    py_dataset = load_dataset(repo_name, split = "train", "python")
     java_dataset = load_dataset(repo_name, split = "train", "java")
     dataset = datasets.concatenate_datasets([py_dataset, java_dataset])
     logger.info("Mapping dataset...")
