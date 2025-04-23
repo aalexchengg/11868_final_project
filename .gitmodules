@@ -1,0 +1,6 @@
+[submodule "fim-bench/fim-bench/safim"]
+	path = fim-bench/fim-bench/safim
+	url = https://github.com/gonglinyuan/safim.git
+[submodule "fim-bench/safim"]
+	path = fim-bench/safim
+	url = https://github.com/gonglinyuan/safim.git

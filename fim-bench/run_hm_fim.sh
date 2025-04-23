@@ -13,5 +13,5 @@ python hm_fim/humaneval_fim.py \
     --input_file ./hm_fim/data/fim_singleline.jsonl \
     --gen_length 50 \
     --max_seq_length 8192 \
-    --output_dir ${OUTPUT_DIR} \
+    --output_dir ${OUTPUT_DIR}/humaneval-infilling \
     --tp ${TP}
