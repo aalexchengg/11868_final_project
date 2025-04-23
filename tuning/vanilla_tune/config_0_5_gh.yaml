@@ -20,7 +20,7 @@ checkpointer:
   output_dir: ${output_dir}
   model_type: QWEN2
 
-upload_checkpoints: True
+upload_final_checkpoint: True
 upload_repo_name: 'phase1_qwen2.5_0.5b_gh'
 resume_from_checkpoint: False
 
