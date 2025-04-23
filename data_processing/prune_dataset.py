@@ -15,7 +15,6 @@ import random
 import logging
 import evaluate
 import numpy as np
-from ftft_trainer import PruneTrainer
 import time
 import torch
 
@@ -171,7 +170,7 @@ def main(args):
         model = AutoModelForCausalLM.from_pretrained(args.model, is_decoder=True)
     else:
         model = AutoModelForCausalLM.from_pretrained(args.model)
-    
+    # model = AutoModelForCausalLM.from_pretrained("ref_model/checkpoint-1250")
 
     tokenizer = AutoTokenizer.from_pretrained(args.model)
     # add special tokens
@@ -188,9 +187,9 @@ def main(args):
     training_args = TrainingArguments(
         output_dir="ref_model",
         push_to_hub=False,
+        save_strategy = "no",
         eval_strategy="no",
-        per_device_train_batch_size=48,
-        per_device_eval_batch_size=1,
+        per_device_train_batch_size = 16,
         eval_accumulation_steps = 1,
         fp16 = True
     )
@@ -202,7 +201,7 @@ def main(args):
     print("beginning train.")
     trainer.train()
     # step two: run predictions and get the probability of the tokens
-    trainer._train_batch_size = 12
+    trainer._train_batch_size = 8 # number of GPUs.
     dataloader = trainer.get_train_dataloader()
     model.eval()
     vals = []
