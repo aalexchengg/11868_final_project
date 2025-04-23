@@ -47,7 +47,7 @@ from tuning.custom_qwen.peft.prop_utils import (
     validate_missing_and_unexpected_for_propulsion,
 )
 
-from torchviz import make_dot
+# from torchviz import make_dot
 
 log = utils.get_logger("DEBUG")
 
