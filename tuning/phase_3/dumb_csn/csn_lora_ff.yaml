@@ -74,7 +74,15 @@ dataset:
   # Use the custom builder function from the modified file
   _component_: tuning.custom_datasets.codesearchnet.text_completion_dataset
   # source, column, split, add_eos etc are arguments to the builder function
-  sources: ['aalexchengg/code-search-net-python_avg_subset']
+  sources:
+    [
+      'aalexchengg/code-search-net-python_avg_subset',
+      'aalexchengg/code-search-net-java_avg_subset',
+      'aalexchengg/code-search-net-javascript_avg_subset',
+      'aalexchengg/code-search-net-ruby_avg_subset',
+      'aalexchengg/code-search-net-php_avg_subset',
+      'aalexchengg/code-search-net-go_avg_subset',
+    ]
   column: code
   split: train[16:100%]
   verbose: False # Enable verbose logging in the dataset
@@ -98,7 +106,15 @@ fast_forward:
   # ff_collate_fn: None
   ff_dataset:
     _component_: tuning.custom_datasets.codesearchnet.text_completion_dataset
-    sources: ['aalexchengg/code-search-net-python_avg_subset']
+    sources:
+      [
+        'aalexchengg/code-search-net-python_avg_subset',
+        'aalexchengg/code-search-net-java_avg_subset',
+        'aalexchengg/code-search-net-javascript_avg_subset',
+        'aalexchengg/code-search-net-ruby_avg_subset',
+        'aalexchengg/code-search-net-php_avg_subset',
+        'aalexchengg/code-search-net-go_avg_subset',
+      ]
     column: code
     split: test[:16]
     verbose: False # Enable verbose logging in the dataset
@@ -106,7 +122,7 @@ fast_forward:
 
 seed: 15122
 shuffle: True
-batch_size: 4
+batch_size: 12
 
 # Optimizer and Scheduler
 optimizer:
