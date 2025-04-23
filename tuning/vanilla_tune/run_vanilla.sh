@@ -1,6 +1,7 @@
 #!/bin/bash
 
 export PYTHONPATH=$PYTHONPATH:../..
+export HF_DATASETS_CACHE="/local/cache/huggingface"
 
 # config options are either {csn, cxg, gh}, get from command line
 CONFIG_OPTION=$1
