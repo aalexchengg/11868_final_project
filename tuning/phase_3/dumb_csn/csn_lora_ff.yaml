@@ -108,7 +108,7 @@ fast_forward:
     _component_: tuning.custom_datasets.codexglue.text_completion_dataset
     source: google/code_x_glue_cc_code_completion_token
     column: code
-    split: test[:24]
+    split: test[:16]
     verbose: False # Enable verbose logging in the dataset
     packed: True # VERY IMPORTANT - Uncommented to ensure proper packing is used
 
