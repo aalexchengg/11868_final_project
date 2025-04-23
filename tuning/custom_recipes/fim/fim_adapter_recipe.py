@@ -965,9 +965,11 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
                             eval_loss = self._evaluate_loss_on_dataloader(
                                 self.ff_dataloader
                             )
-                        else:
+                        elif not hasattr(self, "ff_dataloader") or not hasattr(
+                            self, "ff_val_loss_every_iter"
+                        ):
                             log.warning(
-                                "ff_dataloader not found, cannot compute eval_loss after optimizer step."
+                                "ff_dataloader or ff_val_loss_every_iter not found, cannot compute eval_loss after optimizer step."
                             )
 
                         loss_to_log = running_loss.item() / num_tokens
