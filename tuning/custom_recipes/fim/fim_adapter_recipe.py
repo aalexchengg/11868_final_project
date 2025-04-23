@@ -1183,4 +1183,3 @@ def recipe_main(cfg: DictConfig) -> None:
 
 if __name__ == "__main__":
     sys.exit(recipe_main())
-    
