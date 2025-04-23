@@ -69,7 +69,7 @@ class TextCompletionDataset(Dataset):
         self.eos_id = self._tokenizer.eos_id
 
         log.info(f"Loading dataset from source {source}")
-        dataset = load_dataset(source, split ="train", streaming = False)
+        dataset = load_dataset(source, split ="train", streaming = False, **load_dataset_kwargs)
 
         self._data = dataset
         self._data = self._data.map(github_format_fn, batched = True)
