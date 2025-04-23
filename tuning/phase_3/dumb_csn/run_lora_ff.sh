@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export PYTHONPATH=$PYTHONPATH:../..
+export PYTHONPATH=$PYTHONPATH:../../..
 
 CONFIG_OPTION=$1
 
