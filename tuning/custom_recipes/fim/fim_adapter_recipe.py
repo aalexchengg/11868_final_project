@@ -507,8 +507,8 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
         set_trainable_params(model, self.adapter_params)
 
         # immediately after set_trainable_params(...)
-        for n, p in model.named_parameters():
-            print(f"{n:80s}  requires_grad={p.requires_grad}")
+        # for n, p in model.named_parameters():
+        #     print(f"{n:80s}  requires_grad={p.requires_grad}")
 
         if compile_model:
             training.compile_model(model)
@@ -575,8 +575,8 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
             self.adapter_params.items(), dtype=self._dtype
         )
 
-        for key, value in self.adapter_params.items():
-            print(f"{key:80s}  requires_grad={value.requires_grad}")
+        # for key, value in self.adapter_params.items():
+        #     print(f"{key:80s}  requires_grad={value.requires_grad}")
 
         # activation offloading
         self.activations_handling_ctx = training.get_act_offloading_ctx_manager(
@@ -927,11 +927,11 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
                     running_loss += current_loss
                     current_loss.backward()
 
-                    grad = self._model.layers[0].attn.q_proj.propulsion.grad
-                    print(
-                        "q_proj.propulsion.grad →",
-                        None if grad is None else grad.norm().item(),
-                    )
+                    # grad = self._model.layers[0].attn.q_proj.propulsion.grad
+                    # print(
+                    #     "q_proj.propulsion.grad →",
+                    #     None if grad is None else grad.norm().item(),
+                    # )
 
                     before = self._model.layers[0].attn.q_proj.propulsion.clone()
 
@@ -951,8 +951,8 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
                         # Update the number of steps when the weights are updated
                         self.global_step += 1
 
-                        after = self._model.layers[0].attn.q_proj.propulsion
-                        print("max Δ propulsion:", (after - before).abs().max().item())
+                        # after = self._model.layers[0].attn.q_proj.propulsion
+                        # print("max Δ propulsion:", (after - before).abs().max().item())
 
                         # Evaluate on validation set after optimizer step
                         # NOTE: This can significantly slow down training if the validation set is large
