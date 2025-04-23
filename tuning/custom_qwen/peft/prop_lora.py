@@ -78,8 +78,8 @@ class PropulsionLoRALinear(nn.Module, AdapterModule):
 
         # Setup weight and bias
         linear = PropulsionLinear(
-            in_features=in_dim,
-            out_features=out_dim,
+            in_dim,
+            out_dim,
             bias=self.use_bias,
             degree=self.degree,
         )
@@ -102,12 +102,8 @@ class PropulsionLoRALinear(nn.Module, AdapterModule):
         )
         self.dropout = nn.Dropout(p=dropout) if dropout > 0.0 else nn.Identity()
         # TODO - if training propulsion at same time as lora, we need propulsionLinear to have requires_grad=True for the weights
-        self.lora_a = PropulsionLinear(
-            in_features=in_dim, out_features=rank, bias=False, degree=self.degree
-        )
-        self.lora_b = PropulsionLinear(
-            in_features=rank, out_features=out_dim, bias=False, degree=self.degree
-        )
+        self.lora_a = PropulsionLinear(in_dim, rank, bias=False, degree=self.degree)
+        self.lora_b = PropulsionLinear(rank, out_dim, bias=False, degree=self.degree)
         self.merged = False
         self.initialize_parameters()
 
