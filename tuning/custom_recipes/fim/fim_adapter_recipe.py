@@ -144,6 +144,8 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
             raise ValueError(
                 "fp16 precision is not supported in this recipe. Please use fp32 or bf16."
             )
+        elif self._dtype == torch.float32:
+            torch.set_float32_matmul_precision('medium')
 
         # logging attributes
         self._output_dir = cfg.output_dir
