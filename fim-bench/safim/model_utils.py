@@ -597,6 +597,48 @@ class MagicCoderModel(ModelWrapper):
         else:
             raise NotImplementedError()
 
+class QwenModel(ModelWrapper):
+    def __init__(self, model_name, max_length, block_comments=False):
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.tokenizer.model_max_length = max_length
+        self.pipeline = transformers.pipeline(
+            "text-generation",
+            model=model_name,
+            tokenizer=self.tokenizer,
+            torch_dtype=torch.float16,
+            device_map="auto",
+        )
+        self.logits_processor = (
+            [
+                NoBadWordsLogitsProcessor(
+                    [[word_idx] for word_idx in self.tokenizer.convert_tokens_to_ids(["#", "▁#", "/*", "▁/*"])],
+                    self.tokenizer.eos_token_id
+                )
+            ]
+            if block_comments
+            else None
+        )
+
+    def invoke(self, prompt: str) -> str:
+        generated_text = self.pipeline(
+            prompt,
+            do_sample=True,
+            num_return_sequences=1,
+            temperature=0.2,
+            max_new_tokens=50,
+            eos_token_id=self.tokenizer.eos_token_id,
+            top_p=0.95,
+            handle_long_generation="hole",
+            logits_processor=self.logits_processor
+        )[0]["generated_text"]
+        return generated_text[len(prompt):]
+
+    def assemble_infilling_prompt(self, prefix: str, suffix: str, reverse: bool = False) -> str:
+        if reverse:
+            return "<PRE>" + " <SUF>" + suffix + " <MID>" + prefix
+        else:
+            return "<PRE>" + prefix + " <SUF>" + suffix + " <MID>"
+
 
 def build_model(args: Namespace) -> ModelWrapper:
     if args.model_name.startswith("codellama/CodeLlama"):
@@ -621,6 +663,8 @@ def build_model(args: Namespace) -> ModelWrapper:
         model_wrapper = SantacoderModel(args.model_name, 2048, args.block_comments)
     elif args.model_name.startswith("ise-uiuc/Magicoder"):
         model_wrapper = MagicCoderModel(args.model_name, 4096, args.block_comments)
+    elif args.model_name.tolower().conains("qwen"):
+        model_wrapper = QwenModel(args.model_name, 8192, args.block_comments)
     else:
         raise ValueError(args.model_name)
     return model_wrapper
