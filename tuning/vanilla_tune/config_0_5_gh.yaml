@@ -21,7 +21,7 @@ checkpointer:
   model_type: QWEN2
 
 upload_checkpoints: True
-upload_repo_name: 'phase1_qwen2.5_0.5b_cxg'
+upload_repo_name: 'phase1_qwen2.5_0.5b_gh'
 resume_from_checkpoint: False
 
 # Dataset and Sampler
@@ -31,9 +31,9 @@ resume_from_checkpoint: False
 
 dataset:
   # Use the custom builder function from the modified file
-  _component_: tuning.custom_datasets.codexglue.text_completion_dataset
+  _component_: tuning.custom_datasets.github.text_completion_dataset
   # source, column, split, add_eos etc are arguments to the builder function
-  source: google/code_x_glue_cc_code_completion_token
+  source: lizchu413/github_1m
   column: code
   split: train[:100%]
   packed: True # VERY IMPORTANT
@@ -74,7 +74,7 @@ compile: True # torch.compile the model + loss, True increases speed + decreases
 # Logging
 metric_logger:
   _component_: torchtune.training.metric_logging.DiskLogger
-  log_dir: ./logs/qwen2_5_0_5b/vanilla_cxg/
+  log_dir: ./logs/qwen2_5_0_5b/vanilla_gh/
 log_every_n_steps: 1
 log_peak_memory_stats: True
 
