@@ -232,14 +232,8 @@ def text_completion_dataset(
 if __name__ == "__main__":
     from torchtune.models.qwen2_5._tokenizer import QWEN2_5_SPECIAL_TOKENS, Qwen2_5Tokenizer
     tokenizer = Qwen2_5Tokenizer(path = "tmp/vocab.json", merges_file = "tmp/merges.txt", max_seq_len = 4096)
-    sources = [
-        "Nan-Do/code-search-net-python",
-        "Nan-Do/code-search-net-go",
-        "Nan-Do/code-search-net-php",
-        "Nan-Do/code-search-net-javascript",
-        "Nan-Do/code-search-net-java",
-        "Nan-Do/code-search-net-ruby"]
-    dataset = text_completion_dataset(tokenizer, sources, "code")
+    source = "lizchu413/github_1m"
+    dataset = text_completion_dataset(tokenizer, source, "code")
     for i in range(5):
         print(dataset[i])
     
