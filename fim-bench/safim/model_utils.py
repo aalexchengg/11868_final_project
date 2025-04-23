@@ -663,7 +663,7 @@ def build_model(args: Namespace) -> ModelWrapper:
         model_wrapper = SantacoderModel(args.model_name, 2048, args.block_comments)
     elif args.model_name.startswith("ise-uiuc/Magicoder"):
         model_wrapper = MagicCoderModel(args.model_name, 4096, args.block_comments)
-    elif "qwen" is in args.model_name.lower():
+    elif "qwen" in args.model_name.lower():
         model_wrapper = QwenModel(args.model_name, 8192, args.block_comments)
     else:
         raise ValueError(args.model_name)
