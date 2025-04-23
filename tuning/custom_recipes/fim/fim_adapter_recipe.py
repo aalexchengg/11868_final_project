@@ -1098,7 +1098,7 @@ class AdapterFinetuneRecipeSingleDevice(FTRecipeInterface):
                                 step=self.global_step,
                             )
 
-                            if prev_loss is not None and eval_loss_ff > prev_loss:
+                            if prev_loss is not None and eval_loss_ff >= prev_loss:
                                 self._model.load_state_dict(
                                     prev_param_dict, strict=False
                                 )
