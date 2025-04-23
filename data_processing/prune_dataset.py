@@ -1,13 +1,20 @@
 from datasets import load_dataset
 import datasets
 import argparse
-from transformers import Trainer, TrainingArguments, AutoModelForCausalLM, AutoTokenizer
+from transformers import (
+    Trainer,
+    TrainingArguments,
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    set_seed,
+)
 
 # fim imports
 from typing import Optional, Dict, List
 import random
 import logging
 import evaluate
+import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -118,7 +125,6 @@ def tokenize_and_align(tokenizer):
 def get_dataset(args, tokenizer, token_mapping):
     # load from huggingface
     ds = load_dataset(args.dataset, split="train", streaming=False)
-    ds = ds.select(list(range(100)))
     # first we need to tokenize
     ds = ds.map(tokenize_and_align(tokenizer), batched=True)
     # then we need to generate labels with fim
@@ -136,10 +142,24 @@ def compute_metrics(eval_preds):
     return metric.compute(predictions=preds, references=labels)
 
 
-def top_k(eval_preds):
-    print(eval_preds.shape)
-    eval_predictions = np.argmax(eval_preds.predictions, axis=2)
-    raise AssertionError("stop here")
+def top_k(predictions, labels, p):
+    """
+    takes in the predictions and labels, as well as the percent of samples we are taking
+    and return p% of those indices of those with lowest probability and highest variance
+    """
+    # predictions should have shape dataset size x sequence length x vocab length
+    # labels should have shape dataset size x sequence length
+    k = int(len(predictions) * p)
+    if len(labels.shape) == 2:  # expand dims if necessary
+        labels = np.expand_dims(labels, axis=2)
+    probabilities = np.take_along_axis(
+        predictions, labels, axis=2
+    ).squeeze()  # shape of (dataset size, seq length)
+    averages = np.mean(probabilities, axis=1)
+    averages = np.argsort(averages)[:k]  # only take top k
+    variances = np.std(probabilities, axis=1)
+    variances = np.argsort(variances)[::-1][:k]  # reverse, and then only take top k
+    return averages, variances
 
 
 def main(args):
@@ -164,7 +184,8 @@ def main(args):
         output_dir="yelp_review_classifier",
         push_to_hub=False,
         eval_strategy="no",
-        per_device_eval_batch_size=32,
+        per_device_train_batch_size=4,
+        per_device_eval_batch_size=2,
     )
     trainer = Trainer(
         model=model,
@@ -173,17 +194,30 @@ def main(args):
         eval_dataset=None,
         compute_metrics=compute_metrics,
     )
+    print("beginning train.")
     trainer.train()
     # step two: run predictions and get the probability of the tokens
     print("Getting predictions")
     trainer_preds = trainer.predict(dataset)
     # step three: sort by probability and only take the top p% of tokens
+    average_idx, variance_idx = top_k(
+        trainer_preds.predictions, trainer_preds.labels, args.p
+    )
+    # step four: push the new dataset to the hub
+    dataset_name = args.dataset.split("/")[1]  # get back half
+    average_subset = dataset.select(average_idx)
+    average_subset.push_to_hub(f"aalexchengg/{dataset_name}_avg_subset")
+
+    variance_subset = dataset.select(variance_idx)
+    variance_subset.push_to_hub(f"aalexchengg/{dataset_name}_variance_subset")
     # step four: push the new dataset to the hub
 
     print("All finished.")
 
 
 if __name__ == "__main__":
+    set_seed(15122)
     parser = setup_parser()
     args = parser.parse_args()
+    logger.setLevel(logging.INFO)
     main(args)
