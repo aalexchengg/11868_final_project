@@ -47,7 +47,7 @@ make_fim:
 
 seed: 15122
 shuffle: True
-batch_size: 12
+batch_size: 4
 
 # Optimizer and Scheduler
 optimizer:
