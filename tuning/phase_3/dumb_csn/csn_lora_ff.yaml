@@ -84,7 +84,7 @@ dataset:
       'aalexchengg/code-search-net-go_avg_subset',
     ]
   column: code
-  split: train[4:100%]
+  split: train[2:100%]
   verbose: False # Enable verbose logging in the dataset
   packed: True # VERY IMPORTANT - Uncommented to ensure proper packing is used
 
@@ -116,7 +116,7 @@ fast_forward:
         'aalexchengg/code-search-net-go_avg_subset',
       ]
     column: code
-    split: train[:4]
+    split: train[:2]
     verbose: False # Enable verbose logging in the dataset
     packed: True # VERY IMPORTANT - Uncommented to ensure proper packing is used
 
