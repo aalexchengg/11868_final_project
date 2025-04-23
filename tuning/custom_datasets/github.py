@@ -53,7 +53,7 @@ class TextCompletionDataset(Dataset):
     def __init__(
         self,
         tokenizer: ModelTokenizer,
-        sources: str,
+        source: str,
         column: str = "text",
         add_eos: bool = False,
         filter_fn: Optional[Callable] = None,
@@ -63,7 +63,7 @@ class TextCompletionDataset(Dataset):
         self._tokenizer = tokenizer
         self._column = column
         self.add_eos = add_eos
-        self._sources = sources  # Store source for checking
+        self._source = source # Store source for checking
         self.verbose = verbose
 
         self.eos_id = self._tokenizer.eos_id
@@ -217,7 +217,7 @@ def text_completion_dataset(
     # Pass all arguments, including split via kwargs, to the constructor
     ds = TextCompletionDataset(
         tokenizer=tokenizer,
-        sources=source,
+        source=source,
         column=column,
         add_eos=add_eos,
         filter_fn=filter_fn,
