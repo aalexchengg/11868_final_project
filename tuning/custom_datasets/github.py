@@ -53,7 +53,7 @@ class TextCompletionDataset(Dataset):
     def __init__(
         self,
         tokenizer: ModelTokenizer,
-        sources: List[str],
+        sources: str,
         column: str = "text",
         add_eos: bool = False,
         filter_fn: Optional[Callable] = None,
@@ -68,12 +68,10 @@ class TextCompletionDataset(Dataset):
 
         self.eos_id = self._tokenizer.eos_id
 
-        temp = []
-        for source in sources:
-            log.info(f"Loading dataset from source {source}")
-            dataset = load_dataset(source, split ="train", streaming = False)
-            temp.append(dataset)
-        self._data = concatenate_datasets(temp)
+        log.info(f"Loading dataset from source {source}")
+        dataset = load_dataset(source, split ="train", streaming = False)
+
+        self._data = dataset
         self._data = self._data.map(github_format_fn, batched = True)
         if filter_fn is not None:
             log.info("Applying filter function to the dataset.")
@@ -161,7 +159,7 @@ class TextCompletionDataset(Dataset):
 
 def text_completion_dataset(
     tokenizer: ModelTokenizer,
-    sources: List[str],
+    source: str,
     column: str = "text",
     add_eos: bool = False,
     packed: bool = False,  # IGNORED
@@ -219,7 +217,7 @@ def text_completion_dataset(
     # Pass all arguments, including split via kwargs, to the constructor
     ds = TextCompletionDataset(
         tokenizer=tokenizer,
-        sources=sources,
+        sources=source,
         column=column,
         add_eos=add_eos,
         filter_fn=filter_fn,
