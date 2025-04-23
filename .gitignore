@@ -8,6 +8,8 @@ fim-bench/cclongeval/processed_data/
 
 tuning/adapter_tune/torchtune/
 
+data_processing/yelp_review_classifier/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

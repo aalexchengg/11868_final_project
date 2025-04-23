@@ -369,14 +369,17 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
             "ff_collate_fn", "torchtune.data.padded_collate_sft"
         )
 
-        if self.do_ff:
+        # enables FF in training loop
+        # if self.do_ff:
+            self.ff_val_loss_every_iter = cfg.fast_forward.ff_val_loss_every_iter
+            self.ff_verbose = cfg.fast_forward.verbose
             self.evaluate_every = cfg.fast_forward.evaluate_every
             self.num_stabilization_steps = cfg.fast_forward.num_stabilization_steps
             self.ff_dataset = cfg.fast_forward.ff_dataset
             self.ff_dataloader = self._setup_data(
                 cfg_dataset=self.ff_dataset,
                 shuffle=False,
-                batch_size=cfg.fast_forward.ff_batch_size,
+                batch_size=cfg.batch_size,
                 collate_fn=self.ff_collate_fn,
                 cfg_fim=None,
             )
@@ -712,35 +715,58 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
 
         return loss
 
-    def evaluate_ff(self):
-        with torch.no_grad():
-            self._model.eval()
-            losses = []
-            for step, batch in enumerate(self.ff_dataloader):
-                utils.batch_to_device(batch, self._device)
-                labels = batch.pop("labels")
-                logits = self._model(**batch)
+    def _evaluate_loss_on_dataloader(self, dataloader: StatefulDataLoader) -> float:
+        """Evaluates the model loss on the provided dataloader."""
+        # Ensure model is in eval mode and restore original mode afterwards
+        original_mode = self._model.training
+        self._model.eval()
+        # log.debug(f"Starting evaluation on dataloader...")
+        total_loss = 0.0
+        total_batches = 0
+        try:
+            with torch.no_grad():
+                for step, batch in enumerate(dataloader):
+                    utils.batch_to_device(batch, self._device)
+                    labels = batch.pop("labels")
 
-                print(f"labels[:10]: {labels[:10]}")
-                print(f"logits[:10]: {logits[:10]}")
+                    logits = self._model(**batch)
 
-                labels = torch.hstack(
-                    (labels[..., 1:], self.ignore_labels_cache[: labels.shape[0]])
-                )
+                    # Create ignore tensor dynamically based on current batch size
+                    current_batch_size = labels.shape[0]
+                    ignore_tensor = torch.full(
+                        (current_batch_size, 1),
+                        self._loss_fn.ignore_index,
+                        device=self._device,
+                    )
+                    # Shift labels
+                    labels = torch.hstack((labels[..., 1:], ignore_tensor))
 
-                if not isinstance(logits, list):
-                    labels = labels.reshape(-1)
-                    logits = logits.reshape(-1, logits.size(-1))
+                    if not isinstance(logits, list):
+                        labels = labels.reshape(-1)
+                        logits = logits.reshape(-1, logits.size(-1))
 
-                loss = self._loss_fn(logits, labels)
+                    loss = self._loss_fn(logits, labels)
 
-                del logits
+                    total_loss += loss.item()
+                    total_batches += 1
+                    del logits  # Free memory
 
-                losses.append(loss)
+        except Exception as e:
+            log.error(f"Error during evaluation step {step}: {e}")
+            # Optionally re-raise or handle differently
+            # For now, return NaN if evaluation fails mid-way
+            return float("nan")
+        finally:
+            # Ensure model is set back to original mode even if errors occur
+            self._model.train(original_mode)
+            # log.debug(f"Finished evaluation. Model mode restored to {original_mode}.")
 
-            log.info(f"Losses: {losses}")
-            loss = torch.cat(losses).mean()
-            return loss.item()
+        if total_batches == 0:
+            log.warning("Evaluation dataloader was empty. Returning NaN.")
+            return float("nan")
+
+        avg_loss = total_loss / total_batches
+        return avg_loss
 
     def train(self) -> None:
         """
@@ -821,14 +847,16 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
                         loss_to_log = running_loss.item() / num_tokens
                         pbar.update(1)
                         pbar.set_description(
-                            f"{curr_epoch + 1}|{self.global_step}|Loss: {loss_to_log}"
+                            f"{curr_epoch + 1}|{self.global_step}|Loss: {loss_to_log:.4f}|Eval: {eval_loss:.4f}"
                         )
 
                         # Log per-step metrics
                         if self.global_step % self._log_every_n_steps == 0:
                             time_per_step = time.perf_counter() - t0
                             log_dict = {
-                                "loss": loss_to_log,
+                                "train_loss": loss_to_log,  # Renamed for clarity
+                                "eval_loss": eval_loss,
+                                # "loss": loss_to_log, # Keep original loss key if needed by other tools
                                 "lr": self._optimizer.param_groups[0]["lr"],
                                 "tokens_per_second_per_gpu": num_tokens / time_per_step,
                             }
@@ -906,23 +934,36 @@ class LoRAFinetuneRecipeSingleDevice(FTRecipeInterface):
                             param_dict.update(results)
                             self._model.load_state_dict(param_dict, strict=False)
 
-                            # Set model to eval mode
-                            self._model.eval()
+                            # Evaluate using the refactored function
+                            # No need to manage model mode here, _evaluate_loss_on_dataloader handles it
+                            eval_loss_ff = self._evaluate_loss_on_dataloader(
+                                self.ff_dataloader
+                            )
 
                             fast_forward_step += 1
-                            total_loss = self.evaluate_ff()
+                            self.global_step += 1
 
-                            log.info(f"FF step {fast_forward_step}, loss: {total_loss}")
+                            if self.ff_verbose:
+                                log.info(
+                                    f"FF step {fast_forward_step}, loss: {eval_loss_ff}"
+                                )
 
-                            self._model.train()
+                            ff_log_dict = {
+                                "ff_loss": eval_loss_ff,  # Use the evaluated loss
+                                "ff_step": fast_forward_step,
+                            }
+                            self._metric_logger.log_dict(
+                                ff_log_dict,
+                                step=self.global_step,
+                            )
 
-                            if prev_loss is not None and total_loss > prev_loss:
+                            if prev_loss is not None and eval_loss_ff > prev_loss:
                                 self._model.load_state_dict(
                                     prev_param_dict, strict=False
                                 )
                                 break
 
-                            prev_loss = total_loss
+                            prev_loss = eval_loss_ff  # Store the evaluated loss
 
                         next_predictor_step = next_predictor_step + self.evaluate_every
                         param_dict.update(param_dict_empty)

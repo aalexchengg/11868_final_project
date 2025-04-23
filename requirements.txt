@@ -17,3 +17,5 @@ python-Levenshtein==0.27.1
 pyparsing==3.2.3
 huggingface_hub==0.29.3
 beautifulsoup4==4.13.4
+evaluate==0.4.3
+scikit-learn==1.6.1

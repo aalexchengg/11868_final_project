@@ -88,6 +88,7 @@ make_fim:
 
 fast_forward:
   do_ff: False # whether to do FF
+  ff_val_loss_every_iter: True
   evaluate_every: 4 # How many GD steps between FF runs
   num_stabilization_steps: 10 # how many initial GD steps to take in epoch 0 before starting any FF runs
   verbose: True # whether to include debug output about the FF process
@@ -125,7 +126,7 @@ epochs: 5
 max_steps_per_epoch: null
 gradient_accumulation_steps: 1 # Use to increase effective batch size
 clip_grad_norm: null
-compile: False # Changed to False for initial debugging - prevents potential issues with FIM
+compile: True # Changed to False for initial debugging - prevents potential issues with FIM
 
 # Logging
 metric_logger:
