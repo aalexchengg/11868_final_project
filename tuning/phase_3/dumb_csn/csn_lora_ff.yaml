@@ -105,18 +105,10 @@ fast_forward:
   # TODO - CHANGE THIS TO BE A 'REAL' VALIDATION SET
   # ff_collate_fn: None
   ff_dataset:
-    _component_: tuning.custom_datasets.codesearchnet.text_completion_dataset
-    sources:
-      [
-        'aalexchengg/code-search-net-python_avg_subset',
-        'aalexchengg/code-search-net-java_avg_subset',
-        'aalexchengg/code-search-net-javascript_avg_subset',
-        'aalexchengg/code-search-net-ruby_avg_subset',
-        'aalexchengg/code-search-net-php_avg_subset',
-        'aalexchengg/code-search-net-go_avg_subset',
-      ]
+    _component_: tuning.custom_datasets.codexglue.text_completion_dataset
+    source: google/code_x_glue_cc_code_completion_token
     column: code
-    split: train[:2]
+    split: test[:16]
     verbose: False # Enable verbose logging in the dataset
     packed: True # VERY IMPORTANT - Uncommented to ensure proper packing is used
 
