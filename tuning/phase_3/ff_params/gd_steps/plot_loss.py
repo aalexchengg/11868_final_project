@@ -158,7 +158,7 @@ def _generate_plot(
         return
 
     fig, ax = plt.subplots(figsize=(12, 7))
-    title = f"Training Loss Comparison ({plot_type.replace('_', ' ').title()})"
+    title = f"Testing Loss Comparison ({plot_type.replace('_', ' ').title()})"
     xlabel = "Cumulative Step" if plot_type == "cumulative" else "GD Step Count"
     _setup_plot_style(ax, title=title, xlabel=xlabel)
 
