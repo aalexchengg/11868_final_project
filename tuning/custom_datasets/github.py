@@ -9,17 +9,59 @@
 import random  # Add import
 from typing import Any, Callable, Dict, List, Mapping, Optional, Union
 
+from bs4 import BeautifulSoup
 from datasets import load_dataset, concatenate_datasets
 from torch.utils.data import Dataset
 from torchtune.data._utils import truncate
 from torchtune.datasets._packed import PackedDataset
 from torchtune.modules.transforms.tokenizers import ModelTokenizer
 from torchtune import utils  # Import torchtune utils
-from format_fns import github_format_fn
+from .format_fns import github_format_fn
+import numpy as np
+import os
 
 # Use the torchtune logger with DEBUG level
 log = utils.get_logger("DEBUG")
 
+def filter(example):
+    code = example['code']
+    code_lang = example['language']
+    # note that github takes 'path' instead of 'source'
+    # else statements above to accommodate for the stack, remove for standardized
+    lines = code.split('\n')
+    lens = np.array([len(line) for line in lines])
+
+    # assuming newlines exist
+    if '\n' not in code: return False
+
+    # not empty
+    if len(code) == 0: return False
+
+    # avg line length > 100 or max line length > 1000
+    if np.mean(lens) > 100 or np.max(lens) > 1000: return False
+
+    # fewer than 25% alphabetic characters
+    alpha_proportion = sum(1 for char in code if char.isalpha()) / float(len(code))
+    if alpha_proportion < 0.25: return False
+
+    # other than XSLT check for <?xml version=
+    code_prefix = code[:100]
+    if code_lang != "XSLT" and "<?xml version=" in code_prefix: return False
+
+    # visible text constitutes >= 20% of code, no less than 100 characters
+    if code_lang == "HTML":
+        soup = BeautifulSoup(code, 'html.parser')
+        for tag in soup(['script', 'style']):
+            tag.decompose()
+
+        visible_text = soup.get_text(separator=' ', strip=True)
+        visible_char_count = len(visible_text)
+        if visible_char_count < 100 or visible_char_count / float(len(code)) < 0.2: return False
+
+    # json and yaml files character count from 50 to 5000
+    if code_lang == "YAML" or "JSON" in code_lang:
+        if len(code) < 50 or len(code) > 5000: return False
+    return True
 
 class TextCompletionDataset(Dataset):
     """
@@ -53,7 +95,7 @@ class TextCompletionDataset(Dataset):
     def __init__(
         self,
         tokenizer: ModelTokenizer,
-        sources: List[str],
+        source: str,
         column: str = "text",
         add_eos: bool = False,
         filter_fn: Optional[Callable] = None,
@@ -63,17 +105,15 @@ class TextCompletionDataset(Dataset):
         self._tokenizer = tokenizer
         self._column = column
         self.add_eos = add_eos
-        self._sources = sources  # Store source for checking
+        self._source = source # Store source for checking
         self.verbose = verbose
 
         self.eos_id = self._tokenizer.eos_id
 
-        temp = []
-        for source in sources:
-            log.info(f"Loading dataset from source {source}")
-            dataset = load_dataset(source, split ="train", streaming = False)
-            temp.append(dataset)
-        self._data = concatenate_datasets(temp)
+        log.info(f"Loading dataset from source {source}")
+        dataset = load_dataset(source, streaming = False, **load_dataset_kwargs)
+
+        self._data = dataset
         self._data = self._data.map(github_format_fn, batched = True)
         if filter_fn is not None:
             log.info("Applying filter function to the dataset.")
@@ -161,7 +201,7 @@ class TextCompletionDataset(Dataset):
 
 def text_completion_dataset(
     tokenizer: ModelTokenizer,
-    sources: List[str],
+    source: str,
     column: str = "text",
     add_eos: bool = False,
     packed: bool = False,  # IGNORED
@@ -219,10 +259,10 @@ def text_completion_dataset(
     # Pass all arguments, including split via kwargs, to the constructor
     ds = TextCompletionDataset(
         tokenizer=tokenizer,
-        sources=sources,
+        source=source,
         column=column,
         add_eos=add_eos,
-        filter_fn=filter_fn,
+        filter_fn=filter,
         verbose=verbose,
         **load_dataset_kwargs,  # Includes 'split' if provided in config/call
     )
@@ -232,14 +272,8 @@ def text_completion_dataset(
 if __name__ == "__main__":
     from torchtune.models.qwen2_5._tokenizer import QWEN2_5_SPECIAL_TOKENS, Qwen2_5Tokenizer
     tokenizer = Qwen2_5Tokenizer(path = "tmp/vocab.json", merges_file = "tmp/merges.txt", max_seq_len = 4096)
-    sources = [
-        "Nan-Do/code-search-net-python",
-        "Nan-Do/code-search-net-go",
-        "Nan-Do/code-search-net-php",
-        "Nan-Do/code-search-net-javascript",
-        "Nan-Do/code-search-net-java",
-        "Nan-Do/code-search-net-ruby"]
-    dataset = text_completion_dataset(tokenizer, sources, "code")
+    source = "lizchu413/github_1m"
+    dataset = text_completion_dataset(tokenizer, source, "code")
     for i in range(5):
         print(dataset[i])
     

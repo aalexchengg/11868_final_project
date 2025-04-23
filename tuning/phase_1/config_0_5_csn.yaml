@@ -1,4 +1,4 @@
-output_dir: /ocean/projects/cis240137p/lchu2/torchtune/qwen2_5_0_5b/vanilla_single_device
+output_dir: /local/torchtune/qwen2_5_0_5b/vanilla_single_device
 # using project storage for psc
 # /tmp may be deleted by your system. Change it to your preference.
 
@@ -13,7 +13,7 @@ tokenizer:
   max_seq_len: 4096
 
 checkpointer:
-  _component_: torchtune.training.FullModelHFCheckpointer
+  _component_: tuning.custom_qwen.qwen2_5.CustomFullModelHFCheckpointer
   checkpoint_dir: /tmp/Qwen2_5-0_5B-Base
   checkpoint_files: [model.safetensors]
   recipe_checkpoint: null
@@ -21,7 +21,7 @@ checkpointer:
   model_type: QWEN2
 
 upload_final_checkpoint: True
-upload_repo_name: 'qwen2-0.5b-vanilla-single-device'
+upload_repo_name: 'phase1_qwen2.5_0.5b_csn'
 resume_from_checkpoint: False
 
 # Dataset and Sampler
@@ -31,18 +31,29 @@ resume_from_checkpoint: False
 
 dataset:
   # Use the custom builder function from the modified file
-  _component_: custom_datasets.text_completion_dataset
+  _component_: tuning.custom_datasets.codesearchnet.text_completion_dataset
   # source, column, split, add_eos etc are arguments to the builder function
-  source: google/code_x_glue_cc_code_completion_token
+  sources: [
+        "Nan-Do/code-search-net-python",
+        "Nan-Do/code-search-net-go",
+        "Nan-Do/code-search-net-php",
+        "Nan-Do/code-search-net-javascript",
+        "Nan-Do/code-search-net-java",
+        "Nan-Do/code-search-net-ruby"]
   column: code
-  add_eos: True
   split: train[:100%]
   packed: True # VERY IMPORTANT
-  fim_prob: 1.0
 
-seed: null
+make_fim:
+  convert_to_fim: True # whether to convert dataset to FIM
+  fim_prob: 1.0 # prob a single sample is converted to FIM
+  min_fim_middle_percent: 0.01 # min length of middle portion as percent of total length
+  max_fim_middle_percent: 0.1 # max length of middle portion as percent of total length
+  verbose: False # whether to include debug output about the FIM-transformation process
+
+seed: 15122
 shuffle: True
-batch_size: 12
+batch_size: 4
 
 # Optimizer and Scheduler
 optimizer:
@@ -60,7 +71,7 @@ loss:
   _component_: torchtune.modules.loss.CEWithChunkedOutputLoss
 
 # Training
-epochs: 5
+epochs: 3
 max_steps_per_epoch: null
 gradient_accumulation_steps: 32 # Use to increase effective batch size
 clip_grad_norm: 1
@@ -69,7 +80,7 @@ compile: True # torch.compile the model + loss, True increases speed + decreases
 # Logging
 metric_logger:
   _component_: torchtune.training.metric_logging.DiskLogger
-  log_dir: /ocean/projects/cis240137p/lchu2/logs/vanilla_0_5B
+  log_dir: ./logs/qwen2_5_0_5b/vanilla_csn/
 log_every_n_steps: 1
 log_peak_memory_stats: True
 

@@ -15,7 +15,8 @@ from torchtune.data._utils import truncate
 from torchtune.datasets._packed import PackedDataset
 from torchtune.modules.transforms.tokenizers import ModelTokenizer
 from torchtune import utils  # Import torchtune utils
-from format_fns import csn_format_fn
+from .format_fns import csn_format_fn
+from .github import filter
 
 # Use the torchtune logger with DEBUG level
 log = utils.get_logger("DEBUG")
@@ -222,7 +223,7 @@ def text_completion_dataset(
         sources=sources,
         column=column,
         add_eos=add_eos,
-        filter_fn=filter_fn,
+        filter_fn=filter,
         verbose=verbose,
         **load_dataset_kwargs,  # Includes 'split' if provided in config/call
     )
