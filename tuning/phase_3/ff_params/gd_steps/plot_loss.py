@@ -151,7 +151,7 @@ def _generate_plot(
     """
     Internal helper to generate and save a specific type of plot.
     'cumulative': Segmented FF runs, MA for regular.
-    'gd_steps_only': Only GD steps, MA applied to all.
+    'gd_steps_only': Only GD steps (sequential count), MA applied to all.
     """
     if not run_data_list:
         print("No run data provided to _generate_plot.")
@@ -159,7 +159,7 @@ def _generate_plot(
 
     fig, ax = plt.subplots(figsize=(12, 7))
     title = f"Training Loss Comparison ({plot_type.replace('_', ' ').title()})"
-    xlabel = "Cumulative Step" if plot_type == "cumulative" else "GD Step"
+    xlabel = "Cumulative Step" if plot_type == "cumulative" else "GD Step Count"
     _setup_plot_style(ax, title=title, xlabel=xlabel)
 
     colors = cm.viridis(np.linspace(0.1, 0.9, len(run_data_list)))
@@ -171,14 +171,18 @@ def _generate_plot(
         run = run_orig.copy()
         run["parsed_data"] = run_orig["parsed_data"].copy()
         run["parsed_data"]["data"] = list(run_orig["parsed_data"].get("data", []))
-
         run_type = run["parsed_data"].get("type", "empty")
+
         if run_type == "empty" or not run["parsed_data"]["data"]:
             continue
 
         data_points = run["parsed_data"]["data"]
-        plot_points_final = []
+        # These hold the data *after* filtering for the specific plot type
+        plot_points_final_full = []  # Holds full tuples for cumulative FF plot
+        line_plot_pairs = []  # Holds (x, y) pairs for line plotting / MA
         plot_run_type_for_plot = run_type
+        x_axis_points_for_limits = []
+        y_axis_points_for_limits = []
 
         if plot_type == "gd_steps_only":
             gd_points_raw = [p for p in data_points if p[2] != "ff"]
@@ -186,82 +190,74 @@ def _generate_plot(
                 gd_points_filtered = [p for p in gd_points_raw if p[3] <= max_steps]
             else:
                 gd_points_filtered = gd_points_raw
-            plot_points_final = [
-                (p[3], p[1]) for p in gd_points_filtered
-            ]  # (log_step, value)
-            plot_run_type_for_plot = (
-                "regular"  # Treat all as regular lines for this plot
-            )
-            x_idx, y_idx = 0, 1
+
+            gd_step_count = 0
+            for p in gd_points_filtered:
+                gd_step_count += 1
+                line_plot_pairs.append((gd_step_count, p[1]))
+            plot_run_type_for_plot = "regular"
+            x_axis_points_for_limits = [p[0] for p in line_plot_pairs]
+            y_axis_points_for_limits = [p[1] for p in line_plot_pairs]
 
         elif plot_type == "cumulative":
             if max_steps is not None:
                 cumul_points_filtered = [p for p in data_points if p[0] <= max_steps]
             else:
                 cumul_points_filtered = data_points
-            plot_points_final = (
-                cumul_points_filtered  # (cumul_step, value, type, log_step)
-            )
-            x_idx, y_idx = 0, 1
-
+            # Store full tuples for potential segmented plotting
+            plot_points_final_full = cumul_points_filtered
+            # Also create the (x,y) pairs needed for regular lines or MA base
+            line_plot_pairs = [(p[0], p[1]) for p in cumul_points_filtered]
+            x_axis_points_for_limits = [p[0] for p in line_plot_pairs]
+            y_axis_points_for_limits = [p[1] for p in line_plot_pairs]
         else:
             raise ValueError(f"Unknown plot_type: {plot_type}")
 
-        if not plot_points_final:
+        # Check if there are any points left to plot for this run
+        if not x_axis_points_for_limits:  # If no x-values, skip run for this plot
             print(
                 f"Skipping run '{run['label']}' for plot '{plot_type}' after filtering."
             )
             continue
 
-        run["plot_points"] = plot_points_final
+        # Store the prepared data for the plotting loop
+        run["plot_points_full"] = plot_points_final_full  # Used by cumulative FF plot
+        run["line_plot_pairs"] = line_plot_pairs  # Used by regular plot and MA
         run["plot_run_type"] = plot_run_type_for_plot
         run["color"] = colors[i]
         plot_data_prepared.append(run)
 
-        all_steps_plot.extend([p[x_idx] for p in plot_points_final])
-        all_losses_plot.extend([p[y_idx] for p in plot_points_final])
+        # Collect points for overall axis limits
+        all_steps_plot.extend(x_axis_points_for_limits)
+        all_losses_plot.extend(y_axis_points_for_limits)
 
     if not plot_data_prepared:
         print(f"No data left to plot for plot type '{plot_type}'.")
         plt.close(fig)
         return
 
+    # --- Plotting Logic ---
     for run in plot_data_prepared:
         label = run["label"]
         plot_run_type = run["plot_run_type"]
-        plot_points = run["plot_points"]
+        # Use the pre-calculated pairs for line plotting
+        line_points_for_plot = run["line_plot_pairs"]
         base_color = run["color"]
 
         if plot_run_type == "regular":  # Handles regular runs and gd_steps_only plot
-            # Ensure we have (step, value) pairs for plotting/MA
-            if plot_type == "cumulative":
-                # plot_points is [(cumul_step, value, type, log_step)]
-                line_points_for_plot = [(p[0], p[1]) for p in plot_points]
-            elif plot_type == "gd_steps_only":
-                # plot_points is already [(gd_step, value)]
-                line_points_for_plot = plot_points
-            else:
-                line_points_for_plot = []  # Should not happen
-
             plot_steps, plot_losses = [], []
             if line_points_for_plot:
                 _apply_ma = moving_average_window > 0
-                # Don't apply MA to cumulative plot if original run was FF (handled by segments)
-                # Note: This check might be redundant now as FF runs have plot_run_type = 'ff' for cumulative
-                # Keeping it just in case structure changes, but the primary path is plot_run_type == 'ff'
-                if plot_type == "cumulative" and run["parsed_data"]["type"] == "ff":
-                    _apply_ma = False
-
                 if _apply_ma:
-                    # Pass the correctly formatted (step, value) pairs to MA
                     smoothed = calculate_moving_average(
                         line_points_for_plot, moving_average_window
                     )
                     if smoothed:
                         plot_steps, plot_losses = zip(*smoothed)
                 else:
-                    # Unpack the correctly formatted (step, value) pairs
-                    plot_steps, plot_losses = zip(*line_points_for_plot)
+                    # This list now guaranteed contains (step, value) pairs
+                    if line_points_for_plot:
+                        plot_steps, plot_losses = zip(*line_points_for_plot)
 
             if plot_steps:
                 (line,) = ax.plot(
@@ -273,10 +269,9 @@ def _generate_plot(
                 )
                 legend_handles.append(line)
 
-        elif (
-            plot_run_type == "ff" and plot_type == "cumulative"
-        ):  # Segmented plot for cumulative FF
-            data_points_ff = plot_points  # (cumul_step, value, type, log_step)
+        elif plot_run_type == "ff" and plot_type == "cumulative":
+            # Segmented plot for cumulative FF - uses plot_points_full
+            data_points_ff = run["plot_points_full"]  # Use the full data tuples here
             if moving_average_window > 0:
                 print(
                     f"Warning: MA ignored for cumulative FF run '{label}' due to segmented plotting."
@@ -295,7 +290,7 @@ def _generate_plot(
                 if current_seg_type != prev_seg_type or is_last:
                     end_idx = i + 1 if is_last else i
                     seg_raw = data_points_ff[start_index:end_idx]
-                    seg_steps = [p[0] for p in seg_raw]
+                    seg_steps = [p[0] for p in seg_raw]  # Use cumul_step (index 0)
                     seg_vals = [p[1] for p in seg_raw]
                     seg_color = "forestgreen" if prev_seg_type == "ff" else base_color
                     if last_point:
@@ -328,7 +323,7 @@ def _generate_plot(
                 )
                 legend_handles.append(line)
 
-    # Finalize plot
+    # --- Finalize Plot ---
     if all_steps_plot:
         min_step, max_step = min(all_steps_plot), max(all_steps_plot)
         xlim_left = (
