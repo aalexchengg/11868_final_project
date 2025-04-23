@@ -110,11 +110,11 @@ optimizer:
   _component_: torch.optim.AdamW
   fused: True
   weight_decay: 0.01 # from propulsion paper
-  lr: 5e-5
+  lr: 5e-3 # need high LR for propulsion, otherwise weights literally don't change
 
 lr_scheduler:
   _component_: torchtune.training.lr_schedulers.get_cosine_schedule_with_warmup
-  num_warmup_steps: 20
+  num_warmup_steps: 25
 
 loss:
   _component_: torchtune.modules.loss.CEWithChunkedOutputLoss

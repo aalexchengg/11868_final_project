@@ -111,7 +111,7 @@ optimizer:
   _component_: torch.optim.AdamW
   fused: True
   weight_decay: 0.01 # from propulsion paper
-  lr: 5e-5
+  lr: 5e-3 # need high LR for propulsion, otherwise weights literally don't change
 
 lr_scheduler:
   _component_: torchtune.training.lr_schedulers.get_cosine_schedule_with_warmup
@@ -124,7 +124,7 @@ loss:
 epochs: 5
 max_steps_per_epoch: null
 gradient_accumulation_steps: 1 # Use to increase effective batch size
-clip_grad_norm: null
+clip_grad_norm: 1
 compile: True # torch.compile the model + loss, True increases speed + decreases memory
 
 # Logging
@@ -137,7 +137,7 @@ log_peak_memory_stats: True
 # Environment
 device: cuda
 # NOTE - set to 'fp32' instead of bf16 because running on RTX 2070 on Jackson's Desktop - Change on PSC
-dtype: fp32
+dtype: bf16
 
 # Activations Memory - leave on for 2070
 enable_activation_checkpointing: False # True reduces memory a lot, medium perf impact
