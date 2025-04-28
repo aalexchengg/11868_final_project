@@ -69,13 +69,17 @@ class TextCompletionDataset(Dataset):
 
         self.eos_id = self._tokenizer.eos_id
 
+        split = load_dataset_kwargs.pop(
+            "split", "train"
+        )  # Get split, remove from kwargs passed down
+
         temp = []
         for source in sources:
             log.info(f"Loading dataset from source {source}")
-            dataset = load_dataset(source, split ="train", streaming = False)
+            dataset = load_dataset(source, split=split, streaming=False)
             temp.append(dataset)
         self._data = concatenate_datasets(temp)
-        self._data = self._data.map(csn_format_fn, batched = True)
+        self._data = self._data.map(csn_format_fn, batched=True)
         if filter_fn is not None:
             log.info("Applying filter function to the dataset.")
             self._data = self._data.filter(filter_fn)
@@ -230,17 +234,24 @@ def text_completion_dataset(
 
     return ds
 
+
 if __name__ == "__main__":
-    from torchtune.models.qwen2_5._tokenizer import QWEN2_5_SPECIAL_TOKENS, Qwen2_5Tokenizer
-    tokenizer = Qwen2_5Tokenizer(path = "tmp/vocab.json", merges_file = "tmp/merges.txt", max_seq_len = 4096)
+    from torchtune.models.qwen2_5._tokenizer import (
+        QWEN2_5_SPECIAL_TOKENS,
+        Qwen2_5Tokenizer,
+    )
+
+    tokenizer = Qwen2_5Tokenizer(
+        path="tmp/vocab.json", merges_file="tmp/merges.txt", max_seq_len=4096
+    )
     sources = [
         "Nan-Do/code-search-net-python",
         "Nan-Do/code-search-net-go",
         "Nan-Do/code-search-net-php",
         "Nan-Do/code-search-net-javascript",
         "Nan-Do/code-search-net-java",
-        "Nan-Do/code-search-net-ruby"]
+        "Nan-Do/code-search-net-ruby",
+    ]
     dataset = text_completion_dataset(tokenizer, sources, "code")
     for i in range(5):
         print(dataset[i])
-    
