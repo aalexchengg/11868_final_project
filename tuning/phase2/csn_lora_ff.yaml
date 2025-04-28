@@ -104,18 +104,11 @@ fast_forward:
   # TODO - CHANGE THIS TO BE A 'REAL' VALIDATION SET
   # ff_collate_fn: None
   ff_dataset:
-    _component_: tuning.custom_datasets.codesearchnet.text_completion_dataset
-    sources:
-      [
-        'Nan-Do/code-search-net-python',
-        'Nan-Do/code-search-net-go',
-        'Nan-Do/code-search-net-php',
-        'Nan-Do/code-search-net-javascript',
-        'Nan-Do/code-search-net-java',
-        'Nan-Do/code-search-net-ruby',
-      ]
+    ff_dataset:
+    _component_: tuning.custom_datasets.codexglue.text_completion_dataset
+    source: google/code_x_glue_cc_code_completion_token
     column: code
-    split: train[:4]
+    split: test[:16]
     verbose: False # Enable verbose logging in the dataset
     packed: True # VERY IMPORTANT - Uncommented to ensure proper packing is used
 
