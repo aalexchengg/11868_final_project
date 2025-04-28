@@ -106,14 +106,14 @@ fast_forward:
   ff_dataset:
     _component_: tuning.custom_datasets.codesearchnet.text_completion_dataset
     sources:
-    [
-      'Nan-Do/code-search-net-python',
-      'Nan-Do/code-search-net-go',
-      'Nan-Do/code-search-net-php',
-      'Nan-Do/code-search-net-javascript',
-      'Nan-Do/code-search-net-java',
-      'Nan-Do/code-search-net-ruby',
-    ]
+      [
+        'Nan-Do/code-search-net-python',
+        'Nan-Do/code-search-net-go',
+        'Nan-Do/code-search-net-php',
+        'Nan-Do/code-search-net-javascript',
+        'Nan-Do/code-search-net-java',
+        'Nan-Do/code-search-net-ruby',
+      ]
     column: code
     split: train[:4]
     verbose: False # Enable verbose logging in the dataset
@@ -121,7 +121,7 @@ fast_forward:
 
 seed: 15122
 shuffle: True
-batch_size: 8
+batch_size: 4
 
 # Optimizer and Scheduler
 optimizer:
