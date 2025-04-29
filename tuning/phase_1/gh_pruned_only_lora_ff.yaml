@@ -48,8 +48,8 @@ model:
 
 tokenizer:
   _component_: torchtune.models.qwen2_5.qwen2_5_tokenizer
-  path: /local/Qwen2_5-0_5B-Base/vocab.json
-  merges_file: /local/Qwen2_5-0_5B-Base/merges.txt
+  path: /local/Qwen2_5-0_5B-Phase1-GH-Checkpoint/vocab.json
+  merges_file: /local/Qwen2_5-0_5B-Phase1-GH-Checkpoint/merges.txt
   max_seq_len: 4096
 
 upload_checkpoints: True
@@ -57,13 +57,13 @@ upload_repo_name: 'qwen2-0.5b-phase1-gh_plus-lora-ff'
 
 checkpointer:
   _component_: tuning.custom_qwen.qwen2_5.CustomFullModelHFCheckpointer
-  checkpoint_dir: /local/Qwen2_5-0_5B-Base
-  checkpoint_files: [model.safetensors]
+  checkpoint_dir: /local/Qwen2_5-0_5B-Phase1-GH-Checkpoint
+  checkpoint_files: [model-00001-of-00001.safetensors]
   recipe_checkpoint: null
   output_dir: ${output_dir}
   model_type: QWEN2
 
-resume_from_checkpoint: False
+resume_from_checkpoint: True
 
 # Dataset and Sampler
 # dataset:
