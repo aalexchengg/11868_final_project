@@ -1,0 +1,20 @@
+22 min for 5% of dataset -> ~440 min per GH epoch
+tokens_per_second_per_gpu:841.7943115234375
+tokens_per_second_per_gpu:2188.482421875
+tokens_per_second_per_gpu:2244.4365234375
+tokens_per_second_per_gpu:2289.9873046875
+tokens_per_second_per_gpu:2258.018798828125
+tokens_per_second_per_gpu:2283.442626953125
+tokens_per_second_per_gpu:2386.78759765625
+tokens_per_second_per_gpu:2139.44580078125
+tokens_per_second_per_gpu:2080.830810546875
+tokens_per_second_per_gpu:2116.624755859375
+tokens_per_second_per_gpu:2161.88037109375
+tokens_per_second_per_gpu:2084.487548828125
+tokens_per_second_per_gpu:2388.5439453125
+tokens_per_second_per_gpu:2311.0009765625
+tokens_per_second_per_gpu:2260.94384765625
+tokens_per_second_per_gpu:2296.8154296875
+tokens_per_second_per_gpu:2194.42626953125
+
+Average tokens_per_second_per_gpu: 2148.70
