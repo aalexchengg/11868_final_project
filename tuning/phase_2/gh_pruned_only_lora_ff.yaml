@@ -58,7 +58,7 @@ upload_repo_name: 'qwen2-0.5b-phase2-gh_plus-lora-ff'
 checkpointer:
   _component_: tuning.custom_qwen.qwen2_5.CustomFullModelHFCheckpointer
   checkpoint_dir: /local/Qwen2_5-0_5B-Phase1
-  checkpoint_files: [model.safetensors]
+  checkpoint_files: [model-00001-of-00001.safetensors]
   recipe_checkpoint: null
   output_dir: ${output_dir}
   model_type: QWEN2
