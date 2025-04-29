@@ -48,22 +48,22 @@ model:
 
 tokenizer:
   _component_: torchtune.models.qwen2_5.qwen2_5_tokenizer
-  path: /local/Qwen2_5-0_5B-Phase1-GH-Checkpoint/vocab.json
-  merges_file: /local/Qwen2_5-0_5B-Phase1-GH-Checkpoint/merges.txt
+  path: /local/Qwen2_5-0_5B-Base/vocab.json
+  merges_file: /local/Qwen2_5-0_5B-Base/merges.txt
   max_seq_len: 4096
 
 upload_checkpoints: True
-upload_repo_name: 'qwen2-0.5b-phase1-gh_plus-lora-ff'
+upload_repo_name: 'qwen2-0.5b-phase1-gh_plus-lora-ff-full-run'
 
 checkpointer:
   _component_: tuning.custom_qwen.qwen2_5.CustomFullModelHFCheckpointer
-  checkpoint_dir: /local/Qwen2_5-0_5B-Phase1-GH-Checkpoint
+  checkpoint_dir: /local/Qwen2_5-0_5B-Base
   checkpoint_files: [model-00001-of-00001.safetensors]
   recipe_checkpoint: null
   output_dir: ${output_dir}
   model_type: QWEN2
 
-resume_from_checkpoint: True
+resume_from_checkpoint: False
 
 # Dataset and Sampler
 # dataset:
@@ -106,7 +106,7 @@ fast_forward:
 
 seed: 15122
 shuffle: True
-batch_size: 8
+batch_size: 4
 
 # Optimizer and Scheduler
 optimizer:
@@ -123,7 +123,7 @@ loss:
   _component_: torchtune.modules.loss.CEWithChunkedOutputLoss
 
 # Training
-epochs: 5
+epochs: 20
 max_steps_per_epoch: null
 gradient_accumulation_steps: 8 # Use to increase effective batch size
 clip_grad_norm: null
@@ -132,7 +132,7 @@ compile: True # Changed to False for initial debugging - prevents potential issu
 # Logging
 metric_logger:
   _component_: torchtune.training.metric_logging.DiskLogger
-  log_dir: ./logs/qwen2_5_0_5b/phase1_gh_plus_lora_ff/
+  log_dir: ./logs/qwen2_5_0_5b/phase1_gh_plus_lora_ff_full_run/
 log_every_n_steps: 1
 log_peak_memory_stats: True
 
